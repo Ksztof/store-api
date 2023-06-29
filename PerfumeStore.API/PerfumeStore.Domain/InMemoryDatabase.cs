@@ -3,64 +3,70 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Domain
 {
-	public static class InMemoryDatabase
+    public static class InMemoryDatabase
 	{
-		public static List<Product> products = new List<Product>();
-		//public static IReadOnlyList<Product> Products => products;
-
+		public static List<Products> products = new List<Products>();
+		public static List<ProductCategory> productCategories = new List<ProductCategory>();
 
 		static InMemoryDatabase()
 		{
-			products.Add(new Product
+			//Add Categories
+			var perfumeCategory = new ProductCategory
+			{
+				ProductCategoryId = 1,
+				CategoryName = "Perfume"
+			};
+			productCategories.Add(perfumeCategory);
+
+			var accessoriesCategory = new ProductCategory
+			{
+				ProductCategoryId = 2,
+				CategoryName = "Accessories"
+			};
+			productCategories.Add(accessoriesCategory);
+
+			//Add Products
+			var perfume1 = new Products
 			{
 				ProductId = 1,
 				ProductName = "Perfum1",
-				Rating = 4.5,
 				ProductPrice = 500,
-				Discount = 0,
 				ProductDescription = "perfum o pięknym zapachu",
-				ProductStock = 200,
 				ProductManufacturer = "Bialy jelen",
-				IsProductRecommended = false,
-				IsProductActive = true,
+				ProductCategory = perfumeCategory,
 				DateAdded = DateTime.Now,
-				DateModified = null
-			});
+			};
+			products.Add(perfume1);
 
-			products.Add(new Product
+			var portfel = new Products
 			{
 				ProductId = 2,
 				ProductName = "Portfel",
-				Rating = 5,
 				ProductPrice = 1250,
-				Discount = 125,
 				ProductDescription = "Superancki portfelik",
-				ProductStock = 24,
 				ProductManufacturer = "Luj witom",
-				IsProductRecommended = true,
-				IsProductActive = true,
+				ProductCategory = accessoriesCategory,
 				DateAdded = DateTime.Now,
-				DateModified = null
-			});
+			};
+			products.Add(portfel);
 
-			products.Add(new Product
+			var choinkaZapachowa = new Products
 			{
 				ProductId = 3,
 				ProductName = "Choinka zapachowa",
-				Rating = 3.5,
 				ProductPrice = 25,
-				Discount = 0,
 				ProductDescription = "Superancki portfelik",
-				ProductStock = 1000,
 				ProductManufacturer = "Choinka samochodowa o zapachu waniliowym",
-				IsProductRecommended = false,
-				IsProductActive = false,
+				ProductCategory = accessoriesCategory,
 				DateAdded = DateTime.Now,
-				DateModified = null
-			});
+			};
+			products.Add(choinkaZapachowa);
 		}
+
+
 	}
 }
