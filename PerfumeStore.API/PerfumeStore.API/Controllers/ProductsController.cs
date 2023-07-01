@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.API.Forms;
+using PerfumeStore.Core.Forms;
 using PerfumeStore.Core.Services.ProductsService;
 
 namespace PerfumeStore.API.Controllers
@@ -17,13 +17,13 @@ namespace PerfumeStore.API.Controllers
 
 
 		[HttpPost]
-		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm) 
+		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm) //TODO: validate Forms
 		{
 			throw new NotImplementedException();
 		}
 
 
-		[HttpPut("{id}")]
+		[HttpPut]
 		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
 		{
 			throw new NotImplementedException();

@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Core.Repositories;
+﻿using PerfumeStore.Core.Forms;
+using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,12 @@ namespace PerfumeStore.Core.Services.ProductsService
 			_productsRepository = productsRepository;
 		}
 
-		public Task<int> CreateProductAsync()
+		public Task<int> CreateProductAsync(CreateProductForm createProductForm)
 		{
-			throw new NotImplementedException();
+			var productToCreate = new Products
+			{
+				
+			};
 		}
 
 		public Task<int> DeleteProductAsync()

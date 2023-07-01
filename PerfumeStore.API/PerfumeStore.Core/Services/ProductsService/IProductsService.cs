@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Core.GenericInterfaces;
+﻿using PerfumeStore.Core.Forms;
+using PerfumeStore.Core.GenericInterfaces;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace PerfumeStore.Core.Services.ProductsService
 {
 	public interface IProductsService
 	{
-		public Task<int> CreateProductAsync();
+		public Task<int> CreateProductAsync(CreateProductForm createProductForm);
 		public Task<int> UpdateProductAsync();
 		public Task<int> DeleteProductAsync();
 		public Task<Products> GetProductByIdAsync(int productId);

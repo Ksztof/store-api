@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.GenericInterfaces
 {
-	public interface ICrud<T> where T : IEntity
+	public interface IRepository<T> where T : IEntity
 	{
-		public void CreateAsync(T item);
-		public T GetByIdAsync(int id);
-		public List<T> GetAllAsync();
+		public Task<int> CreateAsync(T item);
+		public Task<T> GetByIdAsync(int id);
+		public Task<IEnumerable<T>> GetAllAsync();
 		public void UpdateAsync(T item);
 		public void DeleteAsync(int id);
 	}

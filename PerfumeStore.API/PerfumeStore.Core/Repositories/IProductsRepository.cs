@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.Repositories
 {
-	public interface IProductsRepository : ICrud<Products>
+	public interface IProductsRepository : IRepository<Products>
 	{
 	}
 }
