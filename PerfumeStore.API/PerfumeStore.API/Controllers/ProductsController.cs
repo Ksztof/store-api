@@ -17,9 +17,10 @@ namespace PerfumeStore.API.Controllers
 
 
 		[HttpPost]
-		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm) //TODO: validate Forms
+		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
 		{
-			throw new NotImplementedException();
+			int createdProductId = _productService.CreateProductAsync(createProductForm);
+			return Ok(createdProductId); // what should I return here?
 		}
 
 

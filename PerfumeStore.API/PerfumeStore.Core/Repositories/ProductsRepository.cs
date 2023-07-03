@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Domain;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,11 @@ namespace PerfumeStore.Core.Repositories
 
 		}
 
-		public void CreateAsync(Products item)
+		public int CreateAsync(Products item) 		
 		{
-			throw new NotImplementedException();
+			InMemoryDatabase.products.Add(item);
+			int createdProductId = item.ProductId;
+			return createdProductId;
 		}
 
 		public void DeleteAsync(int id)
@@ -26,7 +29,7 @@ namespace PerfumeStore.Core.Repositories
 			throw new NotImplementedException();
 		}
 
-		public List<Products> GetAllAsync()
+		public Task<IEnumerable<Products>> GetAllAsync()
 		{
 			throw new NotImplementedException();
 		}
@@ -39,6 +42,13 @@ namespace PerfumeStore.Core.Repositories
 		public void UpdateAsync(Products item)
 		{
 			throw new NotImplementedException();
+		}
+
+		public int GetCurrentProductId()
+		{
+			int lastProductId = InMemoryDatabase.products.Max(x => x.ProductId);
+			int currentProductId = lastProductId + 1;
+			return currentProductId;
 		}
 	}
 }

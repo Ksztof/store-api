@@ -12,18 +12,31 @@ namespace PerfumeStore.Core.Services.ProductsService
 	public class ProductsService : IProductsService
 	{
 		private readonly IProductsRepository _productsRepository;
+		private readonly IProductCategoriesRepository _productCategoriesRepository;
 
-		public ProductsService(IProductsRepository productsRepository)
+
+		public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository)
 		{
 			_productsRepository = productsRepository;
+			_productCategoriesRepository = productCategoriesRepository;
 		}
 
-		public Task<int> CreateProductAsync(CreateProductForm createProductForm)
+		public int CreateProductAsync(CreateProductForm createProductForm)
 		{
-			var productToCreate = new Products
+			Products productToCreate = new Products
 			{
-				
+				ProductId = _productsRepository.GetCurrentProductId(),
+				ProductName = createProductForm.ProductName,
+				ProductPrice = createProductForm.ProductPrice,
+				ProductDescription = createProductForm.ProductDescription,
+				ProductCategory =  _productCategoriesRepository.GetByIdAsync(createProductForm.ProductId),
+				ProductManufacturer = createProductForm.ProductManufacturer,
+				DateAdded = DateTime.Now
 			};
+
+			int createdProductId = _productsRepository.CreateAsync(productToCreate);
+			return createdProductId;
+
 		}
 
 		public Task<int> DeleteProductAsync()
