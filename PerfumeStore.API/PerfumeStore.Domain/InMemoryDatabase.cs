@@ -66,7 +66,5 @@ namespace PerfumeStore.Domain
 			};
 			products.Add(choinkaZapachowa);
 		}
-
-
 	}
 }

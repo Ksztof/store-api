@@ -12,6 +12,7 @@ namespace PerfumeStore.Core.Services.ProductsService
 	public class ProductsService : IProductsService
 	{
 		private readonly IProductsRepository _productsRepository;
+
 		public ProductsService(IProductsRepository productsRepository)
 		{
 			_productsRepository = productsRepository;
