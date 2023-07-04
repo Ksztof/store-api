@@ -11,6 +11,5 @@ namespace PerfumeStore.Core.Repositories
 {
 	public interface IProductsRepository : IRepository<Products>
 	{
-		public int GetCurrentProductId();
 	}
 }

@@ -15,14 +15,12 @@ namespace PerfumeStore.API.Controllers
 			_productService = productService;
 		}
 
-
 		[HttpPost]
 		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
 		{
 			int createdProductId = _productService.CreateProductAsync(createProductForm);
-			return Ok(createdProductId); // what should I return here?
+			return Ok(createdProductId);
 		}
-
 
 		[HttpPut]
 		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
@@ -47,7 +45,5 @@ namespace PerfumeStore.API.Controllers
 		{
 			throw new NotImplementedException();
 		}
-
-
 	}
 }

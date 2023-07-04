@@ -14,11 +14,11 @@ namespace PerfumeStore.Core.Repositories
 	{
 		public ProductsRepository()
 		{
-
 		}
 
 		public int CreateAsync(Products item) 		
 		{
+			item.ProductCategoryId = GetCurrentProductId();
 			InMemoryDatabase.products.Add(item);
 			int createdProductId = item.ProductId;
 			return createdProductId;
@@ -44,7 +44,7 @@ namespace PerfumeStore.Core.Repositories
 			throw new NotImplementedException();
 		}
 
-		public int GetCurrentProductId()
+		private int GetCurrentProductId()
 		{
 			int lastProductId = InMemoryDatabase.products.Max(x => x.ProductId);
 			int currentProductId = lastProductId + 1;

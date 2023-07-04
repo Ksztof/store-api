@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Domain;
+﻿using PerfumeStore.Core.GenericInterfaces;
+using PerfumeStore.Domain;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,16 @@ namespace PerfumeStore.Core.Repositories
 		}
 
 		public void UpdateAsync(ProductCategories item)
+		{
+			throw new NotImplementedException();
+		}
+
+		int IRepository<ProductCategories>.CreateAsync(ProductCategories item)
+		{
+			throw new NotImplementedException();
+		}
+
+		ProductCategories IRepository<ProductCategories>.GetByIdAsync(int id)
 		{
 			throw new NotImplementedException();
 		}
