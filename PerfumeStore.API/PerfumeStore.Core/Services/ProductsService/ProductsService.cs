@@ -1,5 +1,6 @@
 ﻿using PerfumeStore.Core.Forms;
-using PerfumeStore.Core.Repositories;
+using PerfumeStore.Core.Repositories.ProductCategories;
+using PerfumeStore.Core.Repositories.Products;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.Services.ProductsService
 {
-	public class ProductsService : IProductsService
+    public class ProductsService : IProductsService
 	{
 		private readonly IProductsRepository _productsRepository;
 		private readonly IProductCategoriesRepository _productCategoriesRepository;

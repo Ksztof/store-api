@@ -30,17 +30,17 @@ namespace PerfumeStore.API.Controllers
 			return Ok(updatedProductId);
 		}
 
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteProductAsync(int id)
+		[HttpDelete("{productId}")]
+		public async Task<IActionResult> DeleteProductAsync(int productId)
 		{
-			int deletedProductId = await _productService.DeleteProductAsync(id);
+			int deletedProductId = await _productService.DeleteProductAsync(productId);
 			return NoContent();
 		}
 
-		[HttpGet("{id}")]
-		public async Task<IActionResult> GetProductByIdAsync(int id)
+		[HttpGet("{productId}")]
+		public async Task<IActionResult> GetProductByIdAsync(int productId)
 		{
-			Products product = await _productService.GetProductByIdAsync(id);
+			Products product = await _productService.GetProductByIdAsync(productId);
 			return Ok(product);
 		}
 

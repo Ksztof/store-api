@@ -1,5 +1,4 @@
 ﻿using PerfumeStore.Core.GenericInterfaces;
-using PerfumeStore.Core.Services.ProductsService;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -7,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Repositories
+namespace PerfumeStore.Core.Repositories.ProductCategories
 {
-	public interface IProductsRepository : IRepository<Products>
-	{
-	}
+    public interface IProductCategoriesRepository : IRepository<ProductCategories>
+    {
+    }
 }
