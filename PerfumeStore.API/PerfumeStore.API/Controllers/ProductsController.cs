@@ -20,7 +20,7 @@ namespace PerfumeStore.API.Controllers
 		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
 		{
 			int createdProductId = await _productService.CreateProductAsync(createProductForm);
-			return Ok(createdProductId);
+			return CreatedAtAction(nameof(GetProductByIdAsync), new { id = createdProductId}, createdProductId);
 		}
 
 		[HttpPut]
@@ -34,7 +34,7 @@ namespace PerfumeStore.API.Controllers
 		public async Task<IActionResult> DeleteProductAsync(int id)
 		{
 			int deletedProductId = await _productService.DeleteProductAsync(id);
-			return Ok(deletedProductId);
+			return NoContent();
 		}
 
 		[HttpGet("{id}")]
@@ -47,7 +47,8 @@ namespace PerfumeStore.API.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAllProductsAsync()
 		{
-			throw new NotImplementedException();
+			IEnumerable<Products> productsList = await _productService.GetAllProductsAsync();
+			return Ok(productsList);
 		}
 	}
 }
