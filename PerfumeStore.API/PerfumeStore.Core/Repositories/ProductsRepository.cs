@@ -34,7 +34,9 @@ namespace PerfumeStore.Core.Repositories
 
 		public async Task<IEnumerable<Products>> GetAllAsync()
 		{
-			throw new NotImplementedException();
+			IEnumerable<Products> productsList = InMemoryDatabase.products;
+
+			return await Task.FromResult(productsList);
 		}
 
 		public async Task<Products> GetByIdAsync(int id)
