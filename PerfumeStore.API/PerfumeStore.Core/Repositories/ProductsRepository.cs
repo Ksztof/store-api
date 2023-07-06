@@ -16,32 +16,40 @@ namespace PerfumeStore.Core.Repositories
 		{
 		}
 
-		public int CreateAsync(Products item) 		
+		public async Task<int> CreateAsync(Products item) 		
 		{
 			item.ProductCategoryId = GetCurrentProductId();
 			InMemoryDatabase.products.Add(item);
 			int createdProductId = item.ProductId;
-			return createdProductId;
+			return await Task.FromResult(createdProductId);
 		}
 
-		public void DeleteAsync(int id)
+		public async Task<int> DeleteAsync(int id)
+		{
+			Products productToDelete = await GetByIdAsync(id);
+			InMemoryDatabase.products.Remove(productToDelete);
+
+			return await Task.FromResult(productToDelete.ProductId);
+		}
+
+		public async Task<IEnumerable<Products>> GetAllAsync()
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task<IEnumerable<Products>> GetAllAsync()
+		public async Task<Products> GetByIdAsync(int id)
 		{
-			throw new NotImplementedException();
+			Products product = InMemoryDatabase.products.First(x => x.ProductId == id);
+			return await Task.FromResult(product);
 		}
 
-		public Products GetByIdAsync(int id)
+		public async Task<int> UpdateAsync(Products item)
 		{
-			throw new NotImplementedException();
-		}
+			Products productById = await GetByIdAsync(item.ProductId); //temporary variable
+			int productToUpdateIndex = InMemoryDatabase.products.IndexOf(productById);
+			InMemoryDatabase.products[productToUpdateIndex] = item; 
 
-		public void UpdateAsync(Products item)
-		{
-			throw new NotImplementedException();
+			return await Task.FromResult(item.ProductId);
 		}
 
 		private int GetCurrentProductId()

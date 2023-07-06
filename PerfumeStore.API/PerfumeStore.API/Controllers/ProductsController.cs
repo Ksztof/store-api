@@ -18,20 +18,22 @@ namespace PerfumeStore.API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
 		{
-			int createdProductId = _productService.CreateProductAsync(createProductForm);
+			int createdProductId = await _productService.CreateProductAsync(createProductForm);
 			return Ok(createdProductId);
 		}
 
 		[HttpPut]
 		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
 		{
-			throw new NotImplementedException();
+			int updatedProductId = await _productService.UpdateProductAsync(updateform);
+			return Ok(updatedProductId);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteProductAsync(int id)
 		{
-			throw new NotImplementedException();
+			int deletedProductId = await _productService.DeleteProductAsync(id);
+			return Ok(deletedProductId);
 		}
 
 		[HttpGet("{id}")]
