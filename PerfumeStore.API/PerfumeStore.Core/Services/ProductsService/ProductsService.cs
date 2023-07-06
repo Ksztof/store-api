@@ -49,7 +49,8 @@ namespace PerfumeStore.Core.Services.ProductsService
 
 		public async Task<Products> GetProductByIdAsync(int productId)
 		{
-			throw new NotImplementedException();
+			Products product = await _productsRepository.GetByIdAsync(productId);
+			return await Task.FromResult(product);
 		}
 
 		public async Task<int> UpdateProductAsync(UpdateProductForm updateform)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.Forms;
 using PerfumeStore.Core.Services.ProductsService;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -39,7 +40,8 @@ namespace PerfumeStore.API.Controllers
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetProductByIdAsync(int id)
 		{
-			throw new NotImplementedException();
+			Products product = await _productService.GetProductByIdAsync(id);
+			return Ok(product);
 		}
 
 		[HttpGet]
