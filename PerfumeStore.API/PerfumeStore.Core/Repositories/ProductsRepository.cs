@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Domain;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -13,32 +14,49 @@ namespace PerfumeStore.Core.Repositories
 	{
 		public ProductsRepository()
 		{
-
 		}
 
-		public void CreateAsync(Products item)
+		public async Task<int> CreateAsync(Products item) 		
+		{
+			item.ProductCategoryId = GetCurrentProductId();
+			InMemoryDatabase.products.Add(item);
+			int createdProductId = item.ProductId;
+			return await Task.FromResult(createdProductId);
+		}
+
+		public async Task<int> DeleteAsync(int id)
+		{
+			Products productToDelete = await GetByIdAsync(id);
+			InMemoryDatabase.products.Remove(productToDelete);
+
+			return await Task.FromResult(productToDelete.ProductId);
+		}
+
+		public async Task<IEnumerable<Products>> GetAllAsync()
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DeleteAsync(int id)
+		public async Task<Products> GetByIdAsync(int id)
 		{
-			throw new NotImplementedException();
+			Products product = InMemoryDatabase.products.First(x => x.ProductId == id);
+			return await Task.FromResult(product);
 		}
 
-		public List<Products> GetAllAsync()
+		public async Task<int> UpdateAsync(Products item)
 		{
-			throw new NotImplementedException();
+			Products productById = await GetByIdAsync(item.ProductId); //temporary variable
+			int productToUpdateIndex = InMemoryDatabase.products.IndexOf(productById);
+			InMemoryDatabase.products[productToUpdateIndex] = item; 
+
+			return await Task.FromResult(item.ProductId);
 		}
 
-		public Products GetByIdAsync(int id)
+		private int GetCurrentProductId()
 		{
-			throw new NotImplementedException();
-		}
-
-		public void UpdateAsync(Products item)
-		{
-			throw new NotImplementedException();
+			int lastProductId = InMemoryDatabase.products.Max(x => x.ProductId);
+			int currentProductId = lastProductId + 1;
+			return currentProductId;
 		}
 	}
 }

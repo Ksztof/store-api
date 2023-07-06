@@ -10,19 +10,19 @@ namespace PerfumeStore.Domain
     public static class InMemoryDatabase
 	{
 		public static List<Products> products = new List<Products>();
-		public static List<ProductCategory> productCategories = new List<ProductCategory>();
+		public static List<ProductCategories> productCategories = new List<ProductCategories>();
 
 		static InMemoryDatabase()
 		{
 			//Add Categories
-			var perfumeCategory = new ProductCategory
+			var perfumeCategory = new ProductCategories
 			{
 				ProductCategoryId = 1,
 				CategoryName = "Perfume"
 			};
 			productCategories.Add(perfumeCategory);
 
-			var accessoriesCategory = new ProductCategory
+			var accessoriesCategory = new ProductCategories
 			{
 				ProductCategoryId = 2,
 				CategoryName = "Accessories"

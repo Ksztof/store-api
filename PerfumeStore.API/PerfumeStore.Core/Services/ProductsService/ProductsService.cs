@@ -12,38 +12,56 @@ namespace PerfumeStore.Core.Services.ProductsService
 	public class ProductsService : IProductsService
 	{
 		private readonly IProductsRepository _productsRepository;
+		private readonly IProductCategoriesRepository _productCategoriesRepository;
 
-		public ProductsService(IProductsRepository productsRepository)
+		public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository)
 		{
 			_productsRepository = productsRepository;
+			_productCategoriesRepository = productCategoriesRepository;
 		}
 
-		public Task<int> CreateProductAsync(CreateProductForm createProductForm)
+		public async Task<int> CreateProductAsync(CreateProductForm createProductForm)
 		{
 			var productToCreate = new Products
 			{
-				
+				ProductName = createProductForm.ProductName,
+				ProductPrice = createProductForm.ProductPrice,
+				ProductDescription = createProductForm.ProductDescription,
+				ProductCategoryId = createProductForm.ProductCategoryId,
+				ProductManufacturer = createProductForm.ProductManufacturer,
+				DateAdded = DateTime.Now
 			};
+
+			int createdProductId = await _productsRepository.CreateAsync(productToCreate);
+			return createdProductId;
 		}
 
-		public Task<int> DeleteProductAsync()
+		public async Task<int> DeleteProductAsync(int productId)
+		{
+			int deletedProductId = await _productsRepository.DeleteAsync(productId);
+			return await Task.FromResult(deletedProductId);
+		}
+
+		public async Task<IEnumerable<Products>> GetAllProductsAsync()
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task<IEnumerable<Products>> GetAllProductsAsync()
+		public async Task<Products> GetProductByIdAsync(int productId)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task<Products> GetProductByIdAsync(int productId)
+		public async Task<int> UpdateProductAsync(UpdateProductForm updateform)
 		{
-			throw new NotImplementedException();
-		}
+			Products productToUpdate = await _productsRepository.GetByIdAsync(updateform.ProductId); //TODO:will have to think about smarter mapping/mapper
+			productToUpdate.ProductName = updateform.ProductName;
+			productToUpdate.ProductPrice = updateform.ProductPrice;
+			productToUpdate.ProductDescription = updateform.ProductDescription;
+			productToUpdate.ProductManufacturer = updateform.ProductManufacturer;
 
-		public Task<int> UpdateProductAsync()
-		{
-			throw new NotImplementedException();
+			int updatedProductId = await _productsRepository.UpdateAsync(productToUpdate);
+			return await Task.FromResult(updatedProductId);
 		}
 	}
 }

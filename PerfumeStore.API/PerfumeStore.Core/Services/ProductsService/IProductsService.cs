@@ -12,9 +12,9 @@ namespace PerfumeStore.Core.Services.ProductsService
 	public interface IProductsService
 	{
 		public Task<int> CreateProductAsync(CreateProductForm createProductForm);
-		public Task<int> UpdateProductAsync();
-		public Task<int> DeleteProductAsync();
+		public Task<int> UpdateProductAsync(UpdateProductForm updateform);
+		public Task<int> DeleteProductAsync(int productId);
 		public Task<Products> GetProductByIdAsync(int productId);
-		public Task<IEnumerable<Products>> GetAllProductsAsync(); //TODO: nie przewiduję innych potrzeb niż odczyt, więc jest IEnumerable póki co
+		public Task<IEnumerable<Products>> GetAllProductsAsync();
 	}
 }
