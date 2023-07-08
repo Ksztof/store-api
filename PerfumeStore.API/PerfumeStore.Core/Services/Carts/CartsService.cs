@@ -1,13 +1,13 @@
-﻿using PerfumeStore.Core.Repositories.Cart;
+﻿using PerfumeStore.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Services.Cart
+namespace PerfumeStore.Core.Services.Carts
 {
-	public class CartsService : ICartsService
+    public class CartsService : ICartsService
 	{
 		private readonly ICartsRepository _cartRepository;
 

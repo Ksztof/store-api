@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Services.Cart
+namespace PerfumeStore.Core.Services.Carts
 {
 	public interface ICartsService
 	{

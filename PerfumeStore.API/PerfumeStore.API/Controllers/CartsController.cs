@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using PerfumeStore.Core.Services.Cart;
+using PerfumeStore.Core.Services.Carts;
 
 namespace PerfumeStore.API.Controllers
 {

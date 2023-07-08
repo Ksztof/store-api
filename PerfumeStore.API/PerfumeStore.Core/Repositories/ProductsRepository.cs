@@ -4,11 +4,12 @@ using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace PerfumeStore.Core.Repositories.Products
+namespace PerfumeStore.Core.Repositories
 {
     public class ProductsRepository : IProductsRepository
     {
@@ -16,42 +17,40 @@ namespace PerfumeStore.Core.Repositories.Products
         {
         }
 
-        public async Task<int> CreateAsync(Products item)
+        public async Task<int> CreateAsync(Product item)
         {
-            item.ProductCategoryId = GetCurrentProductId();
+            item.ProductId = IdGenerator.GetNextId();
             InMemoryDatabase.products.Add(item);
             int createdProductId = item.ProductId;
             return await Task.FromResult(createdProductId);
         }
 
-        public async Task<int> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            Products productToDelete = await GetByIdAsync(id);
+            Product productToDelete = await GetByIdAsync(id);
             InMemoryDatabase.products.Remove(productToDelete);
-
-            return await Task.FromResult(productToDelete.ProductId);
         }
 
-        public async Task<IEnumerable<Products>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            IEnumerable<Products> productsList = InMemoryDatabase.products;
+            IEnumerable<Product> productsList = InMemoryDatabase.products;
 
             return await Task.FromResult(productsList);
         }
 
-        public async Task<Products> GetByIdAsync(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            Products product = InMemoryDatabase.products.First(x => x.ProductId == id);
+            Product product = InMemoryDatabase.products.FirstOrDefault(x => x.ProductId == id);
             return await Task.FromResult(product);
         }
 
-        public async Task<int> UpdateAsync(Products item)
+        public async Task<Product> UpdateAsync(Product item)
         {
-            Products productById = await GetByIdAsync(item.ProductId); //temporary variable
+            Product productById = await GetByIdAsync(item.ProductId); //temporary variable
             int productToUpdateIndex = InMemoryDatabase.products.IndexOf(productById);
             InMemoryDatabase.products[productToUpdateIndex] = item;
 
-            return await Task.FromResult(item.ProductId);
+            return await Task.FromResult(item);
         }
 
         private int GetCurrentProductId()

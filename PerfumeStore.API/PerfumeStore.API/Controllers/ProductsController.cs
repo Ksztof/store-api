@@ -11,10 +11,12 @@ namespace PerfumeStore.API.Controllers
 	public class ProductsController : ControllerBase
 	{
 		private readonly IProductsService _productService;
+
 		public ProductsController(IProductsService productService)
 		{
 			_productService = productService;
 		}
+
 
 		[HttpPost]
 		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
@@ -26,29 +28,29 @@ namespace PerfumeStore.API.Controllers
 		[HttpPut]
 		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
 		{
-			int updatedProductId = await _productService.UpdateProductAsync(updateform);
+			Product updatedProductId = await _productService.UpdateProductAsync(updateform);
 			return Ok(updatedProductId);
 		}
 
 		[HttpDelete("{productId}")]
 		public async Task<IActionResult> DeleteProductAsync(int productId)
 		{
-			int deletedProductId = await _productService.DeleteProductAsync(productId);
+			await _productService.DeleteProductAsync(productId);
 			return NoContent();
 		}
 
 		[HttpGet("{productId}")]
 		public async Task<IActionResult> GetProductByIdAsync(int productId)
 		{
-			Products product = await _productService.GetProductByIdAsync(productId);
+			Product product = await _productService.GetProductByIdAsync(productId);
 			return Ok(product);
 		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetAllProductsAsync()
 		{
-			IEnumerable<Products> productsList = await _productService.GetAllProductsAsync();
-			return Ok(productsList);
+			IEnumerable<Product> products = await _productService.GetAllProductsAsync();
+			return Ok(products);
 		}
 	}
 }

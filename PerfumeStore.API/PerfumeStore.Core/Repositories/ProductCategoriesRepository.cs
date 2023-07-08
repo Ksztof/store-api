@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Repositories.ProductCategories
+namespace PerfumeStore.Core.Repositories
 {
     public class ProductCategoriesRepository : IProductCategoriesRepository
     {
@@ -28,7 +28,7 @@ namespace PerfumeStore.Core.Repositories.ProductCategories
 
         public Task<ProductCategories> GetById(int id)
         {
-            ProductCategories productCategory = InMemoryDatabase.productCategories.First(x => x.ProductCategoryId == id);
+            ProductCategories? productCategory = InMemoryDatabase.productCategories.FirstOrDefault(x => x.ProductCategoryId == id);
             return Task.FromResult(productCategory);
         }
 
@@ -37,7 +37,7 @@ namespace PerfumeStore.Core.Repositories.ProductCategories
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(ProductCategories item)
+        public Task<ProductCategories> UpdateAsync(ProductCategories item)
         {
             throw new NotImplementedException();
         }
