@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Domain;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Domain.DbModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +17,12 @@ namespace PerfumeStore.Core.Repositories
         {
         }
 
-        public async Task<int> CreateAsync(Product item)
+        public async Task<Product> CreateAsync(Product item)
         {
-            item.ProductId = IdGenerator.GetNextId();
+            item.ProductId = ProductIdGenerator.GetNextId();
             InMemoryDatabase.products.Add(item);
-            int createdProductId = item.ProductId;
-            return await Task.FromResult(createdProductId);
+
+            return await Task.FromResult(item);
         }
 
         public async Task DeleteAsync(int id)
@@ -46,8 +46,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Product> UpdateAsync(Product item)
         {
-            Product productById = await GetByIdAsync(item.ProductId); //temporary variable
-            int productToUpdateIndex = InMemoryDatabase.products.IndexOf(productById);
+            int productToUpdateIndex = InMemoryDatabase.products.IndexOf(item);
             InMemoryDatabase.products[productToUpdateIndex] = item;
 
             return await Task.FromResult(item);

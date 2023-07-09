@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using PerfumeStore.Core.ResponseForms;
 using PerfumeStore.Core.Services;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -15,48 +17,60 @@ namespace PerfumeStore.API.Controllers
 		}
 
 
-		[HttpPost("{productId}/AddProductToCartAsync")]
-		public async Task<IActionResult> AddProductToCartAsync(int productId)
+		[HttpPost("AddProductToCartAsync/{productId}/{userId}/{productQuantity}")]
+		public async Task<IActionResult> AddProductToCartAsync(int productId, int userId, decimal productQuantity)
 		{
-			int cartId = _cartsService.AddProductToCartAsync(productId);
-			return CreatedAt
+			Cart cart = await _cartsService.AddProductToCartAsync(productId, userId, productQuantity);
+			return CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = cart.CartId }, cart);
 		}
 
-		[HttpDelete("{productId}/RemoveProductLineFromCartAsync")]
-		public async Task<IActionResult> RemoveProductLineFromCartAsync(int productId)
+		[HttpPut("DeleteProductLineFromCartAsync/{productId}/{userId}/")]
+		public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId, int userId)
 		{
-			throw new NotImplementedException();
+			Cart updatedCart = await _cartsService.DeleteProductLineFromCartAsync(productId, userId);
+			return Ok(updatedCart);
 		}
 
-		[HttpPost("{productId}/DecreaseProductQuantityAsync")]
-		public async Task<IActionResult> DecreaseProductQuantityAsync(int productId)
+		[HttpPut("DecreaseProductQuantityAsync/{productId}/{userId}/")]
+		public async Task<IActionResult> DecreaseProductQuantityAsync(int productId, int userId)
 		{
-			throw new NotImplementedException();
+			Cart updatedCart = await _cartsService.DecreaseProductQuantityAsync(productId, userId);
+			return Ok(updatedCart);
 		}
 
-		[HttpPost("{productId}/IncreaseProductQuantityAsync")]
-		public async Task<IActionResult> IncreaseProductQuantityAsync(int productId)
+		[HttpPut("IncreaseProductQuantityAsync/{productId}/{userId}/")]
+		public async Task<IActionResult> IncreaseProductQuantityAsync(int productId, int userId)
 		{
-			throw new NotImplementedException();
+			Cart updatedCart = await _cartsService.IncreaseProductQuantityAsync(productId, userId);
+			return Ok(updatedCart);
 		}
 
-		[HttpPost("{productId}/{productQuantity}/SetProductQuantityAsync")]
-		public async Task<IActionResult> SetProductQuantityAsync(int productId, int productQuantity)
+		[HttpPost("SetProductQuantityAsync/{productId}/{productQuantity}/{userId}/")]
+		public async Task<IActionResult> SetProductQuantityAsync(int productId, decimal productQuantity, int userId)
 		{
-			throw new NotImplementedException();
+			Cart updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity, userId);
+			return Ok(updatedCart);
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> CheckCartAsync()
+		[HttpGet("CheckCartAsync/{userId}")]
+		public async Task<IActionResult> CheckCartAsync(int userId)
 		{
-			//Total cart value, List of products with ProductId, Unit price, Quantity, Total price
-			throw new NotImplementedException();
+			CheckCartForm products = await _cartsService.CheckCartAsync(userId);
+			return Ok(products);
 		}
 
-		[HttpDelete]
-		public async Task<IActionResult> ClearCartAsync(int productId)
+		[HttpDelete("ClearCartAsync/{userId}")]
+		public async Task<IActionResult> ClearCartAsync(int userId)
 		{
-			throw new NotImplementedException();
+			Cart updatedCart = await _cartsService.ClearCartAsync(userId);
+			return Ok(updatedCart);
+		}
+
+		[HttpGet("GetCartByIdAsync/{cartId}")]
+		public async Task<IActionResult> GetCartByIdAsync(int cartId)
+		{
+			Cart cart = await _cartsService.GetCartByIdAsync(cartId);
+			return Ok(cart);
 		}
 	}
 }

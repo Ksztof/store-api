@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Domain
 {
-    public static class InMemoryDatabase
+	public static class InMemoryDatabase
 	{
 		public static List<Product> products = new List<Product>();
 		public static List<ProductCategories> productCategories = new List<ProductCategories>();
+		public static List<Cart> carts  = new List<Cart>();
 
 		static InMemoryDatabase()
 		{

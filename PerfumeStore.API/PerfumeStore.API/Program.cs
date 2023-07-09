@@ -1,4 +1,4 @@
-using PerfumeStore.Core.Repositories;
+﻿using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +22,18 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+app.MapControllerRoute(
+	name: "GetProductById",
+	pattern: "api/products/{productId}",
+	defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
+);
+
+/*app.MapControllerRoute(
+	name: "GetProductById",
+	pattern: "api/products/{productId}",
+	defaults: new { controller = "Carts", action = "GetProductByIdAsync" } 
+);*/
+
 
 app.UseHttpsRedirection();
 

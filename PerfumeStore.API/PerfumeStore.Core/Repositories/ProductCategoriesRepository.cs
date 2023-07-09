@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Core.GenericInterfaces;
 using PerfumeStore.Domain;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Domain.DbModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace PerfumeStore.Core.Repositories
 {
     public class ProductCategoriesRepository : IProductCategoriesRepository
     {
-        public Task<int> CreateAsync(ProductCategories item)
+        public Task<ProductCategories> CreateAsync(ProductCategories item)
         {
             throw new NotImplementedException();
         }

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Domain.Models
+namespace PerfumeStore.Domain.DbModels
 {
 	public class ProductCategories : IEntity
 	{
 		public int ProductCategoryId { get; set; }
-		public string Name { get; set; }	
+		public string Name { get; set; }
 	}
 }

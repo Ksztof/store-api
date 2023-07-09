@@ -1,6 +1,6 @@
-﻿using PerfumeStore.Core.Forms;
-using PerfumeStore.Core.Repositories;
-using PerfumeStore.Domain.Models;
+﻿using PerfumeStore.Core.Repositories;
+using PerfumeStore.Core.RequestForms;
+using PerfumeStore.Domain.DbModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace PerfumeStore.Core.Services
             _productsRepository = productsRepository;
         }
 
-        public async Task<int> CreateProductAsync(CreateProductForm createProductForm)
+        public async Task<Product> CreateProductAsync(CreateProductForm createProductForm)
         {
             var productToCreate = new Product
             {
@@ -30,7 +30,7 @@ namespace PerfumeStore.Core.Services
                 DateAdded = DateTime.Now
             };
 
-            int createdProductId = await _productsRepository.CreateAsync(productToCreate);
+            Product createdProductId = await _productsRepository.CreateAsync(productToCreate);
             return createdProductId;
         }
 
@@ -60,6 +60,7 @@ namespace PerfumeStore.Core.Services
             productToUpdate.Manufacturer = updateform.ProductManufacturer;
 
             Product updatedProductId = await _productsRepository.UpdateAsync(productToUpdate);
+
             return await Task.FromResult(updatedProductId);
         }
     }

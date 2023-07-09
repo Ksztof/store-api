@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Domain
 {
-	public static class IdGenerator
+	public static class ProductIdGenerator
 	{
 		private static int _currentId;
 

@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Core.Forms;
+using PerfumeStore.Core.RequestForms;
 using PerfumeStore.Core.Services;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.API.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class ProductsController : ControllerBase
 	{
@@ -17,36 +17,35 @@ namespace PerfumeStore.API.Controllers
 			_productService = productService;
 		}
 
-
-		[HttpPost]
+		[HttpPost("CreateProductAsync")]
 		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
 		{
-			int createdProductId = await _productService.CreateProductAsync(createProductForm);
-			return CreatedAtAction(nameof(GetProductByIdAsync), new { id = createdProductId}, createdProductId);
+			Product createdProduct = await _productService.CreateProductAsync(createProductForm);
+			return CreatedAtAction(nameof(GetProductByIdAsync), new { productId = createdProduct.ProductId }, createdProduct);
 		}
 
-		[HttpPut]
+		[HttpPut("UpdateProductAsync")]
 		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
 		{
 			Product updatedProductId = await _productService.UpdateProductAsync(updateform);
 			return Ok(updatedProductId);
 		}
 
-		[HttpDelete("{productId}")]
+		[HttpDelete("DeleteProductAsync/{productId}")]
 		public async Task<IActionResult> DeleteProductAsync(int productId)
 		{
 			await _productService.DeleteProductAsync(productId);
 			return NoContent();
 		}
 
-		[HttpGet("{productId}")]
+		[HttpGet("GetProductByIdAsync/{productId}")]
 		public async Task<IActionResult> GetProductByIdAsync(int productId)
 		{
 			Product product = await _productService.GetProductByIdAsync(productId);
 			return Ok(product);
 		}
 
-		[HttpGet]
+		[HttpGet("GetAllProductsAsync")]
 		public async Task<IActionResult> GetAllProductsAsync()
 		{
 			IEnumerable<Product> products = await _productService.GetAllProductsAsync();
