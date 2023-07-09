@@ -1,6 +1,5 @@
 using PerfumeStore.Core.Repositories;
-using PerfumeStore.Core.Services.Carts;
-using PerfumeStore.Core.Services.ProductsService;
+using PerfumeStore.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Services.Carts
+namespace PerfumeStore.Core.Services
 {
-	public interface ICartsService
-	{
-	}
+    public interface ICartsService
+    {
+    }
 }

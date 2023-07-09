@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using PerfumeStore.Core.Services.Carts;
+using PerfumeStore.Core.Services;
 
 namespace PerfumeStore.API.Controllers
 {
-	[Route("api/[cotroller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class CartsController : ControllerBase
 	{
@@ -15,45 +15,46 @@ namespace PerfumeStore.API.Controllers
 		}
 
 
-		[HttpPost("{productId}")]
-		public async Task<IActionResult> AddProductToCart(int productId)
+		[HttpPost("{productId}/AddProductToCartAsync")]
+		public async Task<IActionResult> AddProductToCartAsync(int productId)
+		{
+			int cartId = _cartsService.AddProductToCartAsync(productId);
+			return CreatedAt
+		}
+
+		[HttpDelete("{productId}/RemoveProductLineFromCartAsync")]
+		public async Task<IActionResult> RemoveProductLineFromCartAsync(int productId)
 		{
 			throw new NotImplementedException();
 		}
 
-		[HttpDelete("{productId}")]
-		public async Task<IActionResult> RemoveProductLineFromCart(int productId)
+		[HttpPost("{productId}/DecreaseProductQuantityAsync")]
+		public async Task<IActionResult> DecreaseProductQuantityAsync(int productId)
 		{
 			throw new NotImplementedException();
 		}
 
-		[HttpPost("{productId}")]
-		public async Task<IActionResult> DecreaseProductQuantity(int productId)
+		[HttpPost("{productId}/IncreaseProductQuantityAsync")]
+		public async Task<IActionResult> IncreaseProductQuantityAsync(int productId)
 		{
 			throw new NotImplementedException();
 		}
 
-		[HttpPost("{productId}")]
-		public async Task<IActionResult> IncreaseProductQuantity(int productId)
-		{
-			throw new NotImplementedException();
-		}
-
-		[HttpPost("{productId}/{productQuantity}")]
-		public async Task<IActionResult> SetProductQuantity(int productId, int productQuantity)
+		[HttpPost("{productId}/{productQuantity}/SetProductQuantityAsync")]
+		public async Task<IActionResult> SetProductQuantityAsync(int productId, int productQuantity)
 		{
 			throw new NotImplementedException();
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> CheckCart()
+		public async Task<IActionResult> CheckCartAsync()
 		{
 			//Total cart value, List of products with ProductId, Unit price, Quantity, Total price
 			throw new NotImplementedException();
 		}
 
 		[HttpDelete]
-		public async Task<IActionResult> ClearCart(int productId)
+		public async Task<IActionResult> ClearCartAsync(int productId)
 		{
 			throw new NotImplementedException();
 		}

@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.Forms;
-using PerfumeStore.Core.Services.ProductsService;
+using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class ProductsController : ControllerBase
 	{

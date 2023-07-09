@@ -1,5 +1,4 @@
 ﻿using PerfumeStore.Core.GenericInterfaces;
-using PerfumeStore.Core.Services.ProductsService;
 using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
