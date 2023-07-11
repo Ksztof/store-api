@@ -10,7 +10,7 @@ namespace PerfumeStore.Core.Repositories
 {
     public class CartsRepository : ICartsRepository
     {
-        public async Task<Cart?> CheckIfCartExists(int userId)
+        public async Task<Cart?> CheckIfCartExists(Guid userId)
         {
             Cart? cart = InMemoryDatabase.carts.FirstOrDefault(c => c.UserId == userId);
             if (cart == null)

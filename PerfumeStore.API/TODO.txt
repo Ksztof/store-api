@@ -1,0 +1,1 @@
+﻿1. weryfikacja czy produkty z koszyka użytkownika zalogowanego i niezalogowanego są nadal dostępne

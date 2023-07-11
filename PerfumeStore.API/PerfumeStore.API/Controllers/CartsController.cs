@@ -17,10 +17,10 @@ namespace PerfumeStore.API.Controllers
 		}
 
 
-		[HttpPost("AddProductToCartAsync/{productId}/{userId}/{productQuantity}")]
-		public async Task<IActionResult> AddProductToCartAsync(int productId, int userId, decimal productQuantity)
+		[HttpPost("AddProductToCartAsync/{productId}/{productQuantity}")]
+		public async Task<IActionResult> AddProductToCartAsync(int productId, decimal productQuantity)
 		{
-			Cart cart = await _cartsService.AddProductToCartAsync(productId, userId, productQuantity);
+			Cart? cart = await _cartsService.AddProductToCartAsync(productId, productQuantity);
 			return CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = cart.CartId }, cart);
 		}
 

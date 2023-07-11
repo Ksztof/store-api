@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Core.Repositories;
+﻿using PerfumeStore.Core.Middleware;
+using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,7 +29,7 @@ app.MapControllerRoute(
 	pattern: "api/products/{productId}",
 	defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
 );
-
+app.UseMiddleware<GuestSessionMiddleware>();
 /*app.MapControllerRoute(
 	name: "GetProductById",
 	pattern: "api/products/{productId}",
