@@ -8,7 +8,7 @@ namespace PerfumeStore.Core.Forms
 		public string ProductName { get; set; }
 		public double ProductPrice { get; set; }
 		public string ProductDescription { get; set; }
-		/*public int ProductCategoryId { get; set; }
+		/*public int CategoryId { get; set; }
 		public ProductCategories ProductCategories { get; set; }*/
 		public string ProductManufacturer { get; set; } 
 	}

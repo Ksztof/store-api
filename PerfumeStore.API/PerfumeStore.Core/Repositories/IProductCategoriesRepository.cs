@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.Repositories
 {
-	public interface IProductCategoriesRepository : IRepository<ProductCategories>
-	{
-	}
+    public interface IProductCategoriesRepository : IRepository<ProductCategories>
+    {
+    }
 }

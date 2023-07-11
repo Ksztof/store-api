@@ -9,7 +9,7 @@ namespace PerfumeStore.Domain
 {
     public static class InMemoryDatabase
 	{
-		public static List<Products> products = new List<Products>();
+		public static List<Product> products = new List<Product>();
 		public static List<ProductCategories> productCategories = new List<ProductCategories>();
 
 		static InMemoryDatabase()
@@ -18,50 +18,50 @@ namespace PerfumeStore.Domain
 			var perfumeCategory = new ProductCategories
 			{
 				ProductCategoryId = 1,
-				CategoryName = "Perfume"
+				Name = "Perfume"
 			};
 			productCategories.Add(perfumeCategory);
 
 			var accessoriesCategory = new ProductCategories
 			{
 				ProductCategoryId = 2,
-				CategoryName = "Accessories"
+				Name = "Accessories"
 			};
 			productCategories.Add(accessoriesCategory);
 
 			//Add Products
-			var perfume1 = new Products
+			var perfume1 = new Product
 			{
 				ProductId = 1,
-				ProductName = "Perfum1",
-				ProductPrice = 500,
-				ProductDescription = "perfum o pięknym zapachu",
-				ProductManufacturer = "Bialy jelen",
-				ProductCategory = perfumeCategory,
+				Name = "Perfum1",
+				Price = 500,
+				Description = "perfum o pięknym zapachu",
+				Manufacturer = "Bialy jelen",
+				CategoryId = 1,
 				DateAdded = DateTime.Now,
 			};
 			products.Add(perfume1);
 
-			var portfel = new Products
+			var portfel = new Product
 			{
 				ProductId = 2,
-				ProductName = "Portfel",
-				ProductPrice = 1250,
-				ProductDescription = "Superancki portfelik",
-				ProductManufacturer = "Luj witom",
-				ProductCategory = accessoriesCategory,
+				Name = "Portfel",
+				Price = 1250,
+				Description = "Superancki portfelik",
+				Manufacturer = "Luj witom",
+				CategoryId = 2,
 				DateAdded = DateTime.Now,
 			};
 			products.Add(portfel);
 
-			var choinkaZapachowa = new Products
+			var choinkaZapachowa = new Product
 			{
 				ProductId = 3,
-				ProductName = "Choinka zapachowa",
-				ProductPrice = 25,
-				ProductDescription = "Superancki portfelik",
-				ProductManufacturer = "Choinka samochodowa o zapachu waniliowym",
-				ProductCategory = accessoriesCategory,
+				Name = "Choinka zapachowa",
+				Price = 25,
+				Description = "Superancki portfelik",
+				Manufacturer = "Choinka samochodowa o zapachu waniliowym",
+				CategoryId = 2,
 				DateAdded = DateTime.Now,
 			};
 			products.Add(choinkaZapachowa);

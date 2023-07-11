@@ -1,4 +1,5 @@
 using PerfumeStore.Core.Repositories;
+using PerfumeStore.Core.Services.Carts;
 using PerfumeStore.Core.Services.ProductsService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
+builder.Services.AddTransient<ICartsService, CartsService>();
+builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

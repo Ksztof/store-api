@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace PerfumeStore.Core.Repositories
 {
-	public interface IProductsRepository : IRepository<Products>
-	{
-	}
+    public interface IProductsRepository : IRepository<Product>
+    {
+    }
 }
