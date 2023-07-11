@@ -11,7 +11,7 @@ namespace PerfumeStore.Core.Services
 {
 	public interface ICartsService
     {
-		public Task<Cart?> AddProductToCartAsync(int productId, int userId, decimal productQuantity);
+		public Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity);
 		public Task<Cart> GetCartByIdAsync(int cartId);
 		public Task<Cart> DeleteProductLineFromCartAsync(int productId, int userId);
 		public Task<Cart> DecreaseProductQuantityAsync(int productId, int userId);

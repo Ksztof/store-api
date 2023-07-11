@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Core.Repositories;
+﻿using Microsoft.AspNetCore.Http;
+using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.ResponseForms;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
@@ -15,17 +16,20 @@ namespace PerfumeStore.Core.Services
     {
         private readonly ICartsRepository _cartsRepository;
 		private readonly IProductsRepository _productsRepository;
+		private readonly IHttpContextAccessor _httpContextAccessor;
 
-		public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository)
+		public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, IHttpContextAccessor httpContextAccessor)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
-        }
+			_httpContextAccessor = httpContextAccessor;
+		}
 
 
-		public async Task<Cart?> AddProductToCartAsync(int productId, int userId, decimal productQuantity)
+		public async Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity)
         {
-            Cart? cart = await _cartsRepository.CheckIfCartExists(userId);
+			bool guidParseSuccess = Guid.TryParse(_httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"],out Guid userId);
+			Cart? cart = await _cartsRepository.CheckIfCartExists(userId);
 			Product product = await _productsRepository.GetByIdAsync(productId); //TODO: validation
             bool? isProductInCart = cart?.CartProducts?.ContainsKey(productId);
             var productWithQuantity= new CartProduct
@@ -39,7 +43,7 @@ namespace PerfumeStore.Core.Services
                 var newCart = new Cart
                 {
                     CartId = CartIdGenerator.GetNextId(),
-                    CartProducts = new Dictionary<int, CartProduct> { { productId, productWithQuantity } }, //TODO: Add product with give quantity if same product is added "1 by 1" product in cart should increase his quantity instead of adding new product
+                    CartProducts = new Dictionary<int, CartProduct> { { productId, productWithQuantity } },
                     UserId = userId,
                 };
                 newCart = await _cartsRepository.CreateAsync(newCart);
@@ -49,7 +53,7 @@ namespace PerfumeStore.Core.Services
             {
                 cart.CartProducts[productId].ProductQuantity += productQuantity;
 			}
-            else cart.CartProducts.Add(userId, productWithQuantity);
+            else cart.CartProducts.Add(productId, productWithQuantity);
 
 			Cart? updatedCart = await _cartsRepository.UpdateAsync(cart);
 

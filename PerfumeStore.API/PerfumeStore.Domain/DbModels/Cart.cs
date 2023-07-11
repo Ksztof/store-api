@@ -11,7 +11,7 @@ namespace PerfumeStore.Domain.DbModels
 	public class Cart : IEntity
 	{
 		public int CartId { get; set; }
-		public int UserId { get; set; }
+		public Guid UserId { get; set; }
 		public Dictionary<int, CartProduct>? CartProducts { get; set; }
 	}
 }
