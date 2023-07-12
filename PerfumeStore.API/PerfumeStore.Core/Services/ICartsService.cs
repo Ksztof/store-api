@@ -13,11 +13,11 @@ namespace PerfumeStore.Core.Services
     {
 		public Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity);
 		public Task<Cart> GetCartByIdAsync(int cartId);
-		public Task<Cart> DeleteProductLineFromCartAsync(int productId, int userId);
-		public Task<Cart> DecreaseProductQuantityAsync(int productId, int userId);
-		public Task<Cart> IncreaseProductQuantityAsync(int productId, int userId);
-		public Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity, int userId);
-		public Task<CheckCartForm> CheckCartAsync(int userId);
-		public Task<Cart> ClearCartAsync(int userId);
+		public Task<Cart> DeleteProductLineFromCartAsync(int productId);
+		public Task<Cart> DecreaseProductQuantityAsync(int productId);
+		public Task<Cart> IncreaseProductQuantityAsync(int productId);
+		public Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity);
+		public Task<CheckCartForm> CheckCartAsync();
+		public Task<Cart> ClearCartAsync();
 	}
 }
