@@ -14,7 +14,9 @@ namespace PerfumeStore.Core.Repositories
 		public Task<Cart> CreateAsync(Cart item);
 		public Task<Cart> UpdateAsync(Cart item);
 		public Task<Cart> GetByCartIdAsync(int cartId);
-		public Task<Cart> GetByUserIdAsync(int userId);
+		//public Task<Cart> GetByUserIdAsync(int userId);
+		public Task<Cart> GetByUserGuidIdAsync(Guid userGuidId);
+
 
 	}
 }

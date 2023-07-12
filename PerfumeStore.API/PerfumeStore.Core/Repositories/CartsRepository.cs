@@ -44,11 +44,18 @@ namespace PerfumeStore.Core.Repositories
 			return await Task.FromResult(cart);
 		}
 
-		public async Task<Cart> GetByUserIdAsync(int userId)
+		/*public async Task<Cart> GetByUserIdAsync(int userId)
 		{
 			Cart cart = InMemoryDatabase.carts.FirstOrDefault(x => x.UserId == userId);
 
 			return await Task.FromResult(cart);
+		}*/
+
+		public async Task<Cart> GetByUserGuidIdAsync(Guid userGuidId)
+		{
+			Cart cart = InMemoryDatabase.carts.FirstOrDefault(x => x.UserId == userGuidId);
+
+			return await Task.FromResult(cart);
 		}
-    }
+	}
 }

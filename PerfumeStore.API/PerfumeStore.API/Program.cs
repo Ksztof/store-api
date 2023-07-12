@@ -24,22 +24,30 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
 app.MapControllerRoute(
-	name: "GetProductById",
+	name: "GetProductByIdAsync",
 	pattern: "api/products/{productId}",
 	defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
 );
+app.MapControllerRoute(
+	name: "GetCartByIdAsync",
+	pattern: "api/carts/{cartId}",
+	defaults: new { controller = "Carts", action = "GetCartByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
+);
+
+
 app.UseMiddleware<GuestSessionMiddleware>();
-/*app.MapControllerRoute(
-	name: "GetProductById",
-	pattern: "api/products/{productId}",
-	defaults: new { controller = "Carts", action = "GetProductByIdAsync" } 
-);*/
+
 
 
 app.UseHttpsRedirection();
+app.UseRouting();
+
 
 app.UseAuthorization();
+
+
 
 app.MapControllers();
 
