@@ -1,5 +1,4 @@
-﻿using PerfumeStore.Core.Middleware;
-using PerfumeStore.Core.Repositories;
+﻿using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +9,7 @@ builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
 builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
+builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,8 +21,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.MapControllerRoute(
@@ -35,9 +35,6 @@ app.MapControllerRoute(
 	pattern: "api/carts/{cartId}",
 	defaults: new { controller = "Carts", action = "GetCartByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
 );
-
-
-app.UseMiddleware<GuestSessionMiddleware>();
 
 
 
