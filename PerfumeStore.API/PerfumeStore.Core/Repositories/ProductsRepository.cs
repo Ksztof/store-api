@@ -1,13 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Domain;
+﻿using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace PerfumeStore.Core.Repositories
 {
@@ -38,9 +30,13 @@ namespace PerfumeStore.Core.Repositories
             return await Task.FromResult(productsList);
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<Product?> GetByIdAsync(int id)
         {
             Product product = InMemoryDatabase.products.FirstOrDefault(x => x.ProductId == id);
+            if (product == null)
+            {
+                return null;
+            }
             return await Task.FromResult(product);
         }
 
