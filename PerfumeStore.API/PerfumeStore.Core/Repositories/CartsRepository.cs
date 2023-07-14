@@ -23,7 +23,7 @@ namespace PerfumeStore.Core.Repositories
         public async Task<Cart?> GetByCartIdAsync(int cartId)
         {
 
-            Cart? cart = InMemoryDatabase.carts.FirstOrDefault(x => x.CartId == cartId);
+            Cart? cart = InMemoryDatabase.carts.FirstOrDefault(x => x.Id == cartId);
 
             return await Task.FromResult(cart);
         }

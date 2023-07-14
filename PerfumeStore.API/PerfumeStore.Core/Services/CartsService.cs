@@ -28,43 +28,50 @@ namespace PerfumeStore.Core.Services
                 Product? product = await _productsRepository.GetByIdAsync(productId); //TODO: validation
                 if (product == null)
                 {
-                    throw new ProductNotFoundException($"There is no product with the given id. ProductId: {productId}");
+                    throw new ProductNotFoundException($"There is no product with the given id. Id: {productId}");
                 }
-                var productWithQuantity = new CartProduct
-                {
-                    Product = product,
-                    ProductQuantity = productQuantity,
-                };
-
                 int? getCartIdFromCookie = _guestSessionService.GetCartId();
                 if (getCartIdFromCookie == null)
                 {
                     var newCart = new Cart
                     {
-                        CartId = CartIdGenerator.GetNextId(),
-                        CartProducts = new Dictionary<int, CartProduct> { { productId, productWithQuantity } },
+                        Id = CartIdGenerator.GetNextId(),                        
                     };
-                    _guestSessionService.SendCartId(newCart.CartId);
+                    var carLineNewCart = new CartLine
+                    {
+                        Id = CartLineIdGenerator.GetNextId(),
+                        CartId = newCart.Id,
+                        ProductId = product.Id,
+                        Quantity = productQuantity,
+                    };
+                    newCart.CartLine.Add(carLineNewCart);
+                    _guestSessionService.SendCartId(newCart.Id);
                     newCart = await _cartsRepository.CreateAsync(newCart);
-
                     return await Task.FromResult(newCart);
                 }
-
                 Cart? cart = await _cartsRepository.GetByCartIdAsync(getCartIdFromCookie.Value);
-                bool? isProductInCart = cart?.CartProducts?.ContainsKey(productId);
-
-                if (isProductInCart == true)
+                CartLine? cartLine = cart?.CartLine.SingleOrDefault(x => x.ProductId == productId);
+                var cartLineOldCart = new CartLine
                 {
-                    cart.CartProducts[productId].ProductQuantity += productQuantity;
+                    Id = CartLineIdGenerator.GetNextId(),
+                    CartId = cart.Id,
+                    ProductId = product.Id,
+                    Quantity = productQuantity,
+                };
+                if (cartLine != null)
+                {
+                    cartLine.Quantity += productQuantity;
+                    Cart? updatedcartLineQunatity = await _cartsRepository.UpdateAsync(cart);
+                    return await Task.FromResult(updatedcartLineQunatity);
                 }
-                else cart.CartProducts.Add(productId, productWithQuantity);
-                Cart? updatedCart = await _cartsRepository.UpdateAsync(cart);
+                cart.CartLine.Add(cartLineOldCart);
+                Cart? addedNewCartLine = await _cartsRepository.UpdateAsync(cart);
 
-                return await Task.FromResult(updatedCart);
+                return await Task.FromResult(addedNewCartLine);
             }
             catch (ProductNotFoundException e)
             {
-                throw new ProductNotFoundException($"There is no product with the given id. ProductId: {productId}", e);
+                throw new ProductNotFoundException($"There is no product with the given id. Id: {productId}", e);
             }
         }
 
@@ -83,7 +90,8 @@ namespace PerfumeStore.Core.Services
                 {
                     throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
                 }
-                cart.CartProducts[productId].ProductQuantity -= 1;
+                CartLine? cartLine = cart?.CartLine.SingleOrDefault(x => x.ProductId == productId);
+                cartLine.Quantity -= 1;
                 Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
                 return await Task.FromResult(updatedCart);
@@ -110,7 +118,8 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            cart.CartProducts[productId].ProductQuantity += 1;
+            CartLine? cartLine = cart?.CartLine.SingleOrDefault(x => x.ProductId == productId);
+            cartLine.Quantity -= 1;
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return await Task.FromResult(updatedCart);
@@ -128,7 +137,8 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            bool removingResult = cart.CartProducts.Remove(productId);
+            CartLine? cartLine = cart?.CartLine.SingleOrDefault(x => x.ProductId == productId);
+            cart.CartLine.Remove(cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return await Task.FromResult(updatedCart);
@@ -156,7 +166,8 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            cart.CartProducts[productId].ProductQuantity = productQuantity;
+            CartLine? cartLine = cart?.CartLine.SingleOrDefault(x => x.ProductId == productId);
+            cartLine.Quantity = productQuantity;
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return await Task.FromResult(updatedCart);
@@ -174,15 +185,28 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            decimal totalCartValue = cart.CartProducts.Sum(x => x.Value.ProductQuantity * x.Value.Product.Price);
-            IEnumerable<CheckCart> formattedCartProducts = cart.CartProducts.Select(x => new CheckCart
+            IEnumerable<int> productsIds = cart.CartLine.Select(x => x.ProductId);
+            decimal totalCartValue = 0;
+            foreach (int productId in productsIds)
             {
-                ProductId = x.Key,
-                ProductUnitPrice = x.Value.Product.Price,
-                ProductTotalPrice = x.Value.Product.Price * x.Value.ProductQuantity,
-                Quantity = x.Value.ProductQuantity
-            });
-
+                Product product = await _productsRepository.GetByIdAsync(productId);
+                decimal productPrice = product.Price;
+                decimal productQuantity = cart.CartLine.SingleOrDefault(x => x.ProductId == productId).Quantity;
+                totalCartValue += productPrice * productQuantity;
+            }
+            ICollection<CheckCart> formattedCartProducts = new List<CheckCart>();
+            foreach (CartLine cartLine in cart.CartLine)
+            {
+                var product =await _productsRepository.GetByIdAsync(cartLine.ProductId);
+                var cartProduct = new CheckCart
+                {
+                    ProductId = cartLine.ProductId,
+                    ProductUnitPrice = product.Price,
+                    ProductTotalPrice = product.Price * cartLine.Quantity,
+                    Quantity = cartLine.Quantity,
+                };
+                formattedCartProducts.Add(cartProduct);
+            }
             CheckCartForm formatedCart = new CheckCartForm
             {
                 TotalCartValue = totalCartValue,
@@ -204,7 +228,7 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            cart.CartProducts.Clear();
+            cart.CartLine.Clear();
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return await Task.FromResult(cart);

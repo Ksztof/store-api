@@ -22,7 +22,7 @@ namespace PerfumeStore.Core.Repositories
 
         public Task<ProductCategories> GetById(int id)
         {
-            ProductCategories? productCategory = InMemoryDatabase.productCategories.FirstOrDefault(x => x.ProductCategoryId == id);
+            ProductCategories? productCategory = InMemoryDatabase.productCategories.FirstOrDefault(x => x.Id == id);
             return Task.FromResult(productCategory);
         }
 
