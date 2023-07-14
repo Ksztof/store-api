@@ -13,14 +13,14 @@ namespace PerfumeStore.Domain
             //Add Categories
             var perfumeCategory = new ProductCategories
             {
-                ProductCategoryId = 1,
+                Id = 1,
                 Name = "Perfume"
             };
             productCategories.Add(perfumeCategory);
 
             var accessoriesCategory = new ProductCategories
             {
-                ProductCategoryId = 2,
+                Id = 2,
                 Name = "Accessories"
             };
             productCategories.Add(accessoriesCategory);
@@ -28,7 +28,7 @@ namespace PerfumeStore.Domain
             //Add Products
             var perfume1 = new Product
             {
-                ProductId = 1,
+                Id = 1,
                 Name = "Perfum1",
                 Price = 500,
                 Description = "perfum o pięknym zapachu",
@@ -40,7 +40,7 @@ namespace PerfumeStore.Domain
 
             var portfel = new Product
             {
-                ProductId = 2,
+                Id = 2,
                 Name = "Portfel",
                 Price = 1250,
                 Description = "Superancki portfelik",
@@ -52,7 +52,7 @@ namespace PerfumeStore.Domain
 
             var choinkaZapachowa = new Product
             {
-                ProductId = 3,
+                Id = 3,
                 Name = "Choinka zapachowa",
                 Price = 25,
                 Description = "Superancki portfelik",

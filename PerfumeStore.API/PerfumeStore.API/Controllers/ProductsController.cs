@@ -20,7 +20,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
         {
             Product createdProduct = await _productService.CreateProductAsync(createProductForm);
-            return CreatedAtAction(nameof(GetProductByIdAsync), new { productId = createdProduct.ProductId }, createdProduct);
+            return CreatedAtAction(nameof(GetProductByIdAsync), new { productId = createdProduct.Id }, createdProduct);
         }
 
         [HttpPut("UpdateProductAsync")]

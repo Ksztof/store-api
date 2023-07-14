@@ -11,7 +11,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Product> CreateAsync(Product item)
         {
-            item.ProductId = ProductIdGenerator.GetNextId() + 3;
+            item.Id = ProductIdGenerator.GetNextId() + 3;
             InMemoryDatabase.products.Add(item);
 
             return await Task.FromResult(item);
@@ -32,7 +32,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            Product product = InMemoryDatabase.products.FirstOrDefault(x => x.ProductId == id);
+            Product product = InMemoryDatabase.products.FirstOrDefault(x => x.Id == id);
             if (product == null)
             {
                 return null;
@@ -50,7 +50,7 @@ namespace PerfumeStore.Core.Repositories
 
         private int GetCurrentProductId()
         {
-            int lastProductId = InMemoryDatabase.products.Max(x => x.ProductId);
+            int lastProductId = InMemoryDatabase.products.Max(x => x.Id);
             int currentProductId = lastProductId + 1;
             return currentProductId;
         }
