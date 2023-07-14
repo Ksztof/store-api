@@ -3,7 +3,7 @@ using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-    public interface IProductCategoriesRepository : IRepository<ProductCategories>
+    public interface IProductCategoriesRepository : IRepository<ProductCategory>
     {
     }
 }

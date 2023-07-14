@@ -2,7 +2,7 @@
 
 namespace PerfumeStore.Domain.DbModels
 {
-    public class ProductCategories : IEntity
+    public class ProductCategory : IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

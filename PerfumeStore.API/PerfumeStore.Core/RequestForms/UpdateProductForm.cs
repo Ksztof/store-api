@@ -7,7 +7,7 @@
         public decimal ProductPrice { get; set; }
         public string ProductDescription { get; set; }
         /*public int CategoryId { get; set; }
-        public ProductCategories ProductCategories { get; set; }*/
+        public ProductCategory ProductCategory { get; set; }*/
         public string ProductManufacturer { get; set; }
     }
 }

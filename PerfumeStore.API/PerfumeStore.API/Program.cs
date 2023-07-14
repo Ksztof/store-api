@@ -1,5 +1,7 @@
-﻿using PerfumeStore.Core.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
+using PerfumeStore.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddDbContext<ShopDbContext>(options =>
+    options.UseSqlServer(connectionString)
+);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

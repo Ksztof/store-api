@@ -1,24 +1,34 @@
-﻿using PerfumeStore.Domain.DbModels;
+﻿using Microsoft.EntityFrameworkCore;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Domain
 {
-    public static class InMemoryDatabase
+    public class ShopDbContext : DbContext
     {
-        public static List<Product> products = new List<Product>();
-        public static List<ProductCategories> productCategories = new List<ProductCategories>();
-        public static List<Cart> carts = new List<Cart>();
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Cart> carts { get; set; }
+        public DbSet<CartLine> cartsLine { get; set; }
+        public DbSet<ProductCategory> productCategories{ get; set; }
 
-        static InMemoryDatabase()
+        public ShopDbContext(DbContextOptions<ShopDbContext> options) : base(options)
+        {
+        }
+
+        /* public static List<Product> products = new List<Product>();
+         public static List<ProductCategory> productCategories = new List<ProductCategory>();
+         public static List<Cart> carts = new List<Cart>();*/
+
+        static ShopDbContext()
         {
             //Add Categories
-            var perfumeCategory = new ProductCategories
+            var perfumeCategory = new ProductCategory
             {
                 Id = 1,
                 Name = "Perfume"
             };
             productCategories.Add(perfumeCategory);
 
-            var accessoriesCategory = new ProductCategories
+            var accessoriesCategory = new ProductCategory
             {
                 Id = 2,
                 Name = "Accessories"

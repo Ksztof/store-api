@@ -7,15 +7,15 @@ namespace PerfumeStore.Core.Repositories
     {
         public async Task<Cart?> CreateAsync(Cart item)
         {
-            InMemoryDatabase.carts.Add(item);
+            ShopDbContext.carts.Add(item);
 
             return await Task.FromResult(item);
         }
 
         public async Task<Cart> UpdateAsync(Cart item)
         {
-            int cartToUpdateIndex = InMemoryDatabase.carts.IndexOf(item);
-            InMemoryDatabase.carts[cartToUpdateIndex] = item;
+            int cartToUpdateIndex = ShopDbContext.carts.IndexOf(item);
+            ShopDbContext.carts[cartToUpdateIndex] = item;
 
             return await Task.FromResult(item);
         }
@@ -23,7 +23,7 @@ namespace PerfumeStore.Core.Repositories
         public async Task<Cart?> GetByCartIdAsync(int cartId)
         {
 
-            Cart? cart = InMemoryDatabase.carts.FirstOrDefault(x => x.Id == cartId);
+            Cart? cart = ShopDbContext.carts.FirstOrDefault(x => x.Id == cartId);
 
             return await Task.FromResult(cart);
         }

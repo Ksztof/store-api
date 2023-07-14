@@ -5,7 +5,7 @@ namespace PerfumeStore.Core.Repositories
 {
     public class ProductCategoriesRepository : IProductCategoriesRepository
     {
-        public Task<ProductCategories> CreateAsync(ProductCategories item)
+        public Task<ProductCategory> CreateAsync(ProductCategory item)
         {
             throw new NotImplementedException();
         }
@@ -15,23 +15,23 @@ namespace PerfumeStore.Core.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ProductCategories>> GetAllAsync()
+        public Task<IEnumerable<ProductCategory>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ProductCategories> GetById(int id)
+        public Task<ProductCategory> GetById(int id)
         {
-            ProductCategories? productCategory = InMemoryDatabase.productCategories.FirstOrDefault(x => x.Id == id);
+            ProductCategory? productCategory = ShopDbContext.productCategories.FirstOrDefault(x => x.Id == id);
             return Task.FromResult(productCategory);
         }
 
-        public async Task<ProductCategories> GetByIdAsync(int id)
+        public async Task<ProductCategory> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ProductCategories> UpdateAsync(ProductCategories item)
+        public Task<ProductCategory> UpdateAsync(ProductCategory item)
         {
             throw new NotImplementedException();
         }

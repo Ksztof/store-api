@@ -12,7 +12,7 @@ namespace PerfumeStore.Core.Repositories
         public async Task<Product> CreateAsync(Product item)
         {
             item.Id = ProductIdGenerator.GetNextId() + 3;
-            InMemoryDatabase.products.Add(item);
+            ShopDbContext.products.Add(item);
 
             return await Task.FromResult(item);
         }
@@ -20,19 +20,19 @@ namespace PerfumeStore.Core.Repositories
         public async Task DeleteAsync(int id)
         {
             Product productToDelete = await GetByIdAsync(id);
-            InMemoryDatabase.products.Remove(productToDelete);
+            ShopDbContext.products.Remove(productToDelete);
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            IEnumerable<Product> productsList = InMemoryDatabase.products;
+            IEnumerable<Product> productsList = ShopDbContext.products;
 
             return await Task.FromResult(productsList);
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            Product product = InMemoryDatabase.products.FirstOrDefault(x => x.Id == id);
+            Product product = ShopDbContext.products.FirstOrDefault(x => x.Id == id);
             if (product == null)
             {
                 return null;
@@ -42,15 +42,15 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Product> UpdateAsync(Product item)
         {
-            int productToUpdateIndex = InMemoryDatabase.products.IndexOf(item);
-            InMemoryDatabase.products[productToUpdateIndex] = item;
+            int productToUpdateIndex = ShopDbContext.products.IndexOf(item);
+            ShopDbContext.products[productToUpdateIndex] = item;
 
             return await Task.FromResult(item);
         }
 
         private int GetCurrentProductId()
         {
-            int lastProductId = InMemoryDatabase.products.Max(x => x.Id);
+            int lastProductId = ShopDbContext.products.Max(x => x.Id);
             int currentProductId = lastProductId + 1;
             return currentProductId;
         }
