@@ -11,7 +11,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Product> CreateAsync(Product item)
         {
-            item.ProductId = ProductIdGenerator.GetNextId();
+            item.ProductId = ProductIdGenerator.GetNextId() + 3;
             InMemoryDatabase.products.Add(item);
 
             return await Task.FromResult(item);

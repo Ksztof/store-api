@@ -7,7 +7,6 @@ namespace PerfumeStore.Core.Repositories
     {
         public async Task<Cart?> CreateAsync(Cart item)
         {
-            item.CartId = CartIdGenerator.GetNextId();
             InMemoryDatabase.carts.Add(item);
 
             return await Task.FromResult(item);
@@ -23,7 +22,8 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<Cart?> GetByCartIdAsync(int cartId)
         {
-            Cart cart = InMemoryDatabase.carts.FirstOrDefault(x => x.CartId == cartId);
+
+            Cart? cart = InMemoryDatabase.carts.FirstOrDefault(x => x.CartId == cartId);
 
             return await Task.FromResult(cart);
         }
