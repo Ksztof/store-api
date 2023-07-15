@@ -1,7 +1,6 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.ResponseForms;
-using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
 
@@ -35,11 +34,9 @@ namespace PerfumeStore.Core.Services
                 {
                     var newCart = new Cart
                     {
-                        Id = CartIdGenerator.GetNextId(),                        
                     };
                     var carLineNewCart = new CartLine
                     {
-                        Id = CartLineIdGenerator.GetNextId(),
                         CartId = newCart.Id,
                         ProductId = product.Id,
                         Quantity = productQuantity,
@@ -197,7 +194,7 @@ namespace PerfumeStore.Core.Services
             ICollection<CheckCart> formattedCartProducts = new List<CheckCart>();
             foreach (CartLine cartLine in cart.CartLine)
             {
-                var product =await _productsRepository.GetByIdAsync(cartLine.ProductId);
+                var product = await _productsRepository.GetByIdAsync(cartLine.ProductId);
                 var cartProduct = new CheckCart
                 {
                     ProductId = cartLine.ProductId,

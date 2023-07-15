@@ -1,19 +1,26 @@
-﻿using PerfumeStore.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
     public class ProductsRepository : IProductsRepository
     {
-        public ProductsRepository()
+        private readonly ShopDbContext _shopDbContext;
+        public ProductsRepository(ShopDbContext shopDbContext)
         {
+            _shopDbContext = shopDbContext;
         }
 
         public async Task<Product> CreateAsync(Product item)
         {
-            item.Id = ProductIdGenerator.GetNextId() + 3;
-            ShopDbContext.products.Add(item);
-
+            EntityEntry<Product> productEntry = await _shopDbContext.AddAsync(item);
+            await _shopDbContext.SaveChangesAsync();
+            if (productEntry.State is not EntityState.Added)
+            {
+                throw new InvalidOperationException($"The entity is not in the Added state. Value productEntry: {productEntry} ");
+            }
             return await Task.FromResult(item);
         }
 

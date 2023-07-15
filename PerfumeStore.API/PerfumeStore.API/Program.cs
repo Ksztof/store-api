@@ -19,7 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("Server=DESKTOP-J85GIGE;Database=PerfumeShop;User Id=moj_uzytkownik;Password=haslo1234;Trusted_Connection=True;"
+);
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseSqlServer(connectionString)
@@ -32,14 +33,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllerRoute(
-	name: "GetProductByIdAsync",
-	pattern: "api/products/{productId}",
-	defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
+        name: "GetProductByIdAsync",
+        pattern: "api/products/{productId}",
+        defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
 );
 app.MapControllerRoute(
-	name: "GetCartByIdAsync",
-	pattern: "api/carts/{cartId}",
-	defaults: new { controller = "Carts", action = "GetCartByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
+        name: "GetCartByIdAsync",
+        pattern: "api/carts/{cartId}",
+        defaults: new { controller = "Carts", action = "GetCartByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
 );
 
 
