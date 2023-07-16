@@ -1,39 +1,24 @@
-﻿using PerfumeStore.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
     public class ProductCategoriesRepository : IProductCategoriesRepository
     {
-        public Task<ProductCategory> CreateAsync(ProductCategory item)
+        private readonly ShopDbContext _shopDbContext;
+
+        public ProductCategoriesRepository(ShopDbContext shopDbContext)
         {
-            throw new NotImplementedException();
+            _shopDbContext = shopDbContext;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task<ProductCategory?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<ProductCategory>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ProductCategory> GetById(int id)
-        {
-            ProductCategory? productCategory = ShopDbContext.productCategories.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult(productCategory);
-        }
-
-        public async Task<ProductCategory> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ProductCategory> UpdateAsync(ProductCategory item)
-        {
-            throw new NotImplementedException();
+            ProductCategory? ProductCategory = await _shopDbContext.ProductCategories.SingleOrDefaultAsync(x => x.Id == id);
+            return ProductCategory;
         }
     }
 }

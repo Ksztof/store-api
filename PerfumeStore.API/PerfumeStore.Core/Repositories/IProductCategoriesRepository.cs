@@ -3,7 +3,8 @@ using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-    public interface IProductCategoriesRepository : IRepository<ProductCategory>
+    public interface IProductCategoriesRepository 
     {
+        public Task<ProductCategory?> GetByIdAsync(int id);
     }
 }

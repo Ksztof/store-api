@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 
@@ -8,6 +9,7 @@ namespace PerfumeStore.Core.Repositories
     public class ProductsRepository : IProductsRepository
     {
         private readonly ShopDbContext _shopDbContext;
+
         public ProductsRepository(ShopDbContext shopDbContext)
         {
             _shopDbContext = shopDbContext;
@@ -19,47 +21,43 @@ namespace PerfumeStore.Core.Repositories
             await _shopDbContext.SaveChangesAsync();
             if (productEntry.State is not EntityState.Added)
             {
-                throw new InvalidOperationException($"The entity is not in the Added state. Value productEntry: {productEntry} ");
+                throw new InvalidOperationException($"The entity is not in the Added state. Value Product: {productEntry.Entity} ");
             }
-            return await Task.FromResult(item);
+            return productEntry.Entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Product item)
         {
-            Product productToDelete = await GetByIdAsync(id);
-            ShopDbContext.products.Remove(productToDelete);
+            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(item); 
+            await _shopDbContext.SaveChangesAsync();
+            if (deleteResult.State is not EntityState.Deleted)
+            {
+                throw new CantDeleteProductEx($"Can't delete Product. Product state: {deleteResult.State}");
+            }
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            IEnumerable<Product> productsList = ShopDbContext.products;
-
-            return await Task.FromResult(productsList);
+            IEnumerable<Product> productsList = await _shopDbContext.Products.ToListAsync();
+            return productsList;
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            Product product = ShopDbContext.products.FirstOrDefault(x => x.Id == id);
-            if (product == null)
-            {
-                return null;
-            }
-            return await Task.FromResult(product);
+            Product? product = await _shopDbContext.Products.SingleOrDefaultAsync(x => x.Id == id);
+            return product;
         }
 
         public async Task<Product> UpdateAsync(Product item)
         {
-            int productToUpdateIndex = ShopDbContext.products.IndexOf(item);
-            ShopDbContext.products[productToUpdateIndex] = item;
+            EntityEntry<Product> productEntry = _shopDbContext.Products.Update(item);
+            await _shopDbContext.SaveChangesAsync();
 
-            return await Task.FromResult(item);
-        }
-
-        private int GetCurrentProductId()
-        {
-            int lastProductId = ShopDbContext.products.Max(x => x.Id);
-            int currentProductId = lastProductId + 1;
-            return currentProductId;
+            if (productEntry.State is not EntityState.Modified)
+            {
+                throw new InvalidOperationException($"The Product entity is not in the Modified state. Product state: {productEntry.State} ");
+            }
+            return productEntry.Entity;
         }
     }
 }
