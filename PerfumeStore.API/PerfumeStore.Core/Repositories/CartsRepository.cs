@@ -34,20 +34,17 @@ namespace PerfumeStore.Core.Repositories
 
             if (cartEntry.State is not EntityState.Modified)
             {
-                throw new InvalidOperationException($"The entity is not in the Modified state. Value cartEntry {cartEntry} ");
+                throw new InvalidOperationException($"The Cart entity is not in the Modified state. Cart state {cartEntry.State} ");
             }
             return cartEntry.Entity;
         }
 
-        public async Task<Cart?> GetByCartIdAsync(int cartId)
+        public async Task<Cart?> GetByIdAsync(int cartId)
         {
-
-            Cart? cart = await _shopDbContext.Carts.SingleOrDefaultAsync(c => c.Id == cartId);
-            if (cart == null)
-            {
-                throw new CartNotFoundException($"There isn't cart in database with given Id. Value: cart: {cart}");
-            }
-            return await Task.FromResult(cart);
+            Cart? cart = await _shopDbContext.Carts
+                .Include(c => c.CartLines)
+                .SingleOrDefaultAsync(c => c.Id == cartId);
+            return cart;
         }
     }
 }

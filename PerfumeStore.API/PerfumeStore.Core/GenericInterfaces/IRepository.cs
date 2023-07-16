@@ -8,6 +8,6 @@ namespace PerfumeStore.Core.GenericInterfaces
         public Task<T?> GetByIdAsync(int id);
         public Task<IEnumerable<T>> GetAllAsync();
         public Task<T> UpdateAsync(T item);
-        public Task DeleteAsync(int id);
+        public Task DeleteAsync(T item);
     }
 }
