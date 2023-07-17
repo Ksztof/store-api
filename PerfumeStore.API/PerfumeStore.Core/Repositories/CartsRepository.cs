@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 
@@ -12,7 +11,7 @@ namespace PerfumeStore.Core.Repositories
 
         public CartsRepository(ShopDbContext shopDbContext)
         {
-            _shopDbContext = shopDbContext; 
+            _shopDbContext = shopDbContext;
         }
 
         public async Task<Cart?> CreateAsync(Cart item)
@@ -20,10 +19,10 @@ namespace PerfumeStore.Core.Repositories
             EntityEntry<Cart?> cartEntry = await _shopDbContext.Carts.AddAsync(item);
             await _shopDbContext.SaveChangesAsync();
 
-            if (cartEntry.State is not EntityState.Added)
+            /*if (cartEntry.State is not EntityState.Added)
             {
                 throw new InvalidOperationException($"The entity is not in the Added state. Value cartEntry {cartEntry} ");
-            }
+            }*/
             return cartEntry.Entity;
         }
 
@@ -32,10 +31,10 @@ namespace PerfumeStore.Core.Repositories
             EntityEntry<Cart?> cartEntry = _shopDbContext.Carts.Update(item);
             await _shopDbContext.SaveChangesAsync();
 
-            if (cartEntry.State is not EntityState.Modified)
+          /*  if (cartEntry.State is not EntityState.Modified)
             {
                 throw new InvalidOperationException($"The Cart entity is not in the Modified state. Cart state {cartEntry.State} ");
-            }
+            }*/
             return cartEntry.Entity;
         }
 
