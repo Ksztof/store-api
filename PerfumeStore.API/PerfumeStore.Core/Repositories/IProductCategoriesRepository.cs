@@ -1,9 +1,8 @@
-﻿using PerfumeStore.Core.GenericInterfaces;
-using PerfumeStore.Domain.DbModels;
+﻿using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-    public interface IProductCategoriesRepository 
+    public interface IProductCategoriesRepository
     {
         public Task<ProductCategory?> GetByIdAsync(int id);
     }

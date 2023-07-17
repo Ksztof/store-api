@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Core.Repositories;
+﻿using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.RequestForms;
 using PerfumeStore.Domain.DbModels;
 
@@ -20,7 +21,10 @@ namespace PerfumeStore.Core.Services
                 Name = createProductForm.ProductName,
                 Price = createProductForm.ProductPrice,
                 Description = createProductForm.ProductDescription,
-                CategoryId = createProductForm.ProductCategoryId,
+                ProductProductCategories = createProductForm.ProductCategoryId.Select(id => new ProductProductCategory
+                {
+                    ProductCategoryId = id,
+                }).ToList(),
                 Manufacturer = createProductForm.ProductManufacturer,
                 DateAdded = DateTime.Now
             };
@@ -43,8 +47,19 @@ namespace PerfumeStore.Core.Services
 
         public async Task<Product> GetProductByIdAsync(int productId)
         {
-            Product product = await _productsRepository.GetByIdAsync(productId);
-            return await Task.FromResult(product);
+            try
+            {
+                Product? product = await _productsRepository.GetByIdAsync(productId);
+                if (product is null)
+                {
+                    throw new ProductNotFoundException($"Can't find product with given id. Product:  {product}");
+                }
+                return product;
+            }
+            catch (Exception e)
+            {
+                throw new ProductNotFoundException(e.Message, e.InnerException);
+            }
         }
 
         public async Task<Product> UpdateProductAsync(UpdateProductForm updateform)

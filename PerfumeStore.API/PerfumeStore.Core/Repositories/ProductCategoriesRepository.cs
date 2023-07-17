@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
 
