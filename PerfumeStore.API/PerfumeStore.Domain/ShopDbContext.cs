@@ -33,7 +33,5 @@ namespace PerfumeStore.Domain
             .WithOne(cl => cl.Product)
             .HasForeignKey<CartLine>(cl => cl.ProductId);
         }
-
-
     }
 }
