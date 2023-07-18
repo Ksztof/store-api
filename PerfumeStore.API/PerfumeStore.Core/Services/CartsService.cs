@@ -35,15 +35,17 @@ namespace PerfumeStore.Core.Services
                     var newCart = new Cart
                     {
                     };
+                    newCart = await _cartsRepository.CreateAsync(newCart);
+
                     var carLineNewCart = new CartLine
                     {
                         CartId = newCart.Id,
                         ProductId = product.Id,
                         Quantity = productQuantity,
                     };
-                    newCart.CartLines.Add(carLineNewCart);
-                    _guestSessionService.SendCartId(newCart.Id);
+                    newCart.CartLines?.Add(carLineNewCart);
                     newCart = await _cartsRepository.CreateAsync(newCart);
+                    _guestSessionService.SendCartId(newCart.Id);
 
                     return newCart;
                 }
@@ -234,35 +236,22 @@ namespace PerfumeStore.Core.Services
                 {
                     throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
                 }
-                IEnumerable<int> productsIds = cart.CartLines.Select(x => x.ProductId);
                 decimal totalCartValue = 0;
-                foreach (int productId in productsIds)
+                totalCartValue = cart.CartLines.Sum(x => x.Product.Price * x.Quantity);
+                IEnumerable<CheckCart> cartLineAsCheckCart = cart.CartLines.Select(x => new CheckCart
                 {
-                    Product product = await _productsRepository.GetByIdAsync(productId);
-                    decimal productPrice = product.Price;
-                    decimal productQuantity = cart.CartLines.SingleOrDefault(x => x.ProductId == productId).Quantity;
-                    totalCartValue += productPrice * productQuantity;
-                }
-                ICollection<CheckCart> formattedCartProducts = new List<CheckCart>();
-                foreach (CartLine cartLine in cart.CartLines)
-                {
-                    var product = await _productsRepository.GetByIdAsync(cartLine.ProductId);
-                    var cartProduct = new CheckCart
-                    {
-                        ProductId = cartLine.ProductId,
-                        ProductUnitPrice = product.Price,
-                        ProductTotalPrice = product.Price * cartLine.Quantity,
-                        Quantity = cartLine.Quantity,
-                    };
-                    formattedCartProducts.Add(cartProduct);
-                }
+                    ProductId = x.ProductId,
+                    ProductUnitPrice = x.Product.Price,
+                    ProductTotalPrice = x.Quantity * x.Product.Price,
+                    Quantity = x.Quantity
+                }).ToList();
                 CheckCartForm formatedCart = new CheckCartForm
                 {
                     TotalCartValue = totalCartValue,
-                    ProductsInCart = formattedCartProducts,
+                    ProductsInCart = cartLineAsCheckCart,
                 };
 
-                return await Task.FromResult(formatedCart);
+                return formatedCart;
             }
             catch (CookieWithCartIdNotFoundException e)
             {
@@ -272,7 +261,6 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException(e.Message, e.InnerException);
             }
-
         }
 
         public async Task<Cart> ClearCartAsync()
@@ -287,10 +275,10 @@ namespace PerfumeStore.Core.Services
             {
                 throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            cart.CartLine.Clear();
+            cart.CartLines.Clear();
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
-            return await Task.FromResult(cart);
+            return cart;
         }
     }
 }

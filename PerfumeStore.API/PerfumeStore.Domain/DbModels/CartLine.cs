@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PerfumeStore.Domain.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.DbModels
 {
-    public class CartLine
+    public class CartLine : IEntity<int>
     {
         [Key]
         public int Id { get; set; }
@@ -10,6 +11,6 @@ namespace PerfumeStore.Domain.DbModels
         public Cart Cart { get; set; }
         public decimal Quantity { get; set; }
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
     }
 }

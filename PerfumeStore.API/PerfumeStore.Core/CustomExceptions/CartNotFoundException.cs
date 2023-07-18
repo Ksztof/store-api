@@ -3,8 +3,8 @@
     public class CartNotFoundException : Exception
     {
         public CartNotFoundException(string message)
-            : base(message){}
+            : base(message) { }
         public CartNotFoundException(string message, Exception innerException)
-            : base(message, innerException) {}
+            : base(message, innerException) { }
     }
 }

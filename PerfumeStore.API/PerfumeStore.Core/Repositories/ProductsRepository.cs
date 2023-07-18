@@ -19,21 +19,21 @@ namespace PerfumeStore.Core.Repositories
         {
             EntityEntry<Product> productEntry = await _shopDbContext.AddAsync(item);
             await _shopDbContext.SaveChangesAsync();
-            if (productEntry.State is not EntityState.Added)
+            /*if (productEntry.State is not EntityState.Added)
             {
                 throw new InvalidOperationException($"The entity is not in the Added state. Value Product: {productEntry.Entity} ");
-            }
+            }*/
             return productEntry.Entity;
         }
 
         public async Task DeleteAsync(Product item)
         {
-            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(item); 
+            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(item);
             await _shopDbContext.SaveChangesAsync();
-            if (deleteResult.State is not EntityState.Deleted)
+           /* if (deleteResult.State is not EntityState.Deleted)
             {
                 throw new CantDeleteProductEx($"Can't delete Product. Product state: {deleteResult.State}");
-            }
+            }*/
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
@@ -53,10 +53,10 @@ namespace PerfumeStore.Core.Repositories
             EntityEntry<Product> productEntry = _shopDbContext.Products.Update(item);
             await _shopDbContext.SaveChangesAsync();
 
-            if (productEntry.State is not EntityState.Modified)
+          /*  if (productEntry.State is not EntityState.Modified)
             {
                 throw new InvalidOperationException($"The Product entity is not in the Modified state. Product state: {productEntry.State} ");
-            }
+            }*/
             return productEntry.Entity;
         }
     }

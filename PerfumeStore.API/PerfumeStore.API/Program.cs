@@ -18,13 +18,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-var app = builder.Build();
-var connectionString = builder.Configuration.GetConnectionString("Server=DESKTOP-J85GIGE;Database=PerfumeShop;User Id=moj_uzytkownik;Password=haslo1234;Trusted_Connection=True;"
-);
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseSqlServer(connectionString)
-);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

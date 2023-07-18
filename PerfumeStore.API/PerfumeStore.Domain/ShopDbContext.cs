@@ -18,30 +18,20 @@ namespace PerfumeStore.Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ProductProductCategory>()
-                .HasKey(ppc => new { ppc.ProductId, ppc.ProductCategoryId });
-
-            modelBuilder.Entity<ProductProductCategory>()
-                .HasOne(ppc => ppc.Product)
-                .WithMany(p => p.ProductProductCategories)
-                .HasForeignKey(ppc => ppc.ProductId);
-
-            modelBuilder.Entity<ProductProductCategory>()
-                .HasOne(ppc => ppc.ProductCategory)
-                .WithMany(c => c.ProductProductCategories)
-                .HasForeignKey(ppc => ppc.ProductCategoryId);
+            modelBuilder.Entity<Product>()
+            .HasMany(p => p.ProductCategories)
+            .WithOne(pc => pc.Product)
+            .HasForeignKey(cl => cl.ProductId);
 
             modelBuilder.Entity<Cart>()
-                .HasMany(c => c.CartLines)
-                .WithOne(cl => cl.Cart)
-                .HasForeignKey(cl => cl.CartId);
+            .HasMany(c => c.CartLines)
+            .WithOne(cl => cl.Cart)
+            .HasForeignKey(cl => cl.CartId);
 
-            modelBuilder.Entity<CartLine>()
-             .HasOne(cl => cl.Product)
-             .WithMany(p => p.CartLines)
-             .HasForeignKey(cl => cl.ProductId);
+            modelBuilder.Entity<Product>()
+            .HasOne<CartLine>(cl => cl.CartLine)
+            .WithOne(cl => cl.Product)
+            .HasForeignKey<CartLine>(cl => cl.ProductId);
         }
-
-
     }
 }
