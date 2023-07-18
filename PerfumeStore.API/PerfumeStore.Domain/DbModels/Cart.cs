@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.DbModels
 {
-    public class Cart : IEntity
+    public class Cart : IEntity<int>
     {
         [Key]
         public int Id { get; set; }

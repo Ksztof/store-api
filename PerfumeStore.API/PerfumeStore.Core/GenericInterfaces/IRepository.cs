@@ -2,10 +2,10 @@
 
 namespace PerfumeStore.Core.GenericInterfaces
 {
-    public interface IRepository<T> where T : IEntity
+    public interface IRepository<T, TId> where T : IEntity<TId>
     {
         public Task<T> CreateAsync(T item);
-        public Task<T?> GetByIdAsync(int id);
+        public Task<T?> GetByIdAsync(TId id);
         public Task<IEnumerable<T>> GetAllAsync();
         public Task<T> UpdateAsync(T item);
         public Task DeleteAsync(T item);
