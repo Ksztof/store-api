@@ -4,7 +4,7 @@ using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-    public interface IProductsRepository : IRepository<Product>
+    public interface IProductsRepository : IRepository<Product, int>
     {
     }
 }

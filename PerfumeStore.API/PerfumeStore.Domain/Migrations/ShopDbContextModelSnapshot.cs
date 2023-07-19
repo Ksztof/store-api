@@ -43,14 +43,14 @@ namespace PerfumeStore.Domain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CartId")
+                    b.Property<int?>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -84,7 +84,7 @@ namespace PerfumeStore.Domain.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -103,62 +103,36 @@ namespace PerfumeStore.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductProductCategory", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "ProductCategoryId");
-
-                    b.HasIndex("ProductCategoryId");
-
-                    b.ToTable("ProductProductCategories");
-                });
-
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.CartLine", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
+                    b.HasOne("PerfumeStore.Domain.DbModels.Cart", null)
                         .WithMany("CartLines")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany("CartLines")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cart");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductProductCategory", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductCategory", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.DbModels.ProductCategory", "ProductCategory")
-                        .WithMany("ProductProductCategories")
-                        .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany("ProductProductCategories")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductCategory");
+                    b.HasOne("PerfumeStore.Domain.DbModels.Product", null)
+                        .WithMany("ProductCategories")
+                        .HasForeignKey("ProductId");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Cart", b =>
@@ -168,14 +142,7 @@ namespace PerfumeStore.Domain.Migrations
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
                 {
-                    b.Navigation("CartLines");
-
-                    b.Navigation("ProductProductCategories");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductCategory", b =>
-                {
-                    b.Navigation("ProductProductCategories");
+                    b.Navigation("ProductCategories");
                 });
 #pragma warning restore 612, 618
         }

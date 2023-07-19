@@ -8,23 +8,23 @@ namespace PerfumeStore.Core.Services
     public class ProductsService : IProductsService
     {
         private readonly IProductsRepository _productsRepository;
+        private readonly IProductCategoriesRepository _productCategoriesRepository;
 
         public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository)
         {
             _productsRepository = productsRepository;
+            _productCategoriesRepository = productCategoriesRepository;
         }
 
         public async Task<Product> CreateProductAsync(CreateProductForm createProductForm)
         {
+            var productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoryId);
             var productToCreate = new Product
             {
                 Name = createProductForm.ProductName,
                 Price = createProductForm.ProductPrice,
                 Description = createProductForm.ProductDescription,
-                ProductProductCategories = createProductForm.ProductCategoryId.Select(id => new ProductProductCategory
-                {
-                    ProductCategoryId = id,
-                }).ToList(),
+                ProductCategories = productCategories,
                 Manufacturer = createProductForm.ProductManufacturer,
                 DateAdded = DateTime.Now
             };
@@ -47,19 +47,13 @@ namespace PerfumeStore.Core.Services
 
         public async Task<Product> GetProductByIdAsync(int productId)
         {
-            try
+
+            Product? product = await _productsRepository.GetByIdAsync(productId);
+            if (product is null)
             {
-                Product? product = await _productsRepository.GetByIdAsync(productId);
-                if (product is null)
-                {
-                    throw new ProductNotFoundException($"Can't find product with given id. Product:  {product}");
-                }
-                return product;
+                throw new EntityNotFoundException<Product, int>($"Can't find product with given id. Product:  {product}");
             }
-            catch (Exception e)
-            {
-                throw new ProductNotFoundException(e.Message, e.InnerException);
-            }
+            return product;
         }
 
         public async Task<Product> UpdateProductAsync(UpdateProductForm updateform)
