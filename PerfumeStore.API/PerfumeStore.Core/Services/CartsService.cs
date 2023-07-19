@@ -19,248 +19,188 @@ namespace PerfumeStore.Core.Services
             _guestSessionService = guestSessionService;
         }
 
-
         public async Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity)
         {
-            try
+            Product? product = await _productsRepository.GetByIdAsync(productId);
+            if (product == null)
             {
-                Product? product = await _productsRepository.GetByIdAsync(productId);
-                if (product == null)
+                throw new EntityNotFoundException<Product, int>($"There is no product with the given id. ProductId: {productId}");
+            }
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
+            {
+                var newCart = new Cart
                 {
-                    throw new ProductNotFoundException($"There is no product with the given id. ProductId: {productId}");
-                }
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    var newCart = new Cart
+                    CartLines = new List<CartLine>()
                     {
-                    };
-                    newCart = await _cartsRepository.CreateAsync(newCart);
+                        new CartLine
+                        {
+                            ProductId = product.Id,
+                            Quantity = productQuantity,
+                        }
+                    }
+                };
 
-                    var carLineNewCart = new CartLine
-                    {
-                        CartId = newCart.Id,
-                        ProductId = product.Id,
-                        Quantity = productQuantity,
-                    };
-                    newCart.CartLines?.Add(carLineNewCart);
-                    newCart = await _cartsRepository.CreateAsync(newCart);
-                    _guestSessionService.SendCartId(newCart.Id);
+                newCart = await _cartsRepository.CreateAsync(newCart);
+                _guestSessionService.SendCartId(newCart.Id);
 
-                    return newCart;
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart is null)
+                return newCart;
+            }
+
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart is null)
+            {
+                throw new EntityNotFoundException<Product, int>($"The cart with Id: {getCartIdFromCookie.Value} was not found.");
+            }
+
+            CartLine cartLine = cart.CartLines.FirstOrDefault(x => x.ProductId == product.Id);
+            if (cartLine != null)
+            {
+                cartLine.Quantity += productQuantity;
+            }
+            else
+            {
+                cart.CartLines.Add(
+                new CartLine
                 {
-                    throw new CartNotFoundException($"The cart with Id: {getCartIdFromCookie.Value} was not found.");
-                }
-
-                var cartLineForOldCart = new CartLine
-                {
-                    CartId = cart.Id,
                     Product = product,
                     Quantity = productQuantity,
-                };
-                if (cart.CartLines.Any(x => x.ProductId == product.Id))
-                {
-                    CartLine cartLine = cart.CartLines.SingleOrDefault(x => x.ProductId == product.Id);
-                    cartLine.Quantity += productQuantity;
-                    Cart? updatedCart = await _cartsRepository.UpdateAsync(cart);
+                });
+            }
 
-                    return updatedCart;
-                }
-                cart.CartLines.Add(cartLineForOldCart);
-                Cart? extendedCart = await _cartsRepository.UpdateAsync(cart);
+            Cart? extendedCart = await _cartsRepository.UpdateAsync(cart);
 
-                return extendedCart;
-            }
-            catch (ProductNotFoundException e)
-            {
-                throw new ProductNotFoundException(e.Message, e);
-            }
-            catch (CartNotFoundException e)
-            {
-                throw new CartNotFoundException(e.Message, e);
-            }
+            return extendedCart;
         }
 
 
         public async Task<Cart> DecreaseProductQuantityAsync(int productId)
         {
-            try
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
             {
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-                cartLine.Quantity -= 1;
-                Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+            }
 
-                return await Task.FromResult(updatedCart);
-            }
-            catch (CookieWithCartIdNotFoundException e)
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart == null)
             {
-                throw new CookieWithCartIdNotFoundException(e.Message, e);
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CartNotFoundException e)
-            {
-                throw new CartNotFoundException(e.Message, e);
-            }
+
+            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            cartLine.Quantity -= 1;
+            Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+
+            return await Task.FromResult(updatedCart);
         }
 
         public async Task<Cart> IncreaseProductQuantityAsync(int productId)
         {
-            try
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
             {
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-                cartLine.Quantity += 1;
-                Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+            }
 
-                return updatedCart;
-            }
-            catch (CookieWithCartIdNotFoundException e)
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart == null)
             {
-                throw new CookieWithCartIdNotFoundException(e.Message, e);
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CartNotFoundException e)
-            {
-                throw new CartNotFoundException(e.Message, e);
-            }
+
+            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            cartLine.Quantity += 1;
+            Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+
+            return updatedCart;
         }
 
         public async Task<Cart> DeleteProductLineFromCartAsync(int productId)
         {
-            try
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
             {
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-                cart.CartLines.Remove(cartLine);
-                Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+            }
 
-                return updatedCart;
-            }
-            catch (CartNotFoundException e)
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart == null)
             {
-                throw new CartNotFoundException(e.Message, e);
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CookieWithCartIdNotFoundException e)
-            {
-                throw new CookieWithCartIdNotFoundException(e.Message, e);
-            }
+
+            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            cart.CartLines.Remove(cartLine);
+            Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+
+            return updatedCart;
         }
 
         public async Task<Cart> GetCartByIdAsync(int cartId)
         {
-            try
+            Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
+            if (cart == null)
             {
-                Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                return cart;
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CartNotFoundException e)
-            {
-                throw new CartNotFoundException(e.Message, e);
-            }
+
+            return cart;
         }
 
         public async Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
-            try
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
             {
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-                cartLine.Quantity = productQuantity;
-                Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+            }
 
-                return updatedCart;
-            }
-            catch (CookieWithCartIdNotFoundException e)
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart == null)
             {
-                throw new CookieWithCartIdNotFoundException(e.Message, e.InnerException);
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CartNotFoundException e)
-            {
-                throw new CartNotFoundException(e.Message, e.InnerException);
-            }
+
+            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            cartLine.Quantity = productQuantity;
+            Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
+
+            return updatedCart;
+
         }
 
         public async Task<CheckCartForm> CheckCartAsync()
         {
-            try
+            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            if (getCartIdFromCookie == null)
             {
-                int? getCartIdFromCookie = _guestSessionService.GetCartId();
-                if (getCartIdFromCookie == null)
-                {
-                    throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-                }
-                Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
-                if (cart == null)
-                {
-                    throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-                }
-                decimal totalCartValue = 0;
-                totalCartValue = cart.CartLines.Sum(x => x.Product.Price * x.Quantity);
-                IEnumerable<CheckCart> cartLineAsCheckCart = cart.CartLines.Select(x => new CheckCart
-                {
-                    ProductId = x.ProductId,
-                    ProductUnitPrice = x.Product.Price,
-                    ProductTotalPrice = x.Quantity * x.Product.Price,
-                    Quantity = x.Quantity
-                }).ToList();
-                CheckCartForm formatedCart = new CheckCartForm
-                {
-                    TotalCartValue = totalCartValue,
-                    ProductsInCart = cartLineAsCheckCart,
-                };
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+            }
 
-                return formatedCart;
-            }
-            catch (CookieWithCartIdNotFoundException e)
+            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            if (cart == null)
             {
-                throw new CookieWithCartIdNotFoundException(e.Message, e.InnerException);
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
-            catch (CartNotFoundException e)
+
+            decimal totalCartValue = 0;
+            totalCartValue = cart.CartLines.Sum(x => x.Product.Price * x.Quantity);
+            IEnumerable<CheckCart> cartLineAsCheckCart = cart.CartLines.Select(x => new CheckCart
             {
-                throw new CartNotFoundException(e.Message, e.InnerException);
-            }
+                ProductId = x.ProductId,
+                ProductUnitPrice = x.Product.Price,
+                ProductTotalPrice = x.Quantity * x.Product.Price,
+                Quantity = x.Quantity
+            }).ToList();
+
+            CheckCartForm formatedCart = new CheckCartForm
+            {
+                TotalCartValue = totalCartValue,
+                ProductsInCart = cartLineAsCheckCart,
+            };
+
+            return formatedCart;
         }
 
         public async Task<Cart> ClearCartAsync()
@@ -268,13 +208,15 @@ namespace PerfumeStore.Core.Services
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
             {
-                throw new CookieWithCartIdNotFoundException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
             }
+
             Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
             if (cart == null)
             {
-                throw new CartNotFoundException($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
+                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
+
             cart.CartLines.Clear();
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 

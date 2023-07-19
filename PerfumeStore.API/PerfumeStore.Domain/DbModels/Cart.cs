@@ -1,5 +1,4 @@
 ﻿using PerfumeStore.Domain.Interfaces;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.DbModels
@@ -8,6 +7,6 @@ namespace PerfumeStore.Domain.DbModels
     {
         [Key]
         public int Id { get; set; }
-        public Collection<CartLine>? CartLines { get; set; }
+        public ICollection<CartLine>? CartLines { get; set; }
     }
 }

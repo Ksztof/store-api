@@ -24,19 +24,6 @@ namespace PerfumeStore.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductCategories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
@@ -59,9 +46,9 @@ namespace PerfumeStore.Domain.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CartId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    CartId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,8 +57,7 @@ namespace PerfumeStore.Domain.Migrations
                         name: "FK_CartsLine_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CartsLine_Products_ProductId",
                         column: x => x.ProductId,
@@ -81,27 +67,22 @@ namespace PerfumeStore.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductProductCategories",
+                name: "ProductCategories",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductCategoryId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductProductCategories", x => new { x.ProductId, x.ProductCategoryId });
+                    table.PrimaryKey("PK_ProductCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductProductCategories_ProductCategories_ProductCategoryId",
-                        column: x => x.ProductCategoryId,
-                        principalTable: "ProductCategories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProductProductCategories_Products_ProductId",
+                        name: "FK_ProductCategories_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -115,9 +96,9 @@ namespace PerfumeStore.Domain.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductProductCategories_ProductCategoryId",
-                table: "ProductProductCategories",
-                column: "ProductCategoryId");
+                name: "IX_ProductCategories_ProductId",
+                table: "ProductCategories",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -127,13 +108,10 @@ namespace PerfumeStore.Domain.Migrations
                 name: "CartsLine");
 
             migrationBuilder.DropTable(
-                name: "ProductProductCategories");
+                name: "ProductCategories");
 
             migrationBuilder.DropTable(
                 name: "Carts");
-
-            migrationBuilder.DropTable(
-                name: "ProductCategories");
 
             migrationBuilder.DropTable(
                 name: "Products");

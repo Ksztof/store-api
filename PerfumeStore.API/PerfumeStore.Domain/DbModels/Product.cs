@@ -13,6 +13,5 @@ namespace PerfumeStore.Domain.DbModels
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
         public ICollection<ProductCategory> ProductCategories { get; set; }
-        public CartLine CartLine { get; set; }
     }
 }

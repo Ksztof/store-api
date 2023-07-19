@@ -18,5 +18,11 @@ namespace PerfumeStore.Core.Repositories
             ProductCategory? ProductCategory = await _shopDbContext.ProductCategories.SingleOrDefaultAsync(x => x.Id == id);
             return ProductCategory;
         }
+
+        public async Task<ICollection<ProductCategory>> GetByIdsAsync(ICollection<int> ids)
+        {
+            ICollection<ProductCategory> ProductCategory = await _shopDbContext.ProductCategories.Where(x => ids.Contains(x.Id)).ToListAsync();
+            return ProductCategory;
+        }
     }
 }
