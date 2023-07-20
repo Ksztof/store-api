@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PerfumeStore.Domain;
 
@@ -11,9 +12,11 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230719182442_initialMigration")]
+    partial class initialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,8 +59,7 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartsLine");
                 });
@@ -121,9 +123,8 @@ namespace PerfumeStore.Domain.Migrations
                         .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithOne("CartLine")
-                        .HasForeignKey("PerfumeStore.Domain.DbModels.CartLine", "ProductId")
-
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -144,8 +145,6 @@ namespace PerfumeStore.Domain.Migrations
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
                 {
-                    b.Navigation("CartLine")
-                        .IsRequired();
                     b.Navigation("ProductCategories");
                 });
 #pragma warning restore 612, 618
