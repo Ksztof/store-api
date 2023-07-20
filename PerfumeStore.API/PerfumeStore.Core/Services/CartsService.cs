@@ -131,6 +131,7 @@ namespace PerfumeStore.Core.Services
             }
 
             CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            await _cartsRepository.DeleteCartLineAsync(cartLine);
             cart.CartLines.Remove(cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 

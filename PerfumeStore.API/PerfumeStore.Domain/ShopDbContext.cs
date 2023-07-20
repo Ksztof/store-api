@@ -22,6 +22,11 @@ namespace PerfumeStore.Domain
 
             modelBuilder.Entity<Cart>()
             .HasMany(c => c.CartLines);
+
+            modelBuilder.Entity<Product>()
+            .HasOne<CartLine>(cl => cl.CartLine)
+            .WithOne(cl => cl.Product)
+            .HasForeignKey<CartLine>(cl => cl.ProductId);
         }
     }
 }

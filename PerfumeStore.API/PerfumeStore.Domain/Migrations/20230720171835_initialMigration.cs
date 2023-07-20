@@ -93,7 +93,8 @@ namespace PerfumeStore.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CartsLine_ProductId",
                 table: "CartsLine",
-                column: "ProductId");
+                column: "ProductId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductCategories_ProductId",

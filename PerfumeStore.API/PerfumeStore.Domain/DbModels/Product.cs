@@ -1,5 +1,6 @@
 ﻿using PerfumeStore.Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PerfumeStore.Domain.DbModels
 {
@@ -13,5 +14,7 @@ namespace PerfumeStore.Domain.DbModels
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
         public ICollection<ProductCategory> ProductCategories { get; set; }
+        [JsonIgnore]
+        public CartLine CartLine { get; set; }
     }
 }

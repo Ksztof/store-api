@@ -12,7 +12,7 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230719182442_initialMigration")]
+    [Migration("20230720171835_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -59,7 +59,8 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("CartsLine");
                 });
@@ -123,8 +124,8 @@ namespace PerfumeStore.Domain.Migrations
                         .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne("CartLine")
+                        .HasForeignKey("PerfumeStore.Domain.DbModels.CartLine", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -145,6 +146,9 @@ namespace PerfumeStore.Domain.Migrations
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
                 {
+                    b.Navigation("CartLine")
+                        .IsRequired();
+
                     b.Navigation("ProductCategories");
                 });
 #pragma warning restore 612, 618

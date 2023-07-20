@@ -33,9 +33,15 @@ namespace PerfumeStore.Core.Repositories
         public async Task<Cart?> GetByIdAsync(int cartId)
         {
             Cart? cart = await _shopDbContext.Carts
-                .Include(c => c.CartLines)
+                .AsSingleQuery()
+                .Include(c => c.CartLines).ThenInclude(p => p.Product)
                 .SingleOrDefaultAsync(c => c.Id == cartId);
             return cart;
+        }
+        public async Task DeleteCartLineAsync(CartLine cartLine)
+        {
+            EntityEntry<CartLine> CartLineEntry = _shopDbContext.CartsLine.Remove(cartLine);
+            await _shopDbContext.SaveChangesAsync();
         }
     }
 }
