@@ -27,10 +27,10 @@ namespace PerfumeStore.Core.Services
             return cartId;
         }
 
-        public void SendCartId(int cartId)
+        public void SendCartIdToGuest(int cartId)
         {
             string stringCartId = cartId.ToString();
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("GuestSessionId", stringCartId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });// Czy robić tutaj jakąś walidację? Czy da się wysyłać ciasteczko asynchronicznie?
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("GuestSessionId", stringCartId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
         }
     }
 }

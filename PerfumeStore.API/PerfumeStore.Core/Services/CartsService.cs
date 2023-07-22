@@ -30,16 +30,9 @@ namespace PerfumeStore.Core.Services
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
             {
-                var newCart = new Cart();
-                newCart.CartLines.Add(
-                        new CartLine
-                        {
-                            ProductId = product.Id,
-                            Quantity = productQuantity,
-                        });
-
+                Cart newCart = GenerateNewCart(productQuantity, product.Id);
                 newCart = await _cartsRepository.CreateAsync(newCart);
-                _guestSessionService.SendCartId(newCart.Id);
+                _guestSessionService.SendCartIdToGuest(newCart.Id);
 
                 return newCart;
             }
@@ -50,26 +43,18 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Product, int>($"The cart with Id: {getCartIdFromCookie.Value} was not found.");
             }
 
-            CartLine cartLine = cart.CartLines.FirstOrDefault(x => x.ProductId == product.Id);
+            CartLine cartLine = GetCartLine(product.Id, cart);
             if (cartLine != null)
             {
-                cartLine.Quantity += productQuantity;
-            }
-            else
-            {
-                cart.CartLines.Add(
-                new CartLine
-                {
-                    Product = product,
-                    Quantity = productQuantity,
-                });
-            }
+                IncreaseProductQuantity(productQuantity, cartLine);
+                Cart? extendedCart = await _cartsRepository.UpdateAsync(cart);
 
-            Cart? extendedCart = await _cartsRepository.UpdateAsync(cart);
+                return extendedCart;
+            }
+            AddNewCartLineToCart(productQuantity, product, cart);
 
-            return extendedCart;
+            return cart;
         }
-
 
         public async Task<Cart> DecreaseProductQuantityAsync(int productId)
         {
@@ -85,11 +70,11 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-            cartLine.Quantity -= 1;
+            CartLine? cartLine = GetCartLine(productId, cart);
+            DecreaceProductQuantityByOne(cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
-            return await Task.FromResult(updatedCart);
+            return updatedCart;
         }
 
         public async Task<Cart> IncreaseProductQuantityAsync(int productId)
@@ -106,8 +91,8 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-            cartLine.Quantity += 1;
+            CartLine? cartLine = GetCartLine(productId, cart);
+            IncreaseProductQuantityByOne(cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return updatedCart;
@@ -127,7 +112,7 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
+            CartLine? cartLine = GetCartLine(productId, cart);
             await _cartsRepository.DeleteCartLineAsync(cartLine);
             cart.CartLines.Remove(cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
@@ -160,12 +145,11 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CartLine? cartLine = cart?.CartLines.SingleOrDefault(x => x.ProductId == productId);
-            cartLine.Quantity = productQuantity;
+            CartLine? cartLine = GetCartLine(productId, cart);
+            SetProductQuantity(productQuantity, cartLine);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
             return updatedCart;
-
         }
 
         public async Task<CheckCartForm> CheckCartAsync()
@@ -182,21 +166,7 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            decimal totalCartValue = 0;
-            totalCartValue = cart.CartLines.Sum(x => x.Product.Price * x.Quantity);
-            IEnumerable<CheckCart> cartLineAsCheckCart = cart.CartLines.Select(x => new CheckCart
-            {
-                ProductId = x.ProductId,
-                ProductUnitPrice = x.Product.Price,
-                ProductTotalPrice = x.Quantity * x.Product.Price,
-                Quantity = x.Quantity
-            }).ToList();
-
-            CheckCartForm formatedCart = new CheckCartForm
-            {
-                TotalCartValue = totalCartValue,
-                ProductsInCart = cartLineAsCheckCart,
-            };
+            CheckCartForm formatedCart = GetInformationAboutCart(cart);
 
             return formatedCart;
         }
@@ -215,10 +185,99 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            cart.CartLines.Clear();
+            ClearAllCartLines(cart);
             Cart updatedCart = await _cartsRepository.UpdateAsync(cart);
 
+
             return cart;
+        }
+
+        private static void ClearAllCartLines(Cart? cart)
+        {
+            cart.CartLines.Clear();
+        }
+
+        private static void AddNewCartLineToCart(decimal productQuantity, Product? product, Cart? cart)
+        {
+            cart.CartLines.Add(
+                            new CartLine
+                            {
+                                Product = product,
+                                Quantity = productQuantity,
+                            });
+        }
+
+        private static void IncreaseProductQuantity(decimal productQuantity, CartLine cartLine)
+        {
+            cartLine.Quantity += productQuantity;
+        }
+
+        private static CartLine? GetCartLine(int productId, Cart cart)
+        {
+            return cart.CartLines.FirstOrDefault(x => x.ProductId == productId);
+        }
+
+        private static Cart GenerateNewCart(decimal productQuantity, int productId)
+        {
+            var newCart = new Cart();
+            newCart.CartLines.Add(
+                    new CartLine
+                    {
+                        ProductId = productId,
+                        Quantity = productQuantity,
+                    });
+
+            return newCart;
+        }
+
+        private static void DecreaceProductQuantityByOne(CartLine? cartLine)
+        {
+            cartLine.Quantity -= 1;
+        }
+
+        private static void IncreaseProductQuantityByOne(CartLine? cartLine)
+        {
+            cartLine.Quantity += 1;
+        }
+
+        private static void SetProductQuantity(decimal productQuantity, CartLine? cartLine)
+        {
+            cartLine.Quantity = productQuantity;
+        }
+
+        private static CheckCartForm FormatInformationAboutCart(decimal totalCartValue, IEnumerable<CheckCart> cartLineAsCheckCart)
+        {
+            return new CheckCartForm
+            {
+                TotalCartValue = totalCartValue,
+                ProductsInCart = cartLineAsCheckCart,
+            };
+        }
+
+        private static IEnumerable<CheckCart> FormatCartLineToCheckCart(Cart? cart)
+        {
+            return cart.CartLines.Select(x => new CheckCart
+            {
+                ProductId = x.ProductId,
+                ProductUnitPrice = x.Product.Price,
+                ProductTotalPrice = x.Quantity * x.Product.Price,
+                Quantity = x.Quantity
+            }).ToList();
+        }
+
+        private static decimal CalculateTotalCartValue(Cart? cart)
+        {
+            return cart.CartLines.Sum(x => x.Product.Price * x.Quantity);
+        }
+
+        private static CheckCartForm GetInformationAboutCart(Cart? cart)
+        {
+            decimal totalCartValue = 0;
+            totalCartValue = CalculateTotalCartValue(cart);
+            IEnumerable<CheckCart> cartLineAsCheckCart = FormatCartLineToCheckCart(cart);
+            CheckCartForm formatedCart = FormatInformationAboutCart(totalCartValue, cartLineAsCheckCart);
+
+            return formatedCart;
         }
     }
 }

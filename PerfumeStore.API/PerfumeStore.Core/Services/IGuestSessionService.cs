@@ -2,7 +2,7 @@
 {
     public interface IGuestSessionService
     {
-        public void SendCartId(int cartId);
+        public void SendCartIdToGuest(int cartId);
         public int? GetCartId();
     }
 }

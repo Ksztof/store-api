@@ -18,19 +18,15 @@ namespace PerfumeStore.Core.Services
 
         public async Task<Product> CreateProductAsync(CreateProductForm createProductForm)
         {
-            var productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoryId);
-            var productToCreate = new Product
+            ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoryId);
+            if (!productCategories.Any())
             {
-                Name = createProductForm.ProductName,
-                Price = createProductForm.ProductPrice,
-                Description = createProductForm.ProductDescription,
-                ProductCategories = productCategories,
-                Manufacturer = createProductForm.ProductManufacturer,
-                DateAdded = DateTime.Now
-            };
+                throw new EntityNotFoundException<ProductCategory, int>("Product categories are missing.");
+            }
+            Product newProduct = GenerateNewProduct(createProductForm, productCategories);
+            newProduct = await _productsRepository.CreateAsync(newProduct);
 
-            Product createdProductId = await _productsRepository.CreateAsync(productToCreate);
-            return createdProductId;
+            return newProduct;
         }
 
         public async Task DeleteProductAsync(int productId)
@@ -55,17 +51,40 @@ namespace PerfumeStore.Core.Services
             return product;
         }
 
-        public async Task<Product> UpdateProductAsync(UpdateProductForm updateform)
+        public async Task<Product> UpdateProductAsync(UpdateProductForm updateForm)
         {
-            Product productToUpdate = await _productsRepository.GetByIdAsync(updateform.ProductId); //TODO:will have to think about smarter mapping/mapper
+            Product? productToUpdate = await _productsRepository.GetByIdAsync(updateForm.ProductId);
+            if (productToUpdate is null)
+            {
+                throw new EntityNotFoundException<Product, int>($"Can't find entity {typeof(Product)} with Id: {updateForm.ProductId}");
+            }
+            Product updatedProductId = await _productsRepository.UpdateAsync(productToUpdate);
+
+            return updatedProductId;
+        }
+
+        private Product GenerateNewProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
+        {
+            var productToCreate = new Product
+            {
+                Name = createProductForm.ProductName,
+                Price = createProductForm.ProductPrice,
+                Description = createProductForm.ProductDescription,
+                ProductCategories = productCategories,
+                Manufacturer = createProductForm.ProductManufacturer,
+                DateAdded = DateTime.Now
+            };
+
+            return productToCreate;
+        }
+
+        private static void GenerateUpdatedProduct(UpdateProductForm updateform, Product productToUpdate)
+        {
             productToUpdate.Name = updateform.ProductName;
             productToUpdate.Price = updateform.ProductPrice;
             productToUpdate.Description = updateform.ProductDescription;
             productToUpdate.Manufacturer = updateform.ProductManufacturer;
-
-            Product updatedProductId = await _productsRepository.UpdateAsync(productToUpdate);
-
-            return await Task.FromResult(updatedProductId);
         }
     }
 }
+
