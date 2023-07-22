@@ -15,7 +15,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<ProductCategory?> GetByIdAsync(int id)
         {
-            ProductCategory? ProductCategory = await _shopDbContext.ProductCategories.SingleOrDefaultAsync(x => x.Id == id);
+            ProductCategory? ProductCategory = await _shopDbContext.ProductCategories.FindAsync(id);
             return ProductCategory;
         }
 

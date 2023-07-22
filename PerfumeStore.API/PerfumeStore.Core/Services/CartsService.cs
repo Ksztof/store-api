@@ -24,22 +24,19 @@ namespace PerfumeStore.Core.Services
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
             {
-                throw new EntityNotFoundException<Product, int>($"There is no product with the given id. ProductId: {productId}");
+                throw new EntityNotFoundException<Product, int>($"There is no Entity of type {typeof(Product)} with Id - {productId}");
             }
+
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
             {
-                var newCart = new Cart
-                {
-                    CartLines = new List<CartLine>()
-                    {
+                var newCart = new Cart();
+                newCart.CartLines.Add(
                         new CartLine
                         {
                             ProductId = product.Id,
                             Quantity = productQuantity,
-                        }
-                    }
-                };
+                        });
 
                 newCart = await _cartsRepository.CreateAsync(newCart);
                 _guestSessionService.SendCartId(newCart.Id);

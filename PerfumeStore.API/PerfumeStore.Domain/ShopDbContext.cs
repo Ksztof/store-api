@@ -18,15 +18,15 @@ namespace PerfumeStore.Domain
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>()
-            .HasMany(p => p.ProductCategories);
+                .HasMany(p => p.ProductCategories);
 
             modelBuilder.Entity<Cart>()
-            .HasMany(c => c.CartLines);
+                .HasMany(c => c.CartLines);
 
             modelBuilder.Entity<Product>()
-            .HasOne<CartLine>(cl => cl.CartLine)
-            .WithOne(cl => cl.Product)
-            .HasForeignKey<CartLine>(cl => cl.ProductId);
+                .HasOne<CartLine>(cl => cl.CartLine)
+                .WithOne(cl => cl.Product)
+                .HasForeignKey<CartLine>(cl => cl.ProductId);
         }
     }
 }

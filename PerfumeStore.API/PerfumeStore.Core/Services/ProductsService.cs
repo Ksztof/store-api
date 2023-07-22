@@ -35,8 +35,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task DeleteProductAsync(int productId)
         {
-            Product product = await _productsRepository.GetByIdAsync(productId);
-            await _productsRepository.DeleteAsync(product);
+            await _productsRepository.DeleteAsync(productId);
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()

@@ -40,7 +40,7 @@ namespace PerfumeStore.Core.Repositories
         }
         public async Task DeleteCartLineAsync(CartLine cartLine)
         {
-            EntityEntry<CartLine> CartLineEntry = _shopDbContext.CartsLine.Remove(cartLine);
+            _shopDbContext.CartsLine.Remove(cartLine);
             await _shopDbContext.SaveChangesAsync();
         }
     }

@@ -22,9 +22,10 @@ namespace PerfumeStore.Core.Repositories
             return productEntry.Entity;
         }
 
-        public async Task DeleteAsync(Product item)
+        public async Task DeleteAsync(int id)
         {
-            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(item);
+            Product product = await GetByIdAsync(id);
+            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(product);
             await _shopDbContext.SaveChangesAsync();
         }
 
