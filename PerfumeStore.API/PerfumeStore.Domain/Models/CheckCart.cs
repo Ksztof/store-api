@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.Domain.Models
 {
-    public class CheckCart
+    public class CheckCartDto
     {
         public int ProductId { get; set; }
         public decimal ProductUnitPrice { get; set; }

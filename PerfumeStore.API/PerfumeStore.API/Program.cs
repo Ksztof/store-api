@@ -2,6 +2,7 @@
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain;
+using PerfumeStore.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

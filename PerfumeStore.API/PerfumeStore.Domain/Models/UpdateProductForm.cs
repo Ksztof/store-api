@@ -1,4 +1,4 @@
-﻿namespace PerfumeStore.Core.RequestForms
+﻿namespace PerfumeStore.Domain.Models
 {
     public class UpdateProductForm
     {
@@ -7,5 +7,6 @@
         public decimal ProductPrice { get; set; }
         public string ProductDescription { get; set; }
         public string ProductManufacturer { get; set; }
+        public ICollection<int> ProductCategoriesIds { get; set; }
     }
 }

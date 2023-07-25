@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Core.ResponseForms;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -23,24 +23,17 @@ namespace PerfumeStore.API.Controllers
             return CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = cart.Id }, cart);
         }
 
-        [HttpPut("DeleteProductLineFromCartAsync/{productId}/")]
+        [HttpPut("ChangeProductQuantityAsync/{productId}/{operation}")]
+        public async Task<IActionResult> ChangeProductQuantityAsync(int productId, string operation)
+        {
+            Cart updatedCart = await _cartsService.ChangeProductQuantityAsync(productId);
+            return Ok(updatedCart);
+        }
+
+        [HttpPut("DeleteProductLineFromCart/{productId}/")]
         public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId)
         {
             Cart updatedCart = await _cartsService.DeleteProductLineFromCartAsync(productId);
-            return Ok(updatedCart);
-        }
-
-        [HttpPut("DecreaseProductQuantityAsync/{productId}/")]
-        public async Task<IActionResult> DecreaseProductQuantityAsync(int productId)
-        {
-            Cart updatedCart = await _cartsService.DecreaseProductQuantityAsync(productId);
-            return Ok(updatedCart);
-        }
-
-        [HttpPut("IncreaseProductQuantityAsync/{productId}/")]
-        public async Task<IActionResult> IncreaseProductQuantityAsync(int productId)
-        {
-            Cart updatedCart = await _cartsService.IncreaseProductQuantityAsync(productId);
             return Ok(updatedCart);
         }
 

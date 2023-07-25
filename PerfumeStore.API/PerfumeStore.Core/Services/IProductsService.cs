@@ -1,5 +1,5 @@
-﻿using PerfumeStore.Core.RequestForms;
-using PerfumeStore.Domain.DbModels;
+﻿using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
 {

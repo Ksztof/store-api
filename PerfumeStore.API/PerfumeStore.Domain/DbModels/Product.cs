@@ -1,4 +1,5 @@
 ﻿using PerfumeStore.Domain.Interfaces;
+using PerfumeStore.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -16,5 +17,25 @@ namespace PerfumeStore.Domain.DbModels
         public ICollection<ProductCategory> ProductCategories { get; set; }
         [JsonIgnore]
         public CartLine CartLine { get; set; }
+
+        public void CreateProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
+        {
+            Name = createProductForm.ProductName;
+            Price = createProductForm.ProductPrice;
+            Description = createProductForm.ProductDescription;
+            ProductCategories = productCategories;
+            Manufacturer = createProductForm.ProductManufacturer;
+            DateAdded = DateTime.Now;
+        }
+
+        public void UpdateProduct(UpdateProductForm updateForm, ICollection<ProductCategory> productCategories)
+        {
+            Name = updateForm.ProductName;
+            Price = updateForm.ProductPrice;
+            Description = updateForm.ProductDescription;
+            ProductCategories = productCategories;
+            Manufacturer = updateForm.ProductManufacturer;
+            DateAdded = DateTime.Now;
+        }
     }
 }

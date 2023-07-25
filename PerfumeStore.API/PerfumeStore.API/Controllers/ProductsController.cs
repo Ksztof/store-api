@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Core.RequestForms;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {

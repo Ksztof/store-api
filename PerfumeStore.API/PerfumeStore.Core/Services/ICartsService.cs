@@ -1,5 +1,5 @@
-﻿using PerfumeStore.Core.ResponseForms;
-using PerfumeStore.Domain.DbModels;
+﻿using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
 {
@@ -8,8 +8,7 @@ namespace PerfumeStore.Core.Services
         public Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity);
         public Task<Cart> GetCartByIdAsync(int cartId);
         public Task<Cart> DeleteProductLineFromCartAsync(int productId);
-        public Task<Cart> DecreaseProductQuantityAsync(int productId);
-        public Task<Cart> IncreaseProductQuantityAsync(int productId);
+        public Task<Cart> ChangeProductQuantityAsync(int productId, string operation);
         public Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity);
         public Task<CheckCartForm> CheckCartAsync();
         public Task<Cart> ClearCartAsync();
