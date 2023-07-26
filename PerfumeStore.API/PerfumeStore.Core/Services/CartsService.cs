@@ -1,6 +1,7 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Enums;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
@@ -47,26 +48,6 @@ namespace PerfumeStore.Core.Services
                 cart = await _cartsRepository.CreateAsync(cart);
                 _guestSessionService.SendCartIdToGuest(cart.Id);
             }
-
-            return cart;
-        }
-
-        public async Task<Cart> ChangeProductQuantityAsync(int productId, string operation)
-        {
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
-            if (getCartIdFromCookie == null)
-            {
-                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
-            }
-
-            Cart? cart = await _cartsRepository.GetByIdAsync(productId);
-            if (cart == null)
-            {
-                throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
-            }
-
-            cart.ChangeProductQuantity(productId, operation);
-            cart = await _cartsRepository.UpdateAsync(cart);
 
             return cart;
         }

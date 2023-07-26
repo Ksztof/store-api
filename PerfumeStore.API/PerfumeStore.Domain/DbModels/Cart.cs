@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Domain.Interfaces;
+﻿using PerfumeStore.Domain.Enums;
+using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,17 +31,7 @@ namespace PerfumeStore.Domain.DbModels
                 cartLine.Quantity += quantity;
             }
         }
-
-        public void ChangeProductQuantity(int productId, string operation)
-        {
-            CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
-            if (operation == "increase")
-            {
-                cartLine.Quantity += 1;
-            }
-            else cartLine.Quantity -= 1;
-        }
-
+      
         public void DeleteProductLineFromCart(int productId)
         {
             CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
