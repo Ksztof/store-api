@@ -31,7 +31,11 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            IEnumerable<Product> productsList = await _shopDbContext.Products.ToListAsync();
+            IEnumerable<Product> productsList = await _shopDbContext.Products
+                .AsSingleQuery()
+                .Select(x => x)
+                .Include(x => x.ProductCategories).ToListAsync();
+                
             return productsList;
         }
 

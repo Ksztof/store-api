@@ -17,13 +17,19 @@ namespace PerfumeStore.Domain.DbModels
         public ICollection<ProductCategory> ProductCategories { get; set; }
         [JsonIgnore]
         public CartLine CartLine { get; set; }
+        public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
+
 
         public void CreateProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
         {
             Name = createProductForm.ProductName;
             Price = createProductForm.ProductPrice;
             Description = createProductForm.ProductDescription;
-            ProductCategories = productCategories;
+            ProductProductCategories = ProductCategories.Select(pc => new ProductProductCategory
+            {
+                Product = this,
+                ProductCategory = pc
+            }).ToList();
             Manufacturer = createProductForm.ProductManufacturer;
             DateAdded = DateTime.Now;
         }
