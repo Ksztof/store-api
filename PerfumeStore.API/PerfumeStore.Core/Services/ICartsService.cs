@@ -1,5 +1,4 @@
 ﻿using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Enums;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services

@@ -147,7 +147,7 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductCategory", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany("ProductCategories")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -183,8 +183,6 @@ namespace PerfumeStore.Domain.Migrations
                 {
                     b.Navigation("CartLine")
                         .IsRequired();
-
-                    b.Navigation("ProductCategories");
 
                     b.Navigation("ProductProductCategories");
                 });

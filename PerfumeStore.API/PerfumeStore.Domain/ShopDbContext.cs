@@ -18,9 +18,6 @@ namespace PerfumeStore.Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>()
-                .HasMany(p => p.ProductCategories);
-
             modelBuilder.Entity<Cart>()
                 .HasMany(c => c.CartLines);
 
@@ -33,14 +30,38 @@ namespace PerfumeStore.Domain
                  .HasKey(pc => new { pc.ProductId, pc.ProductCategoryId });
 
             modelBuilder.Entity<ProductProductCategory>()
-                .HasOne(pc => pc.Product)
+                .HasOne<Product>(pc => pc.Product)
                 .WithMany(p => p.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductId);
-                
+                .HasForeignKey(pc => pc.ProductId).
+                OnDelete(DeleteBehavior.ClientSetNull);
+
             modelBuilder.Entity<ProductProductCategory>()
-                .HasOne(pc => pc.ProductCategory)
+                .HasOne<ProductCategory>(pc => pc.ProductCategory)
                 .WithMany(c => c.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductCategoryId);
+                .HasForeignKey(pc => pc.ProductCategoryId).
+                OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }
+/*modelBuilder.Entity<Cart>()
+                .HasMany(c => c.CartLines)
+                .WithOne(e => e.Cart)
+                .HasForeignKey(e => e.CartId);
+
+modelBuilder.Entity<Product>()
+    .HasOne<CartLine>(cl => cl.CartLine)
+    .WithOne(cl => cl.Product)
+    .HasForeignKey<CartLine>(cl => cl.ProductId);
+
+modelBuilder.Entity<ProductProductCategory>()
+     .HasKey(pc => new { pc.ProductId, pc.ProductCategoryId });
+
+modelBuilder.Entity<ProductProductCategory>()
+    .HasOne<Product>(pc => pc.Product)
+    .WithMany(p => p.ProductProductCategories)
+    .HasForeignKey(pc => pc.ProductId);
+
+modelBuilder.Entity<ProductProductCategory>()
+    .HasOne<ProductCategory>(pc => pc.ProductCategory)
+    .WithMany(c => c.ProductProductCategories)
+    .HasForeignKey(pc => pc.ProductCategoryId);*/

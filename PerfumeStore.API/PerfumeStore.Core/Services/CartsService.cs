@@ -1,7 +1,6 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Enums;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
@@ -51,7 +50,7 @@ namespace PerfumeStore.Core.Services
 
             return cart;
         }
-        
+
         public async Task<Cart> DeleteProductLineFromCartAsync(int productId)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();

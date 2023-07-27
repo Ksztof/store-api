@@ -14,7 +14,6 @@ namespace PerfumeStore.Domain.DbModels
         public string Description { get; set; }
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
-        public ICollection<ProductCategory> ProductCategories { get; set; }
         [JsonIgnore]
         public CartLine CartLine { get; set; }
         public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
@@ -25,7 +24,7 @@ namespace PerfumeStore.Domain.DbModels
             Name = createProductForm.ProductName;
             Price = createProductForm.ProductPrice;
             Description = createProductForm.ProductDescription;
-            ProductProductCategories = ProductCategories.Select(pc => new ProductProductCategory
+            ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
             {
                 Product = this,
                 ProductCategory = pc
@@ -39,7 +38,11 @@ namespace PerfumeStore.Domain.DbModels
             Name = updateForm.ProductName;
             Price = updateForm.ProductPrice;
             Description = updateForm.ProductDescription;
-            ProductCategories = productCategories;
+            ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
+            {
+                Product = this,
+                ProductCategory = pc
+            }).ToList();
             Manufacturer = updateForm.ProductManufacturer;
             DateAdded = DateTime.Now;
         }

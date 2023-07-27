@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Enums;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers

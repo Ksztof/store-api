@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PerfumeStore.Domain.DbModels
+﻿namespace PerfumeStore.Domain.DbModels
 {
     public class ProductProductCategory
     {
