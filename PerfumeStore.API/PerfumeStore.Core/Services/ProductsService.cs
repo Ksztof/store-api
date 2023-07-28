@@ -1,4 +1,5 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
@@ -16,7 +17,7 @@ namespace PerfumeStore.Core.Services
             _productCategoriesRepository = productCategoriesRepository;
         }
 
-        public async Task<Product> CreateProductAsync(CreateProductForm createProductForm)
+        public async Task<ProductDto> CreateProductAsync(CreateProductForm createProductForm)
         {
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
@@ -31,8 +32,10 @@ namespace PerfumeStore.Core.Services
             Product product = new Product();
             product.CreateProduct(createProductForm, productCategories);
             product = await _productsRepository.CreateAsync(product);
+            ProductDto productDto = MapProductForUser(product);
 
-            return product;
+
+            return productDto;
         }
 
         public async Task DeleteProductAsync(int productId)
@@ -42,26 +45,31 @@ namespace PerfumeStore.Core.Services
             {
                 throw new EntityNotFoundException<Product, int>($"Entity of type: {typeof(Product)} is missing. Entity Id: {productId}");
             }
+
             await _productsRepository.DeleteAsync(productId);
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
         {
-            IEnumerable<Product> productsList = await _productsRepository.GetAllAsync();
-            return productsList;
+            IEnumerable<Product> products = await _productsRepository.GetAllAsync();
+            IEnumerable<ProductDto> productsDto = MapProductsForUser(products);
+            return productsDto;
         }
 
-        public async Task<Product> GetProductByIdAsync(int productId)
+        public async Task<ProductDto> GetProductByIdAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
             {
                 throw new EntityNotFoundException<Product, int>($"Can't find product with given id. Product:  {product}");
             }
-            return product;
+
+            ProductDto productDto = MapProductForUser(product);
+
+            return productDto;
         }
 
-        public async Task<Product> UpdateProductAsync(UpdateProductForm updateForm)
+        public async Task<ProductDto> UpdateProductAsync(UpdateProductForm updateForm)
         {
             Product? product = await _productsRepository.GetByIdAsync(updateForm.ProductId);
             if (product is null)
@@ -81,10 +89,37 @@ namespace PerfumeStore.Core.Services
 
             product.UpdateProduct(updateForm, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
+            ProductDto productDto = MapProductForUser(product);
 
-            return product;
+
+            return productDto;
         }
+        private static IEnumerable<ProductDto> MapProductsForUser(IEnumerable<Product> products)
+        {
+            return products.Select(x => new ProductDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Price = x.Price,
+                Description = x.Description,
+                Manufacturer = x.Manufacturer,
+                DateAdded = x.DateAdded,
+            });
+        }
+        private static ProductDto MapProductForUser(Product? product)
+        {
+            ProductDto productDto = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                Manufacturer = product.Manufacturer,
+                DateAdded = product.DateAdded,
+            };
 
+            return productDto;
+        }
     }
 }
 

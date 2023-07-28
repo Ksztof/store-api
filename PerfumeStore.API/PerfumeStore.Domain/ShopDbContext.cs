@@ -32,36 +32,12 @@ namespace PerfumeStore.Domain
             modelBuilder.Entity<ProductProductCategory>()
                 .HasOne<Product>(pc => pc.Product)
                 .WithMany(p => p.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductId).
-                OnDelete(DeleteBehavior.ClientSetNull);
+                .HasForeignKey(pc => pc.ProductId);
 
             modelBuilder.Entity<ProductProductCategory>()
                 .HasOne<ProductCategory>(pc => pc.ProductCategory)
                 .WithMany(c => c.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductCategoryId).
-                OnDelete(DeleteBehavior.ClientSetNull);
+                .HasForeignKey(pc => pc.ProductCategoryId);
         }
     }
 }
-/*modelBuilder.Entity<Cart>()
-                .HasMany(c => c.CartLines)
-                .WithOne(e => e.Cart)
-                .HasForeignKey(e => e.CartId);
-
-modelBuilder.Entity<Product>()
-    .HasOne<CartLine>(cl => cl.CartLine)
-    .WithOne(cl => cl.Product)
-    .HasForeignKey<CartLine>(cl => cl.ProductId);
-
-modelBuilder.Entity<ProductProductCategory>()
-     .HasKey(pc => new { pc.ProductId, pc.ProductCategoryId });
-
-modelBuilder.Entity<ProductProductCategory>()
-    .HasOne<Product>(pc => pc.Product)
-    .WithMany(p => p.ProductProductCategories)
-    .HasForeignKey(pc => pc.ProductId);
-
-modelBuilder.Entity<ProductProductCategory>()
-    .HasOne<ProductCategory>(pc => pc.ProductCategory)
-    .WithMany(c => c.ProductProductCategories)
-    .HasForeignKey(pc => pc.ProductCategoryId);*/

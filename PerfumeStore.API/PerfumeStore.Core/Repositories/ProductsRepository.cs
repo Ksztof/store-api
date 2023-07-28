@@ -32,9 +32,7 @@ namespace PerfumeStore.Core.Repositories
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             IEnumerable<Product> productsList = await _shopDbContext.Products
-                .AsSingleQuery()
                 .Select(x => x).ToListAsync();
-                //.Include(x => x.ProductCategories).ToListAsync();
 
             return productsList;
         }
@@ -43,7 +41,7 @@ namespace PerfumeStore.Core.Repositories
         {
             Product? product = await _shopDbContext.Products
                 .AsSingleQuery()
-                //.Include(x => x.ProductCategories)
+                .Include(x => x.ProductProductCategories)
                 .SingleOrDefaultAsync(x => x.Id == id);
             return product;
         }

@@ -12,7 +12,7 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230727130110_initialMigration")]
+    [Migration("20230728063902_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -107,12 +107,7 @@ namespace PerfumeStore.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductCategories");
                 });
@@ -141,17 +136,6 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
                         .WithOne("CartLine")
                         .HasForeignKey("PerfumeStore.Domain.DbModels.CartLine", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductCategory", b =>
-                {
-                    b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
