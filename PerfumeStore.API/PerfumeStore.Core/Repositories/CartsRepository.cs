@@ -34,13 +34,21 @@ namespace PerfumeStore.Core.Repositories
         {
             Cart? cart = await _shopDbContext.Carts
                 .AsSingleQuery()
-                .Include(c => c.CartLines).ThenInclude(p => p.Product)
+                .Include(x => x.CartLines)
+                .ThenInclude(x => x.Product)
                 .SingleOrDefaultAsync(c => c.Id == cartId);
+
             return cart;
         }
         public async Task DeleteCartLineAsync(CartLine cartLine)
         {
             _shopDbContext.CartsLine.Remove(cartLine);
+            await _shopDbContext.SaveChangesAsync();
+        }
+
+        public async Task ClearCartAsync(ICollection<CartLine> cartLines)
+        {
+            _shopDbContext.CartsLine.RemoveRange(cartLines);
             await _shopDbContext.SaveChangesAsync();
         }
     }

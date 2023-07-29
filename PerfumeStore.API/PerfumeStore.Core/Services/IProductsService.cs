@@ -1,15 +1,14 @@
 ﻿using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
 {
     public interface IProductsService
     {
-        public Task<ProductDto> CreateProductAsync(CreateProductForm createProductForm);
-        public Task<ProductDto> UpdateProductAsync(UpdateProductForm updateform);
+        public Task<ProductResponse> CreateProductAsync(CreateProductForm createProductForm);
+        public Task<ProductResponse> UpdateProductAsync(UpdateProductForm updateform);
         public Task DeleteProductAsync(int productId);
-        public Task<ProductDto> GetProductByIdAsync(int productId);
-        public Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+        public Task<ProductResponse> GetProductByIdAsync(int productId);
+        public Task<IEnumerable<ProductResponse>> GetAllProductsAsync();
     }
 }

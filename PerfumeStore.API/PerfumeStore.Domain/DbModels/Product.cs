@@ -1,7 +1,6 @@
 ﻿using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Models;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace PerfumeStore.Domain.DbModels
 {

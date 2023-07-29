@@ -8,5 +8,7 @@ namespace PerfumeStore.Core.Repositories
         public Task<Cart> UpdateAsync(Cart item);
         public Task<Cart?> GetByIdAsync(int cartId);
         public Task DeleteCartLineAsync(CartLine cartLine);
+        public Task ClearCartAsync(ICollection<CartLine> cartLines);
+
     }
 }

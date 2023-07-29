@@ -17,7 +17,7 @@ namespace PerfumeStore.Core.Services
             _productCategoriesRepository = productCategoriesRepository;
         }
 
-        public async Task<ProductDto> CreateProductAsync(CreateProductForm createProductForm)
+        public async Task<ProductResponse> CreateProductAsync(CreateProductForm createProductForm)
         {
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
@@ -32,7 +32,7 @@ namespace PerfumeStore.Core.Services
             Product product = new Product();
             product.CreateProduct(createProductForm, productCategories);
             product = await _productsRepository.CreateAsync(product);
-            ProductDto productDto = MapProductForUser(product);
+            ProductResponse productDto = MapProductDto(product);
 
 
             return productDto;
@@ -49,14 +49,14 @@ namespace PerfumeStore.Core.Services
             await _productsRepository.DeleteAsync(productId);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
-            IEnumerable<ProductDto> productsDto = MapProductsForUser(products);
+            IEnumerable<ProductResponse> productsDto = MapProductsToDto(products);
             return productsDto;
         }
 
-        public async Task<ProductDto> GetProductByIdAsync(int productId)
+        public async Task<ProductResponse> GetProductByIdAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
@@ -64,12 +64,12 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Product, int>($"Can't find product with given id. Product:  {product}");
             }
 
-            ProductDto productDto = MapProductForUser(product);
+            ProductResponse productDto = MapProductDto(product);
 
             return productDto;
         }
 
-        public async Task<ProductDto> UpdateProductAsync(UpdateProductForm updateForm)
+        public async Task<ProductResponse> UpdateProductAsync(UpdateProductForm updateForm)
         {
             Product? product = await _productsRepository.GetByIdAsync(updateForm.ProductId);
             if (product is null)
@@ -89,14 +89,14 @@ namespace PerfumeStore.Core.Services
 
             product.UpdateProduct(updateForm, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
-            ProductDto productDto = MapProductForUser(product);
+            ProductResponse productDto = MapProductDto(product);
 
 
             return productDto;
         }
-        private static IEnumerable<ProductDto> MapProductsForUser(IEnumerable<Product> products)
+        private static IEnumerable<ProductResponse> MapProductsToDto(IEnumerable<Product> products)
         {
-            return products.Select(x => new ProductDto
+            return products.Select(x => new ProductResponse
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -106,9 +106,9 @@ namespace PerfumeStore.Core.Services
                 DateAdded = x.DateAdded,
             });
         }
-        private static ProductDto MapProductForUser(Product? product)
+        private static ProductResponse MapProductDto(Product? product)
         {
-            ProductDto productDto = new ProductDto
+            ProductResponse productDto = new ProductResponse
             {
                 Id = product.Id,
                 Name = product.Name,

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
-using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
@@ -20,14 +19,14 @@ namespace PerfumeStore.API.Controllers
         [HttpPost("CreateProductAsync")]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
         {
-            ProductDto createdProduct = await _productService.CreateProductAsync(createProductForm);
+            ProductResponse createdProduct = await _productService.CreateProductAsync(createProductForm);
             return Ok(createdProduct);
         }
 
         [HttpPut("UpdateProductAsync")]
         public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
         {
-            ProductDto updatedProductId = await _productService.UpdateProductAsync(updateform);
+            ProductResponse updatedProductId = await _productService.UpdateProductAsync(updateform);
             return Ok(updatedProductId);
         }
 
@@ -41,14 +40,14 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("GetProductByIdAsync/{productId}")]
         public async Task<IActionResult> GetProductByIdAsync(int productId)
         {
-            ProductDto product = await _productService.GetProductByIdAsync(productId);
+            ProductResponse product = await _productService.GetProductByIdAsync(productId);
             return Ok(product);
         }
 
         [HttpGet("GetAllProductsAsync")]
         public async Task<IActionResult> GetAllProductsAsync()
         {
-            IEnumerable<ProductDto> products = await _productService.GetAllProductsAsync();
+            IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
             return Ok(products);
         }
     }

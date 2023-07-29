@@ -1,4 +1,5 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
@@ -18,7 +19,7 @@ namespace PerfumeStore.Core.Services
             _guestSessionService = guestSessionService;
         }
 
-        public async Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity)
+        public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
@@ -47,11 +48,12 @@ namespace PerfumeStore.Core.Services
                 cart = await _cartsRepository.CreateAsync(cart);
                 _guestSessionService.SendCartIdToGuest(cart.Id);
             }
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cart;
+            return cartResponse;
         }
 
-        public async Task<Cart> DeleteProductLineFromCartAsync(int productId)
+        public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -65,24 +67,33 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            cart.DeleteProductLineFromCart(productId);
-            cart = await _cartsRepository.UpdateAsync(cart);
+            CartLine? cartLine = cart.CartLines.FirstOrDefault(x => x.ProductId == productId);
+            if (cartLine == null)
+            {
+                throw new EntityNotFoundException<CartLine, int>($"There is no entity of type: {typeof(CartLine)} You're serching for a cart line that includes product of Id: {productId}");
+            }
 
-            return cart;
+            await _cartsRepository.DeleteCartLineAsync(cartLine);
+            cart.DeleteCartLineFromCart(productId);
+            cart = await _cartsRepository.UpdateAsync(cart);
+            CartResponse cartResponse = MapCartResponse(cart);
+
+            return cartResponse;
         }
 
-        public async Task<Cart> GetCartByIdAsync(int cartId)// ??? I think it;s ok, there s no need to move it to Cart.cs????
+        public async Task<CartResponse> GetCartByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cart;
+            return cartResponse;
         }
 
-        public async Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity)
+        public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -96,11 +107,13 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
             cart.SetProductQuantity(productId, productQuantity);
+            cart = await _cartsRepository.UpdateAsync(cart);
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cart;
+            return cartResponse;
         }
 
-        public async Task<CheckCartForm> CheckCartAsync()
+        public async Task<AboutCartResponse> CheckCartAsync()
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -114,12 +127,12 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CheckCartForm informationAboutCart = cart.CheckCart();
+            AboutCartResponse aboutCartResposne = cart.CheckCart();
 
-            return informationAboutCart;
+            return aboutCartResposne;
         }
 
-        public async Task<Cart> ClearCartAsync()
+        public async Task<CartResponse> ClearCartAsync()
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -133,8 +146,27 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
+            ICollection<CartLine> cartLines = cart.CartLines;
+            await _cartsRepository.ClearCartAsync(cartLines);
             cart.ClearCart();
-            return cart;
+            CartResponse cartResponse = MapCartResponse(cart);
+
+            return cartResponse;
+        }
+
+        private static CartResponse MapCartResponse(Cart cart)
+        {
+            return new CartResponse
+            {
+                Id = cart.Id,
+                CartLineDto = cart.CartLines.Select(x => new CartLineResponse
+                {
+                    ProductName = x.Product.Name,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.Product.Price,
+                    TotalPrice = x.Quantity * x.Product.Price,
+                })
+            };
         }
     }
 }
