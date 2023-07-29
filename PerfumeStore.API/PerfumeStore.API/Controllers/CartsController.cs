@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
@@ -19,14 +20,14 @@ namespace PerfumeStore.API.Controllers
         [HttpPost("AddProductToCartAsync/{productId}/{productQuantity}")]
         public async Task<IActionResult> AddProductToCartAsync(int productId, decimal productQuantity)
         {
-            Cart? cart = await _cartsService.AddProductToCartAsync(productId, productQuantity);
+            CartDto cart = await _cartsService.AddProductToCartAsync(productId, productQuantity);
             return CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = cart.Id }, cart);
         }
 
-        [HttpPut("DeleteProductLineFromCart/{productId}/")]
+        [HttpPut("DeleteCartLineFromCart/{productId}/")]
         public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId)
         {
-            Cart updatedCart = await _cartsService.DeleteProductLineFromCartAsync(productId);
+            CartDto updatedCart = await _cartsService.DeleteCartLineFromCartAsync(productId);
             return Ok(updatedCart);
         }
 

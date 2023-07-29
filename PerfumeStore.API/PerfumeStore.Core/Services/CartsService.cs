@@ -1,4 +1,5 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
@@ -18,7 +19,7 @@ namespace PerfumeStore.Core.Services
             _guestSessionService = guestSessionService;
         }
 
-        public async Task<Cart?> AddProductToCartAsync(int productId, decimal productQuantity)
+        public async Task<CartDto> AddProductToCartAsync(int productId, decimal productQuantity)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
@@ -47,11 +48,12 @@ namespace PerfumeStore.Core.Services
                 cart = await _cartsRepository.CreateAsync(cart);
                 _guestSessionService.SendCartIdToGuest(cart.Id);
             }
+            CartDto cartDto = MapCartDto(cart);
 
-            return cart;
+            return cartDto;
         }
 
-        public async Task<Cart> DeleteProductLineFromCartAsync(int productId)
+        public async Task<CartDto> DeleteCartLineFromCartAsync(int productId)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -65,13 +67,21 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            cart.DeleteProductLineFromCart(productId);
-            cart = await _cartsRepository.UpdateAsync(cart);
+            CartLine? cartLine = cart.CartLines.FirstOrDefault(x => x.ProductId == productId);
+            if (cartLine == null)
+            {
+                throw new EntityNotFoundException<CartLine, int>($"There is no entity of type: {typeof(CartLine)} You're serching for a cart line that includes product of Id: {productId}");
+            }
 
-            return cart;
+            await _cartsRepository.DeleteCartLineAsync(cartLine);
+            cart.DeleteCartLineFromCart(productId);
+            cart = await _cartsRepository.UpdateAsync(cart);
+            CartDto cartDto = MapCartDto(cart);
+
+            return cartDto;
         }
 
-        public async Task<Cart> GetCartByIdAsync(int cartId)// ??? I think it;s ok, there s no need to move it to Cart.cs????
+        public async Task<Cart> GetCartByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
@@ -135,6 +145,21 @@ namespace PerfumeStore.Core.Services
 
             cart.ClearCart();
             return cart;
+        }
+
+        private static CartDto MapCartDto(Cart cart)
+        {
+            return new CartDto
+            {
+                Id = cart.Id,
+                CartLineDto = cart.CartLines.Select(x => new CartLineDto
+                {
+                    ProductName = x.Product.Name,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.Product.Price,
+                    TotalPrice = x.Quantity * x.Product.Price,
+                })
+            };
         }
     }
 }

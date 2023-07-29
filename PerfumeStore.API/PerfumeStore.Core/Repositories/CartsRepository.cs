@@ -34,8 +34,10 @@ namespace PerfumeStore.Core.Repositories
         {
             Cart? cart = await _shopDbContext.Carts
                 .AsSingleQuery()
-                .Include(c => c.CartLines).ThenInclude(p => p.Product)
+                .Include(x => x.CartLines)
+                .ThenInclude(x => x.Product)
                 .SingleOrDefaultAsync(c => c.Id == cartId);
+
             return cart;
         }
         public async Task DeleteCartLineAsync(CartLine cartLine)

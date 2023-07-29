@@ -32,7 +32,7 @@ namespace PerfumeStore.Core.Services
             Product product = new Product();
             product.CreateProduct(createProductForm, productCategories);
             product = await _productsRepository.CreateAsync(product);
-            ProductDto productDto = MapProductForUser(product);
+            ProductDto productDto = MapProductDto(product);
 
 
             return productDto;
@@ -52,7 +52,7 @@ namespace PerfumeStore.Core.Services
         public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
         {
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
-            IEnumerable<ProductDto> productsDto = MapProductsForUser(products);
+            IEnumerable<ProductDto> productsDto = MapProductsToDto(products);
             return productsDto;
         }
 
@@ -64,7 +64,7 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Product, int>($"Can't find product with given id. Product:  {product}");
             }
 
-            ProductDto productDto = MapProductForUser(product);
+            ProductDto productDto = MapProductDto(product);
 
             return productDto;
         }
@@ -89,12 +89,12 @@ namespace PerfumeStore.Core.Services
 
             product.UpdateProduct(updateForm, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
-            ProductDto productDto = MapProductForUser(product);
+            ProductDto productDto = MapProductDto(product);
 
 
             return productDto;
         }
-        private static IEnumerable<ProductDto> MapProductsForUser(IEnumerable<Product> products)
+        private static IEnumerable<ProductDto> MapProductsToDto(IEnumerable<Product> products)
         {
             return products.Select(x => new ProductDto
             {
@@ -106,7 +106,7 @@ namespace PerfumeStore.Core.Services
                 DateAdded = x.DateAdded,
             });
         }
-        private static ProductDto MapProductForUser(Product? product)
+        private static ProductDto MapProductDto(Product? product)
         {
             ProductDto productDto = new ProductDto
             {

@@ -19,6 +19,7 @@ namespace PerfumeStore.Domain.DbModels
                 {
                     ProductId = productId,
                 };
+                this.CartLines.Add(newLine);
             }
         }
 
@@ -31,7 +32,7 @@ namespace PerfumeStore.Domain.DbModels
             }
         }
 
-        public void DeleteProductLineFromCart(int productId)
+        public void DeleteCartLineFromCart(int productId)
         {
             CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
             bool deleteSuccess = CartLines.Remove(cartLine);
