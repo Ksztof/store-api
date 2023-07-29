@@ -49,12 +49,12 @@ namespace PerfumeStore.Domain.DbModels
             CartLines.Clear();
         }
 
-        public CheckCartForm CheckCart()
+        public AboutCartResponse CheckCart()
         {
             decimal totalCartValue = CartLines.Sum(x => x.Product.Price * x.Quantity);
             IEnumerable<CheckCartDto> aboutProducts = GetInformationAboutProducts();
 
-            CheckCartForm aboutCart = new CheckCartForm
+            AboutCartResponse aboutCart = new AboutCartResponse
             {
                 AboutProductsInCart = aboutProducts,
                 TotalCartValue = totalCartValue
@@ -67,7 +67,6 @@ namespace PerfumeStore.Domain.DbModels
         {
             return CartLines.Select(x => new CheckCartDto
             {
-                ProductId = x.ProductId,
                 ProductUnitPrice = x.Product.Price,
                 ProductTotalPrice = x.Product.Price * x.Quantity,
                 Quantity = x.Quantity,

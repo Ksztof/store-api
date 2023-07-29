@@ -19,7 +19,7 @@ namespace PerfumeStore.Core.Services
             _guestSessionService = guestSessionService;
         }
 
-        public async Task<CartDto> AddProductToCartAsync(int productId, decimal productQuantity)
+        public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
@@ -48,12 +48,12 @@ namespace PerfumeStore.Core.Services
                 cart = await _cartsRepository.CreateAsync(cart);
                 _guestSessionService.SendCartIdToGuest(cart.Id);
             }
-            CartDto cartDto = MapCartDto(cart);
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cartDto;
+            return cartResponse;
         }
 
-        public async Task<CartDto> DeleteCartLineFromCartAsync(int productId)
+        public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -76,23 +76,24 @@ namespace PerfumeStore.Core.Services
             await _cartsRepository.DeleteCartLineAsync(cartLine);
             cart.DeleteCartLineFromCart(productId);
             cart = await _cartsRepository.UpdateAsync(cart);
-            CartDto cartDto = MapCartDto(cart);
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cartDto;
+            return cartResponse;
         }
 
-        public async Task<Cart> GetCartByIdAsync(int cartId)
+        public async Task<CartResponse> GetCartByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cart;
+            return cartResponse;
         }
 
-        public async Task<Cart> SetProductQuantityAsync(int productId, decimal productQuantity)
+        public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -106,11 +107,13 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
             cart.SetProductQuantity(productId, productQuantity);
+            cart = await _cartsRepository.UpdateAsync(cart);
+            CartResponse cartResponse = MapCartResponse(cart);
 
-            return cart;
+            return cartResponse;
         }
 
-        public async Task<CheckCartForm> CheckCartAsync()
+        public async Task<AboutCartResponse> CheckCartAsync()
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -124,12 +127,12 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
-            CheckCartForm informationAboutCart = cart.CheckCart();
+            AboutCartResponse aboutCartResposne = cart.CheckCart();
 
-            return informationAboutCart;
+            return aboutCartResposne;
         }
 
-        public async Task<Cart> ClearCartAsync()
+        public async Task<CartResponse> ClearCartAsync()
         {
             int? getCartIdFromCookie = _guestSessionService.GetCartId();
             if (getCartIdFromCookie == null)
@@ -143,16 +146,20 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
             }
 
+            ICollection<CartLine> cartLines = cart.CartLines;
+            await _cartsRepository.ClearCartAsync(cartLines);
             cart.ClearCart();
-            return cart;
+            CartResponse cartResponse = MapCartResponse(cart);
+
+            return cartResponse;
         }
 
-        private static CartDto MapCartDto(Cart cart)
+        private static CartResponse MapCartResponse(Cart cart)
         {
-            return new CartDto
+            return new CartResponse
             {
                 Id = cart.Id,
-                CartLineDto = cart.CartLines.Select(x => new CartLineDto
+                CartLineDto = cart.CartLines.Select(x => new CartLineResponse
                 {
                     ProductName = x.Product.Name,
                     Quantity = x.Quantity,
