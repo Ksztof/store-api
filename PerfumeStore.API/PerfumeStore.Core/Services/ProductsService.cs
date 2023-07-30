@@ -32,10 +32,10 @@ namespace PerfumeStore.Core.Services
             Product product = new Product();
             product.CreateProduct(createProductForm, productCategories);
             product = await _productsRepository.CreateAsync(product);
-            ProductResponse productDto = MapProductDto(product);
+            ProductResponse productResponse = MapProductResponse(product);
 
 
-            return productDto;
+            return productResponse;
         }
 
         public async Task DeleteProductAsync(int productId)
@@ -52,8 +52,8 @@ namespace PerfumeStore.Core.Services
         public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
-            IEnumerable<ProductResponse> productsDto = MapProductsToDto(products);
-            return productsDto;
+            IEnumerable<ProductResponse> productsResponse = MapProductsToResponse(products);
+            return productsResponse;
         }
 
         public async Task<ProductResponse> GetProductByIdAsync(int productId)
@@ -64,17 +64,17 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Product, int>($"Can't find product with given id. Product:  {product}");
             }
 
-            ProductResponse productDto = MapProductDto(product);
+            ProductResponse productResponse = MapProductResponse(product);
 
-            return productDto;
+            return productResponse;
         }
 
-        public async Task<ProductResponse> UpdateProductAsync(UpdateProductForm updateForm)
+        public async Task<ProductResponse> UpdateProductAsync(UpdateProductForm updateForm, int productId)
         {
-            Product? product = await _productsRepository.GetByIdAsync(updateForm.ProductId);
+            Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
             {
-                throw new EntityNotFoundException<Product, int>($"Can't find entity {typeof(Product)} with Id: {updateForm.ProductId}");
+                throw new EntityNotFoundException<Product, int>($"Can't find entity {typeof(Product)} with Id: {productId}");
             }
 
             ICollection<ProductCategory> newProductCategories = await _productCategoriesRepository.GetByIdsAsync(updateForm.ProductCategoriesIds);
@@ -89,12 +89,12 @@ namespace PerfumeStore.Core.Services
 
             product.UpdateProduct(updateForm, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
-            ProductResponse productDto = MapProductDto(product);
+            ProductResponse productResponse = MapProductResponse(product);
 
 
-            return productDto;
+            return productResponse;
         }
-        private static IEnumerable<ProductResponse> MapProductsToDto(IEnumerable<Product> products)
+        private static IEnumerable<ProductResponse> MapProductsToResponse(IEnumerable<Product> products)
         {
             return products.Select(x => new ProductResponse
             {
@@ -106,9 +106,9 @@ namespace PerfumeStore.Core.Services
                 DateAdded = x.DateAdded,
             });
         }
-        private static ProductResponse MapProductDto(Product? product)
+        private static ProductResponse MapProductResponse(Product? product)
         {
-            ProductResponse productDto = new ProductResponse
+            ProductResponse productResponse = new ProductResponse
             {
                 Id = product.Id,
                 Name = product.Name,
@@ -118,7 +118,7 @@ namespace PerfumeStore.Core.Services
                 DateAdded = product.DateAdded,
             };
 
-            return productDto;
+            return productResponse;
         }
     }
 }
