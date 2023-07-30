@@ -32,26 +32,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllerRoute(
-        name: "GetProductByIdAsync",
-        pattern: "api/products/{productId}",
-        defaults: new { controller = "Products", action = "GetProductByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
-);
-app.MapControllerRoute(
-        name: "GetCartByIdAsync",
-        pattern: "api/carts/{cartId}",
-        defaults: new { controller = "Carts", action = "GetCartByIdAsync" }// Da się to lepiej zrobić? albo t wypieprzyć?
-);
-
-
-
 app.UseHttpsRedirection();
+
 app.UseRouting();
 
-
 app.UseAuthorization();
-
-
 
 app.MapControllers();
 

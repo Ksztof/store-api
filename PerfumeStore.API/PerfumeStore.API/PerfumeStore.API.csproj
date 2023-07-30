@@ -20,8 +20,4 @@
     <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ResponseForms\" />
-  </ItemGroup>
-
 </Project>
