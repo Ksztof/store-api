@@ -8,6 +8,7 @@ namespace PerfumeStore.Domain.DbModels
     {
         [Key]
         public int Id { get; set; }
+        public Order? Order { get; set; }
         public ICollection<CartLine>? CartLines { get; set; } = new List<CartLine>();
 
         public void AddProduct(int productId)

@@ -27,14 +27,14 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Product, int>($"There is no Entity of type {typeof(Product)} with Id - {productId}");
             }
 
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
+            int? GuestCartId = _guestSessionService.GetCartId();
             Cart cart;
-            if (getCartIdFromCookie != null)
+            if (GuestCartId != null)
             {
-                cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+                cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
                 if (cart is null)
                 {
-                    throw new EntityNotFoundException<Product, int>($"The cart with Id: {getCartIdFromCookie.Value} was not found.");
+                    throw new EntityNotFoundException<Product, int>($"The cart with Id: {GuestCartId.Value} was not found.");
                 }
                 cart.AddProduct(productId);
                 cart.UpdateProductQuantity(productId, productQuantity);
@@ -55,13 +55,13 @@ namespace PerfumeStore.Core.Services
 
         public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
         {
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
-            if (getCartIdFromCookie == null)
+            int? GuestCartId = _guestSessionService.GetCartId();
+            if (GuestCartId == null)
             {
-                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
             }
 
-            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
@@ -95,13 +95,13 @@ namespace PerfumeStore.Core.Services
 
         public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
-            if (getCartIdFromCookie == null)
+            int? GuestCartId = _guestSessionService.GetCartId();
+            if (GuestCartId == null)
             {
-                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
             }
 
-            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
@@ -115,13 +115,13 @@ namespace PerfumeStore.Core.Services
 
         public async Task<AboutCartResponse> CheckCartAsync()
         {
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
-            if (getCartIdFromCookie == null)
+            int? GuestCartId = _guestSessionService.GetCartId();
+            if (GuestCartId == null)
             {
-                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
             }
 
-            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
@@ -134,13 +134,13 @@ namespace PerfumeStore.Core.Services
 
         public async Task<CartResponse> ClearCartAsync()
         {
-            int? getCartIdFromCookie = _guestSessionService.GetCartId();
-            if (getCartIdFromCookie == null)
+            int? GuestCartId = _guestSessionService.GetCartId();
+            if (GuestCartId == null)
             {
-                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {getCartIdFromCookie}");
+                throw new MissingDataInCookieException($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
             }
 
-            Cart? cart = await _cartsRepository.GetByIdAsync(getCartIdFromCookie.Value);
+            Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
                 throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
