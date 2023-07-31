@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.Models;
@@ -16,24 +17,25 @@ namespace PerfumeStore.API.Controllers
             _cartsService = cartsService;
         }
 
-        [HttpPost("AddProductToCartAsync/{productId}/{productQuantity}")]
-        public async Task<IActionResult> AddProductToCartAsync(int productId, decimal productQuantity)
+        [HttpPost("products/{productId}")]
+        public async Task<IActionResult> AddProductToCartAsync(int productId, [FromBody] QuantityRequest productQuantity)
         {
-            CartResponse cart = await _cartsService.AddProductToCartAsync(productId, productQuantity);
-            return CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = cart.Id }, cart);
+            CartResponse cart = await _cartsService.AddProductToCartAsync(productId, productQuantity.Quantity);
+            return CreatedAtAction("GetCartById", new { cartId = cart.Id }, cart);
+
         }
 
-        [HttpPut("DeleteCartLineFromCart/{productId}/")]
+        [HttpPut("products/{productId}")]
         public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId)
         {
             CartResponse updatedCart = await _cartsService.DeleteCartLineFromCartAsync(productId);
             return Ok(updatedCart);
         }
 
-        [HttpPost("SetProductQuantityAsync/{productId}/{productQuantity}/")]
-        public async Task<IActionResult> SetProductQuantityAsync(int productId, decimal productQuantity)
+        [HttpPost("products/{productId}/quantity")]
+        public async Task<IActionResult> SetProductQuantityAsync(int productId, [FromBody] QuantityRequest productQuantity)
         {
-            CartResponse updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity);
+            CartResponse updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity.Quantity);
             return Ok(updatedCart);
         }
 
@@ -44,14 +46,14 @@ namespace PerfumeStore.API.Controllers
             return Ok(products);
         }
 
-        [HttpDelete("ClearCartAsync/")]
+        [HttpDelete]
         public async Task<IActionResult> ClearCartAsync()
         {
             CartResponse updatedCart = await _cartsService.ClearCartAsync();
             return Ok(updatedCart);
         }
 
-        [HttpGet("GetCartByIdAsync/{cartId}")]
+        [HttpGet("{cartId}", Name = "GetCartById")]
         public async Task<IActionResult> GetCartByIdAsync(int cartId)
         {
             CartResponse cart = await _cartsService.GetCartByIdAsync(cartId);
