@@ -56,8 +56,7 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartsLine");
                 });
@@ -81,8 +80,7 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId")
-                        .IsUnique();
+                    b.HasIndex("CartId");
 
                     b.ToTable("Orders");
                 });
@@ -156,8 +154,8 @@ namespace PerfumeStore.Domain.Migrations
                         .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithOne("CartLine")
-                        .HasForeignKey("PerfumeStore.Domain.DbModels.CartLine", "ProductId")
+                        .WithMany("CartLines")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -167,8 +165,8 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
-                        .WithOne("Order")
-                        .HasForeignKey("PerfumeStore.Domain.DbModels.Order", "CartId")
+                        .WithMany("Orders")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -198,13 +196,12 @@ namespace PerfumeStore.Domain.Migrations
                 {
                     b.Navigation("CartLines");
 
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
                 {
-                    b.Navigation("CartLine")
-                        .IsRequired();
+                    b.Navigation("CartLines");
 
                     b.Navigation("ProductProductCategories");
                 });

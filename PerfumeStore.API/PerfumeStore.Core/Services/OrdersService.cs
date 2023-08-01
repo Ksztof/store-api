@@ -57,16 +57,6 @@ namespace PerfumeStore.Core.Services
             return orderResponse;
         }
 
-        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartResponse checkCart)
-        {
-            return new OrderResponse
-            {
-                Id = order.Id,
-                AboutProductsInCart = checkCart.AboutProductsInCart,
-                TotalCartValue = checkCart.TotalCartValue,
-            };
-        }
-
         public async void DeleteOrderAsync(int orderId)
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
@@ -88,6 +78,16 @@ namespace PerfumeStore.Core.Services
 
             order.MarkAsDeleted();
             _ordersRepository.UpdateAsync(order);
+        }
+
+        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartResponse checkCart)
+        {
+            return new OrderResponse
+            {
+                Id = order.Id,
+                AboutProductsInCart = checkCart.AboutProductsInCart,
+                TotalCartValue = checkCart.TotalCartValue,
+            };
         }
     }
 }

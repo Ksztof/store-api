@@ -18,7 +18,7 @@ namespace PerfumeStore.API.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet]//?? Is Get ok here
+        [HttpPost]//?? Is Get ok here
         public async Task<IActionResult> SubmitOrder()
         {
             OrderResponse order = await _orderService.CreateOrderAsync();
@@ -45,7 +45,7 @@ namespace PerfumeStore.API.Controllers
         [HttpPut("{orderId}/cancel")]
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
-            _orderService.DeleteOrderAsync(orderId);
+            _orderService.MarkOrderAsDeletedAsync(orderId);
 
             return Ok();
         }

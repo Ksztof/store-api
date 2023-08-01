@@ -132,14 +132,12 @@ namespace PerfumeStore.Domain.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CartsLine_ProductId",
                 table: "CartsLine",
-                column: "ProductId",
-                unique: true);
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CartId",
                 table: "Orders",
-                column: "CartId",
-                unique: true);
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductProductCategories_ProductCategoryId",
