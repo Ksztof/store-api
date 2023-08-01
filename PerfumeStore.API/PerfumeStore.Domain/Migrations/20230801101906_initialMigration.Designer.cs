@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PerfumeStore.Domain;
 
@@ -11,9 +12,11 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230801101906_initialMigration")]
+    partial class initialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,7 +59,8 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("CartsLine");
                 });
@@ -80,7 +84,9 @@ namespace PerfumeStore.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("CartId")
+                        .IsUnique();
+
                     b.ToTable("Orders");
                 });
 
@@ -153,8 +159,8 @@ namespace PerfumeStore.Domain.Migrations
                         .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.DbModels.Product", "Product")
-                        .WithMany("CartLines")
-                        .HasForeignKey("ProductId")
+                        .WithOne("CartLine")
+                        .HasForeignKey("PerfumeStore.Domain.DbModels.CartLine", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -164,9 +170,8 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
-                        .WithMany("Orders")
-                        .HasForeignKey("CartId")
-
+                        .WithOne("Order")
+                        .HasForeignKey("PerfumeStore.Domain.DbModels.Order", "CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -196,12 +201,13 @@ namespace PerfumeStore.Domain.Migrations
                 {
                     b.Navigation("CartLines");
 
-                    b.Navigation("Orders");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
                 {
-                    b.Navigation("CartLines");
+                    b.Navigation("CartLine")
+                        .IsRequired();
 
                     b.Navigation("ProductProductCategories");
                 });

@@ -46,7 +46,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
             _orderService.MarkOrderAsDeletedAsync(orderId);
-
+            
             return Ok();
         }
     }
