@@ -12,7 +12,7 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230729195932_initialMigration")]
+    [Migration("20230801101906_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -63,6 +63,31 @@ namespace PerfumeStore.Domain.Migrations
                         .IsUnique();
 
                     b.ToTable("CartsLine");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId")
+                        .IsUnique();
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>
@@ -142,6 +167,17 @@ namespace PerfumeStore.Domain.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
+                {
+                    b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
+                        .WithOne("Order")
+                        .HasForeignKey("PerfumeStore.Domain.DbModels.Order", "CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+                });
+
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.ProductProductCategory", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.ProductCategory", "ProductCategory")
@@ -164,6 +200,8 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Cart", b =>
                 {
                     b.Navigation("CartLines");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Product", b =>

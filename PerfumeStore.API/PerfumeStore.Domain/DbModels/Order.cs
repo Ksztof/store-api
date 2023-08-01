@@ -22,5 +22,10 @@ namespace PerfumeStore.Domain.DbModels
             Status = OrderStatusE.New;
             CartId = cartId;
         }
+        public void MarkAsDeleted()
+        {
+            Status = OrderStatusE.Cancelled;
+        }
+
     }
 }

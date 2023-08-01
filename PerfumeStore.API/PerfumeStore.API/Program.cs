@@ -12,6 +12,9 @@ builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRep
 builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
+builder.Services.AddTransient<IOrdersService, OrdersService>();
+builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

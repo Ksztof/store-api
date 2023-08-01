@@ -10,5 +10,8 @@ namespace PerfumeStore.Core.Repositories
     public interface IOrdersRepository
     {
         public Task<Order> CreateOrderAsync(Order order);
+        public Task<Order?> GetByIdAsync(int orderId);
+        public void DeleteOrderAsync(Order order);
+        public void UpdateAsync(Order order);
     }
 }

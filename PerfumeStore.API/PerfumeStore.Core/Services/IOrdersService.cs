@@ -12,6 +12,9 @@ namespace PerfumeStore.Core.Services
 {
     public interface IOrdersService 
     {
-        public Task<AboutCartResponse> CreateOrderAsync();
+        public Task<OrderResponse> CreateOrderAsync();
+        public Task<OrderResponse> GetByIdAsync(int orderId);
+        public void DeleteOrderAsync(int orderId);
+        public void MarkOrderAsDeletedAsync(int orderId);
     }
 }
