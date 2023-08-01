@@ -22,15 +22,15 @@ namespace PerfumeStore.Domain
             modelBuilder.Entity<Cart>()
                 .HasMany(c => c.CartLines);
 
-            modelBuilder.Entity<Product>()
-                .HasOne<CartLine>(cl => cl.CartLine)
-                .WithOne(cl => cl.Product)
-                .HasForeignKey<CartLine>(cl => cl.ProductId);
+            modelBuilder.Entity<CartLine>()
+                .HasOne(cl => cl.Product)
+                .WithMany(p => p.CartLines)
+                .HasForeignKey(cl => cl.ProductId);
 
-            modelBuilder.Entity<Cart>()
-                .HasOne<Order>(o => o.Order)
-                .WithOne(o => o.Cart)
-                .HasForeignKey<Order>(o => o.CartId);
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Cart)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CartId);
 
             modelBuilder.Entity<ProductProductCategory>()
                  .HasKey(pc => new { pc.ProductId, pc.ProductCategoryId });

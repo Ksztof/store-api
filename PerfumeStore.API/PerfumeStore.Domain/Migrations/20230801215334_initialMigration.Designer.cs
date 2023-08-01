@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PerfumeStore.Domain;
 
@@ -11,9 +12,11 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230801215334_initialMigration")]
+    partial class initialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +84,7 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
                     b.ToTable("Orders");
                 });
 
@@ -166,7 +170,6 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
                         .WithMany("Orders")
                         .HasForeignKey("CartId")
-
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
