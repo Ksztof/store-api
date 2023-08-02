@@ -81,6 +81,7 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
                     b.ToTable("Orders");
                 });
 
@@ -164,9 +165,8 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
-                        .WithMany("Orders")
-                        .HasForeignKey("CartId")
-
+                        .WithOne("Order")
+                        .HasForeignKey("PerfumeStore.Domain.DbModels.Order", "CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
