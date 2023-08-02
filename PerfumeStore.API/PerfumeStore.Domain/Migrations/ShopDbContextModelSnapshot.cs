@@ -81,6 +81,7 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
                     b.ToTable("Orders");
                 });
 
@@ -166,7 +167,6 @@ namespace PerfumeStore.Domain.Migrations
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
                         .WithMany("Orders")
                         .HasForeignKey("CartId")
-
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
