@@ -165,8 +165,8 @@ namespace PerfumeStore.Domain.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.DbModels.Cart", "Cart")
-                        .WithOne("Order")
-                        .HasForeignKey("PerfumeStore.Domain.DbModels.Order", "CartId")
+                        .WithMany("Orders")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

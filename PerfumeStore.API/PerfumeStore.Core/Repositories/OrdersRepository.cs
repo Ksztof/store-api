@@ -26,7 +26,7 @@ namespace PerfumeStore.Core.Repositories
             return createOrder.Entity;
         }
 
-        public async void DeleteOrderAsync(Order order)
+        public async Task DeleteOrderAsync(Order order)
         {
             EntityEntry<Order> deleteOrder =  _shopDbContext.Orders.Remove(order);
             await _shopDbContext.SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace PerfumeStore.Core.Repositories
             return order;
         }
 
-        public async void UpdateAsync(Order order)
+        public async Task UpdateAsync(Order order)
         {
             EntityEntry<Order> orderUpdate = _shopDbContext.Orders.Update(order);
             await _shopDbContext.SaveChangesAsync();

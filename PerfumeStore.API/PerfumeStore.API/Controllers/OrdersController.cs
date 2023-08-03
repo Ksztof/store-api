@@ -37,17 +37,17 @@ namespace PerfumeStore.API.Controllers
         [HttpDelete("{orderId}")]
         public async Task<IActionResult> DeleteOrderAsync(int orderId)
         {
-            _orderService.DeleteOrderAsync(orderId);
+            await _orderService.DeleteOrderAsync(orderId);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut("{orderId}/cancel")]
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
-            _orderService.MarkOrderAsDeletedAsync(orderId);
+            await _orderService.MarkOrderAsDeletedAsync(orderId);
             
-            return Ok();
+            return NoContent();
         }
     }
 }

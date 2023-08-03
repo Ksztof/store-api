@@ -57,7 +57,7 @@ namespace PerfumeStore.Core.Services
             return orderResponse;
         }
 
-        public async void DeleteOrderAsync(int orderId)
+        public async Task DeleteOrderAsync(int orderId)
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
@@ -65,10 +65,10 @@ namespace PerfumeStore.Core.Services
                 throw new EntityNotFoundException<Order, int>($"Can't find entity of type: {typeof(Order)}, Entity Id: {orderId}");
             }
 
-            _ordersRepository.DeleteOrderAsync(order);
+            await _ordersRepository.DeleteOrderAsync(order);
         }
 
-        public async void MarkOrderAsDeletedAsync(int orderId)
+        public async Task MarkOrderAsDeletedAsync(int orderId)
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
@@ -77,7 +77,7 @@ namespace PerfumeStore.Core.Services
             }
 
             order.MarkAsDeleted();
-            _ordersRepository.UpdateAsync(order);
+            await _ordersRepository.UpdateAsync(order);
         }
 
         private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartResponse checkCart)

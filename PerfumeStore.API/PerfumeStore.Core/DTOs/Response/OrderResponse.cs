@@ -11,7 +11,6 @@ namespace PerfumeStore.Core.DTOs.Response
 {
     public class OrderResponse
     {
-        [JsonIgnore]
         public int Id { get; set; }
         public decimal TotalCartValue { get; set; }
         public IEnumerable<CheckCartDto> AboutProductsInCart { get; set; }
