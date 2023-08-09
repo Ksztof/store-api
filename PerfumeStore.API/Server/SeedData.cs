@@ -4,10 +4,10 @@ using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.EntityFramework.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Server.Data;
+using PerfumeShop.Server.Data;
 using System.Security.Claims;
 
-namespace Server
+namespace PerfumeShop.Server
 {
     public class SeedData
     {

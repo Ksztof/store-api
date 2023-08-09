@@ -1,6 +1,6 @@
 ﻿using IdentityServer4.Models;
 
-namespace Server
+namespace PerfumeShop.Server
 {
     public class Config
     {

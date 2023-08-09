@@ -16,8 +16,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PerfumeShop.Server.Quickstart.Consent;
 
-namespace IdentityServerHost.Quickstart.UI
+namespace PerfumeShop.Server.Quickstart.Device
 {
     [Authorize]
     [SecurityHeaders]

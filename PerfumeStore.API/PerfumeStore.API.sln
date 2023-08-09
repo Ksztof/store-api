@@ -26,7 +26,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{7A00E45E-256B-4511-BB9A-5B7683904BFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeShop.Server", "Server\PerfumeShop.Server.csproj", "{7A00E45E-256B-4511-BB9A-5B7683904BFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeShop.Client", "PerfumeShop.Client\PerfumeShop.Client.csproj", "{2951C9A4-18D7-4D39-9F7C-C5085FEA2658}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{7A00E45E-256B-4511-BB9A-5B7683904BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A00E45E-256B-4511-BB9A-5B7683904BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A00E45E-256B-4511-BB9A-5B7683904BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2951C9A4-18D7-4D39-9F7C-C5085FEA2658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2951C9A4-18D7-4D39-9F7C-C5085FEA2658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2951C9A4-18D7-4D39-9F7C-C5085FEA2658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2951C9A4-18D7-4D39-9F7C-C5085FEA2658}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

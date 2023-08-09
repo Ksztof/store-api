@@ -4,7 +4,7 @@
 
 using System;
 
-namespace IdentityServerHost.Quickstart.UI
+namespace PerfumeShop.Server.Quickstart.Account
 {
     public class AccountOptions
     {
