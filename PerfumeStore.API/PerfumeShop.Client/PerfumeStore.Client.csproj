@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="6.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PerfumeStore.API\PerfumeStore.API.csproj" />
   </ItemGroup>
 

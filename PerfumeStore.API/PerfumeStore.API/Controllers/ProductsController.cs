@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.Models;
@@ -7,6 +8,7 @@ namespace PerfumeStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductsService _productService;
