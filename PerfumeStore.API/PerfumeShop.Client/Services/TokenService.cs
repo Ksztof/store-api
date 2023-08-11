@@ -9,13 +9,13 @@ namespace PerfumeShop.Client.Services
         public readonly DiscoveryDocumentResponse discoveryDocument;
         public readonly HttpClient httpClient;
 
-        public TokenService(IOptions<IdentityServerSettings> identityServerSettigns, DiscoveryDocumentResponse discoveryDocumentResponse, HttpClient httpClient)
+        public TokenService(IOptions<IdentityServerSettings> identityServerSettigns)
         {
             this.identityServerSettigns = identityServerSettigns;
-            this.httpClient = new HttpClient();
+            httpClient = new HttpClient();
             discoveryDocument = httpClient.GetDiscoveryDocumentAsync(this.identityServerSettigns.Value.DiscoveryUrl).Result;
 
-            if (discoveryDocumentResponse.IsError)
+            if (discoveryDocument.IsError)
             {
                 throw new Exception("Unable to get discovery document", discoveryDocument.Exception);
             }

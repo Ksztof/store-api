@@ -4,7 +4,7 @@
 
 using IdentityServer4.Models;
 
-namespace PerfumeShop.Server.Quickstart.Consent
+namespace PerfumeShop.Serv.Quickstart.Consent
 {
     public class ProcessConsentResult
     {

@@ -15,7 +15,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace PerfumeShop.Server.Quickstart.Account
+namespace PerfumeShop.Serv.Quickstart.Account
 {
     [SecurityHeaders]
     [AllowAnonymous]

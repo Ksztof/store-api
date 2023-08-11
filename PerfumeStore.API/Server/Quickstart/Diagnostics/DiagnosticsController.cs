@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PerfumeShop.Serv.Quickstart;
 
-namespace PerfumeShop.Server.Quickstart.Diagnostics
+namespace PerfumeShop.Serv.Quickstart.Diagnostics
 {
     [SecurityHeaders]
     [Authorize]

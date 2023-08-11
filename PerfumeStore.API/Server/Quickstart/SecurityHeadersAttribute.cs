@@ -5,7 +5,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace PerfumeShop.Server.Quickstart
+namespace PerfumeShop.Serv.Quickstart
 {
     public class SecurityHeadersAttribute : ActionFilterAttribute
     {

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace PerfumeShop.Server.Quickstart.Account
+namespace PerfumeShop.Serv.Quickstart.Account
 {
     public class AccountOptions
     {

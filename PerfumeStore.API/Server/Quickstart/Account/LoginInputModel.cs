@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeShop.Server.Quickstart.Account
+namespace PerfumeShop.Serv.Quickstart.Account
 {
     public class LoginInputModel
     {

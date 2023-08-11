@@ -15,7 +15,7 @@ using IdentityServer4.Validation;
 using System.Collections.Generic;
 using System;
 
-namespace PerfumeShop.Server.Quickstart.Consent
+namespace PerfumeShop.Serv.Quickstart.Consent
 {
     /// <summary>
     /// This controller processes the consent UI

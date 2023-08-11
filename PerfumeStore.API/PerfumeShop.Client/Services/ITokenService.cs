@@ -2,9 +2,8 @@
 
 namespace PerfumeShop.Client.Services
 {
-  public interface ITokenService
-  {
+    public interface ITokenService
+    {
         Task<TokenResponse> GetToken(string scope);
-  }
+    }
 }
- 

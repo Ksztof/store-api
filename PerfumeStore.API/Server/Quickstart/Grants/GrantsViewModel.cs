@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PerfumeShop.Server.Quickstart.Grants
+namespace PerfumeShop.Serv.Quickstart.Grants
 {
     public class GrantsViewModel
     {

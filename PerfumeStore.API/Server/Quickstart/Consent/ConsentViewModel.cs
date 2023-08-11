@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace PerfumeShop.Server.Quickstart.Consent
+namespace PerfumeShop.Serv.Quickstart.Consent
 {
     public class ConsentViewModel : ConsentInputModel
     {

@@ -15,12 +15,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeShop.Server.Quickstart;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PerfumeShop.Server.Quickstart.Account
+namespace PerfumeShop.Serv.Quickstart.Account
 {
     /// <summary>
     /// This sample controller implements a typical login/logout/provision workflow for local and external accounts.

@@ -4,7 +4,7 @@
 
 using IdentityServer4.Models;
 
-namespace PerfumeShop.Server.Quickstart.Home
+namespace PerfumeShop.Serv.Quickstart.Home
 {
     public class ErrorViewModel
     {

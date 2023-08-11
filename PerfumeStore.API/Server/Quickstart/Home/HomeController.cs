@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PerfumeShop.Serv.Quickstart;
+using PerfumeShop.Serv.Quickstart.Home;
 using System.Threading.Tasks;
 
-namespace PerfumeShop.Server.Quickstart.Home
+namespace PerfumeShop.Serv.Quickstart.Home
 {
     [SecurityHeaders]
     [AllowAnonymous]

@@ -1,9 +1,9 @@
 using System;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeShop.Server.Quickstart.Account;
+using PerfumeShop.Serv.Quickstart.Account;
 
-namespace PerfumeShop.Server.Quickstart
+namespace PerfumeShop.Serv.Quickstart
 {
     public static class Extensions
     {

@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using IdentityServer4;
 
-namespace PerfumeShop.Server.Quickstart
+namespace PerfumeShop.Serv.Quickstart
 {
     public class TestUsers
     {

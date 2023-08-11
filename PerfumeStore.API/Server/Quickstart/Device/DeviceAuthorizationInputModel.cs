@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using PerfumeShop.Server.Quickstart.Consent;
+using PerfumeShop.Serv.Quickstart.Consent;
 
-namespace PerfumeShop.Server.Quickstart.Device
+namespace PerfumeShop.Serv.Quickstart.Device
 {
     public class DeviceAuthorizationInputModel : ConsentInputModel
     {

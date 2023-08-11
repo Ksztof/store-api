@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PerfumeShop.Server.Quickstart.Account
+namespace PerfumeShop.Serv.Quickstart.Account
 {
     public class LoginViewModel : LoginInputModel
     {

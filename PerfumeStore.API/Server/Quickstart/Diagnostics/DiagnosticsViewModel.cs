@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PerfumeShop.Server.Quickstart.Diagnostics
+namespace PerfumeShop.Serv.Quickstart.Diagnostics
 {
     public class DiagnosticsViewModel
     {

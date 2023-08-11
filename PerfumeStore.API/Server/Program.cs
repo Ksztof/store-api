@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PerfumeShop.Server;
-using PerfumeShop.Server.Data;
+using PerfumeShop.Serv;
+using PerfumeShop.Serv.Data;
 
 var seed = args.Contains("/seed");
 if (seed)
