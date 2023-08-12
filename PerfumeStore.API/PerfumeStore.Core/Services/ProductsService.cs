@@ -53,9 +53,16 @@ namespace PerfumeStore.Core.Services
 
         public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
+            var tokenResponse = await _tokenService.GetToken("PerfumeStoreAPI.read");
+
+            if (tokenResponse.IsError)
+            {
+                throw new Exception("Unauthorized request.");
+            }
 
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
             IEnumerable<ProductResponse> productsResponse = MapProductsToResponse(products);
+
             return productsResponse;
         }
 

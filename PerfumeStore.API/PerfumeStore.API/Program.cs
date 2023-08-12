@@ -1,9 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PerfumeStore.Core.DTOs;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient();
+
+builder.Services.Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"));
+
 
 // Add services to the container.
 builder.Services.AddTransient<IProductsService, ProductsService>();
@@ -14,6 +20,7 @@ builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();
 
@@ -47,6 +54,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthorization();
 app.UseAuthorization();
 
 app.MapControllers();
