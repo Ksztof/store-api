@@ -10,16 +10,19 @@ namespace PerfumeStore.Core.Services
     {
         private readonly IProductsRepository _productsRepository;
         private readonly IProductCategoriesRepository _productCategoriesRepository;
+        private readonly ITokenService _tokenService;
 
-        public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository)
+        public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository, ITokenService tokenService)
         {
             _productsRepository = productsRepository;
             _productCategoriesRepository = productCategoriesRepository;
+            _tokenService = tokenService;
         }
 
         public async Task<ProductResponse> CreateProductAsync(CreateProductForm createProductForm)
         {
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
+
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
             {
                 var foundIds = productCategories.Select(pc => pc.Id);
@@ -33,7 +36,6 @@ namespace PerfumeStore.Core.Services
             product.CreateProduct(createProductForm, productCategories);
             product = await _productsRepository.CreateAsync(product);
             ProductResponse productResponse = MapProductResponse(product);
-
 
             return productResponse;
         }
@@ -51,6 +53,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
+
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
             IEnumerable<ProductResponse> productsResponse = MapProductsToResponse(products);
             return productsResponse;

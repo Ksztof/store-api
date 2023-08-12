@@ -21,7 +21,7 @@ namespace PerfumeShop.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            var tokenResponse = await TokenService.GetToken("PerfumeStoreAPI.read");
+            //var tokenResponse = await TokenService.GetToken("PerfumeStoreAPI.read");
             //HttpClient.SetBearerToken(tokenResponse.AccessToken);
 
             var result = await HttpClient.GetAsync(Config["apiUrl"] + "/api/products");
