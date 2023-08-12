@@ -1,19 +1,20 @@
 ﻿using IdentityModel.Client;
 using Microsoft.Extensions.Options;
+using PerfumeShop.Client.Services;
 
 namespace PerfumeShop.Client.Services
 {
     public class TokenService : ITokenService
     {
-        public readonly IOptions<IdentityServerSettings> identityServerSettigns;
+        public readonly IOptions<IdentityServerSettings> identityServerSettings;
         public readonly DiscoveryDocumentResponse discoveryDocument;
-        public readonly HttpClient httpClient;
+        private readonly HttpClient httpClient;
 
-        public TokenService(IOptions<IdentityServerSettings> identityServerSettigns)
+        public TokenService(IOptions<IdentityServerSettings> identityServerSettings)
         {
-            this.identityServerSettigns = identityServerSettigns;
+            this.identityServerSettings = identityServerSettings;
             httpClient = new HttpClient();
-            discoveryDocument = httpClient.GetDiscoveryDocumentAsync(this.identityServerSettigns.Value.DiscoveryUrl).Result;
+            discoveryDocument = httpClient.GetDiscoveryDocumentAsync(this.identityServerSettings.Value.DiscoveryUrl).Result;
 
             if (discoveryDocument.IsError)
             {
@@ -26,8 +27,8 @@ namespace PerfumeShop.Client.Services
             var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = discoveryDocument.TokenEndpoint,
-                ClientId = identityServerSettigns.Value.ClientName,
-                ClientSecret = identityServerSettigns.Value.ClientPassword,
+                ClientId = identityServerSettings.Value.ClientName,
+                ClientSecret = identityServerSettings.Value.ClientPassword,
                 Scope = scope
             });
 

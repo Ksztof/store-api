@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
+
 namespace PerfumeShop.Client.Pages
 {
     public partial class Products
@@ -22,7 +23,8 @@ namespace PerfumeShop.Client.Pages
         {
             var tokenResponse = await TokenService.GetToken("PerfumeStoreAPI.read");
             //HttpClient.SetBearerToken(tokenResponse.AccessToken);
-            var result = await HttpClient.GetAsync(Config["apiUrl"] + "/api/Products");
+
+            var result = await HttpClient.GetAsync(Config["apiUrl"] + "/api/products");
 
             if (result.IsSuccessStatusCode)
             {

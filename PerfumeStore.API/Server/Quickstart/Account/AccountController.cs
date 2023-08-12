@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PerfumeShop.Serv.Quickstart;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,6 @@ namespace PerfumeShop.Serv.Quickstart.Account
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly TestUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
@@ -38,12 +38,13 @@ namespace PerfumeShop.Serv.Quickstart.Account
         private readonly SignInManager<IdentityUser> _signInManager;
 
         public AccountController(
-            IIdentityServerInteractionService interaction,
-            IClientStore clientStore,
-            IAuthenticationSchemeProvider schemeProvider,
-            IEventService events,
-            SignInManager<IdentityUser> signInManager)
+                IIdentityServerInteractionService interaction,
+                IClientStore clientStore,
+                IAuthenticationSchemeProvider schemeProvider,
+                IEventService events,
+                SignInManager<IdentityUser> signInManager)
         {
+
             _interaction = interaction;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
@@ -166,10 +167,7 @@ namespace PerfumeShop.Serv.Quickstart.Account
                             throw new Exception("invalid return URL");
                         }
                     }
-
                 }
-
-                // validate username/password against in-memory store
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);

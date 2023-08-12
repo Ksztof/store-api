@@ -17,7 +17,7 @@ namespace PerfumeShop.Serv
             services.AddLogging();
             services.AddDbContext<AspNetIdentityDbContext>(
                 options => options.UseSqlServer(connectionString)
-                );
+            );
 
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
@@ -31,17 +31,19 @@ namespace PerfumeShop.Serv
                         db.UseSqlServer(
                             connectionString,
                             sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
-                            );
-                });
-
+                        );
+                }
+            );
             services.AddConfigurationDbContext(
                 options =>
                 {
                     options.ConfigureDbContext = db =>
                         db.UseSqlServer(
                             connectionString,
-                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
-                });
+                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
+                        );
+                }
+            );
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -69,10 +71,9 @@ namespace PerfumeShop.Serv
                 {
                     UserName = "angella",
                     Email = "angella.freeman@email.com",
-                    EmailConfirmed = true,
+                    EmailConfirmed = true
                 };
-
-                var result = userMgr.CreateAsync(angella, "Pas123$").Result;
+                var result = userMgr.CreateAsync(angella, "Pass123$").Result;
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
@@ -87,20 +88,19 @@ namespace PerfumeShop.Serv
                             new Claim(JwtClaimTypes.GivenName, "Angella"),
                             new Claim(JwtClaimTypes.FamilyName, "Freeman"),
                             new Claim(JwtClaimTypes.WebSite, "http://angellafreeman.com"),
-                            new Claim("location", "somewhere"),
-                        }).Result;
+                            new Claim("location", "somewhere")
+                        }
+                    ).Result;
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
-
                 }
-
             }
         }
 
         private static void EnsureSeedData(ConfigurationDbContext context)
         {
-            if (!context.Clients.Any()) { }
+            if (!context.Clients.Any())
             {
                 foreach (var client in Config.Clients.ToList())
                 {
@@ -120,7 +120,7 @@ namespace PerfumeShop.Serv
                 context.SaveChanges();
             }
 
-            if (!context.IdentityResources.Any())
+            if (!context.ApiScopes.Any())
             {
                 foreach (var resource in Config.ApiScopes.ToList())
                 {
@@ -142,4 +142,3 @@ namespace PerfumeShop.Serv
         }
     }
 }
-
