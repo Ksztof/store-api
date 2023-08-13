@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Server.Migrations
+namespace PerfumeShop.Serv.Migrations.PersistedGrantDb
 {
     /// <inheritdoc />
     public partial class InitialIdentityServerMigration : Migration

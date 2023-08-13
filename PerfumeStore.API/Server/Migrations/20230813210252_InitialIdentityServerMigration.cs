@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Server.Migrations.ConfigurationDb
+namespace PerfumeShop.Serv.Migrations
 {
     /// <inheritdoc />
     public partial class InitialIdentityServerMigration : Migration

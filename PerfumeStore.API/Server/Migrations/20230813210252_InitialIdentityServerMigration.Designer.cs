@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Server.Migrations.ConfigurationDb
+namespace PerfumeShop.Serv.Migrations
 {
     [DbContext(typeof(ConfigurationDbContext))]
-    [Migration("20230808123603_InitialIdentityServerMigration")]
+    [Migration("20230813210252_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Server.Migrations.ConfigurationDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
