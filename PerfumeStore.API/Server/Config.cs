@@ -18,6 +18,7 @@ namespace PerfumeShop.Serv
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new[] { new ApiScope("PerfumeStoreAPI.read"), new ApiScope("PerfumeStoreAPI.write"), };
+
         public static IEnumerable<ApiResource> ApiResources =>
             new[]
             {

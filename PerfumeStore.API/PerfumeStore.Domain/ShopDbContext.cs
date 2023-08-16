@@ -12,7 +12,6 @@ namespace PerfumeStore.Domain
         public DbSet<ProductProductCategory> ProductProductCategories { get; set; }
         public DbSet<Order> Orders { get; set; }
 
-
         public ShopDbContext(DbContextOptions<ShopDbContext> options) : base(options)
         {
         }

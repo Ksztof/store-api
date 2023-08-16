@@ -22,7 +22,6 @@ namespace PerfumeStore.API.Controllers
         {
             CartResponse cart = await _cartsService.AddProductToCartAsync(productId, productQuantity.Quantity);
             return CreatedAtAction("GetCartById", new { cartId = cart.Id }, cart);
-
         }
 
         [HttpPut("products/{productId}")]

@@ -5,7 +5,6 @@ namespace PerfumeStore.API.UnitTests
         [Fact]
         public void Test1()
         {
-
         }
     }
 }

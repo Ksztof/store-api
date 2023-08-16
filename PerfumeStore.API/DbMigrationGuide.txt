@@ -17,3 +17,8 @@ cli:
     2. Add-Migration InitialIdentityServerMigration -c ConfigurationDbContext
     3. Update-database -Context PersistedGrantDbContext
     4. Update-database -Context ConfigurationDbContext
+
+
+AspIdentity tables
+    1. Add-Migration InitialAspNetIdentityMigration -Context AspNetIdentityDbContext
+    2. Update-Database -Context AspNetIdentityDbContext

@@ -2,17 +2,13 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.Repositories
 {
     public class OrdersRepository : IOrdersRepository
     {
         public readonly ShopDbContext _shopDbContext;
+
         public OrdersRepository(ShopDbContext shopDbContext)
         {
             _shopDbContext = shopDbContext;
@@ -28,7 +24,7 @@ namespace PerfumeStore.Core.Repositories
 
         public async Task DeleteOrderAsync(Order order)
         {
-            EntityEntry<Order> deleteOrder =  _shopDbContext.Orders.Remove(order);
+            EntityEntry<Order> deleteOrder = _shopDbContext.Orders.Remove(order);
             await _shopDbContext.SaveChangesAsync();
         }
 

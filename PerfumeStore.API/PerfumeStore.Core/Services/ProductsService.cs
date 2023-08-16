@@ -101,9 +101,9 @@ namespace PerfumeStore.Core.Services
             product = await _productsRepository.UpdateAsync(product);
             ProductResponse productResponse = MapProductResponse(product);
 
-
             return productResponse;
         }
+
         private static IEnumerable<ProductResponse> MapProductsToResponse(IEnumerable<Product> products)
         {
             return products.Select(x => new ProductResponse
@@ -116,6 +116,7 @@ namespace PerfumeStore.Core.Services
                 DateAdded = x.DateAdded,
             });
         }
+
         private static ProductResponse MapProductResponse(Product? product)
         {
             ProductResponse productResponse = new ProductResponse
@@ -132,4 +133,3 @@ namespace PerfumeStore.Core.Services
         }
     }
 }
-

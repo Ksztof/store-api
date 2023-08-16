@@ -11,7 +11,6 @@ namespace PerfumeStore.Core.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-
         public int? GetCartId()
         {
             if (!_httpContextAccessor.HttpContext.Request.Cookies.ContainsKey("GuestSessionId"))

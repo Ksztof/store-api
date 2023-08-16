@@ -10,7 +10,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"));
 
-
 // Add services to the container.
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();

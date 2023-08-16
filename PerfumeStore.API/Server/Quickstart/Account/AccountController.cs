@@ -1,7 +1,6 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Events;
@@ -9,16 +8,10 @@ using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeShop.Serv.Quickstart;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PerfumeShop.Serv.Quickstart.Account
 {
@@ -44,7 +37,6 @@ namespace PerfumeShop.Serv.Quickstart.Account
                 IEventService events,
                 SignInManager<IdentityUser> signInManager)
         {
-
             _interaction = interaction;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
@@ -85,7 +77,7 @@ namespace PerfumeShop.Serv.Quickstart.Account
             {
                 if (context != null)
                 {
-                    // if the user cancels, send a result back into IdentityServer as if they 
+                    // if the user cancels, send a result back into IdentityServer as if they
                     // denied the consent (even if this client does not require consent).
                     // this will send back an access denied OIDC error response to the client.
                     await _interaction.DenyAuthorizationAsync(context, AuthorizationError.AccessDenied);
@@ -119,7 +111,7 @@ namespace PerfumeShop.Serv.Quickstart.Account
                     {
                         await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName, clientId: context?.Client.ClientId));
 
-                        // only set explicit expiration here if user chooses "remember me". 
+                        // only set explicit expiration here if user chooses "remember me".
                         // otherwise we rely upon expiration configured in cookie middleware.
                         AuthenticationProperties props = null;
                         if (AccountOptions.AllowRememberLogin && model.RememberLogin)
@@ -177,7 +169,6 @@ namespace PerfumeShop.Serv.Quickstart.Account
             var vm = await BuildLoginViewModelAsync(model);
             return View(vm);
         }
-
 
         /// <summary>
         /// Show logout page
@@ -238,10 +229,10 @@ namespace PerfumeShop.Serv.Quickstart.Account
             return View();
         }
 
-
         /*****************************************/
         /* helper APIs for the AccountController */
         /*****************************************/
+
         private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);

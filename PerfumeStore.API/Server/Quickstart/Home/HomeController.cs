@@ -1,16 +1,9 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using PerfumeShop.Serv.Quickstart;
-using PerfumeShop.Serv.Quickstart.Home;
-using System.Threading.Tasks;
 
 namespace PerfumeShop.Serv.Quickstart.Home
 {

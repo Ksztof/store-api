@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
-using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -46,7 +43,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
             await _orderService.MarkOrderAsDeletedAsync(orderId);
-            
+
             return NoContent();
         }
     }

@@ -8,6 +8,7 @@ namespace PerfumeStore.Domain.DbModels
     {
         [Key]
         public int Id { get; set; }
+
         public string Name { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
@@ -15,7 +16,6 @@ namespace PerfumeStore.Domain.DbModels
         public DateTime DateAdded { get; set; }
         public ICollection<CartLine> CartLines { get; set; }
         public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
-
 
         public void CreateProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
         {

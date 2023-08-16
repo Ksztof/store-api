@@ -7,7 +7,6 @@ namespace PerfumeShop.Serv.Data
     {
         public AspNetIdentityDbContext(DbContextOptions<AspNetIdentityDbContext> options) : base(options)
         {
-
         }
     }
 }

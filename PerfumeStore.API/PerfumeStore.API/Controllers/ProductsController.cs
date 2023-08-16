@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Domain.Models;

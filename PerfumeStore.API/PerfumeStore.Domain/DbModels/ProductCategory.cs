@@ -7,6 +7,7 @@ namespace PerfumeStore.Domain.DbModels
     {
         [Key]
         public int Id { get; set; }
+
         public string Name { get; set; }
         public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
     }

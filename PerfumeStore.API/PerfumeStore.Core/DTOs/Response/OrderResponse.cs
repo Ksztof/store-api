@@ -1,11 +1,4 @@
-﻿using PerfumeStore.Domain.Enums;
-using PerfumeStore.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.DTOs.Response
 {
