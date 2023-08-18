@@ -2,6 +2,7 @@
 using PerfumeStore.Core.DTOs;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
+using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
+builder.Services.AddTransient<QuantityValidator>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();

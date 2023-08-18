@@ -16,10 +16,10 @@ namespace PerfumeStore.Core.Services
             httpClient = new HttpClient();
             discoveryDocument = httpClient.GetDiscoveryDocumentAsync(this.identityServerSettings.Value.DiscoveryUrl).Result;
 
-            if (discoveryDocument.IsError)
+            /*if (discoveryDocument.IsError)
             {
                 throw new Exception("Unable to get discovery document", discoveryDocument.Exception);
-            }
+            }*/
         }
 
         public async Task<TokenResponse> GetToken(string scope)

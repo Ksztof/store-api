@@ -2,6 +2,7 @@
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
+using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
@@ -21,6 +22,11 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> AddProductToCartAsync(int productId, [FromBody] QuantityRequest productQuantity)
         {
             CartResponse cart = await _cartsService.AddProductToCartAsync(productId, productQuantity.Quantity);
+            if (cart.Errors is not null)
+            {
+                return BadRequest(cart.Errors);
+            }
+
             return CreatedAtAction("GetCartById", new { cartId = cart.Id }, cart);
         }
 
@@ -31,10 +37,15 @@ namespace PerfumeStore.API.Controllers
             return Ok(updatedCart);
         }
 
-        [HttpPost("products/{productId}/quantity")]
+        [HttpPut("products/{productId}/quantity")]
         public async Task<IActionResult> SetProductQuantityAsync(int productId, [FromBody] QuantityRequest productQuantity)
         {
             CartResponse updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity.Quantity);
+             if (updatedCart.Errors is not null)
+            {
+                return BadRequest(updatedCart.Errors);
+            }
+
             return Ok(updatedCart);
         }
 

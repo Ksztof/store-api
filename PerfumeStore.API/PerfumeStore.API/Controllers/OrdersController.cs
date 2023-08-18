@@ -15,7 +15,7 @@ namespace PerfumeStore.API.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost]//?? Is Get ok here
+        [HttpPost]
         public async Task<IActionResult> SubmitOrder()
         {
             OrderResponse order = await _orderService.CreateOrderAsync();
