@@ -12,14 +12,14 @@ namespace PerfumeStore.Core.Services
         public readonly IOrdersRepository _ordersRepository;
         private readonly IGuestSessionService _guestSessionService;
         private readonly ICartsRepository _cartsRepository;
-        private readonly EntityIntIdValidator _entityIntIdValidator;
+        private readonly IValidationService _validationService;
 
-        public OrdersService(IOrdersRepository ordersRepository, IGuestSessionService guestSessionService, ICartsRepository cartsRepository, EntityIntIdValidator entityIntIdValidator)
+        public OrdersService(IOrdersRepository ordersRepository, IGuestSessionService guestSessionService, ICartsRepository cartsRepository, IValidationService validationService)
         {
             _ordersRepository = ordersRepository;
             _guestSessionService = guestSessionService;
             _cartsRepository = cartsRepository;
-            _entityIntIdValidator = entityIntIdValidator;
+            _validationService = validationService;
         }
 
         public async Task<OrderResponse> CreateOrderAsync()
@@ -42,7 +42,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task<OrderResponse> GetByIdAsync(int orderId)
         {
-            var idValidation = _entityIntIdValidator.Validate(orderId);
+            var idValidation = _validationService.ValidateEntityId(orderId);
             if (!idValidation.IsValid)
             {
                 IEnumerable<string> errors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
@@ -63,7 +63,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task DeleteOrderAsync(int orderId)
         {
-            var idValidation = _entityIntIdValidator.Validate(orderId);
+            var idValidation = _validationService.ValidateEntityId(orderId);
             if (!idValidation.IsValid)
             {
                 IEnumerable<string> errors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
@@ -81,7 +81,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task MarkOrderAsDeletedAsync(int orderId)
         {
-            var idValidation = _entityIntIdValidator.Validate(orderId);
+            var idValidation = _validationService.ValidateEntityId(orderId);
             if (!idValidation.IsValid)
             {
                 IEnumerable<string> errors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();

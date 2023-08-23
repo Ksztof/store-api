@@ -1,8 +1,10 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Repositories;
+using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace PerfumeStore.Core.Services
 {
@@ -11,16 +13,25 @@ namespace PerfumeStore.Core.Services
         private readonly IProductsRepository _productsRepository;
         private readonly IProductCategoriesRepository _productCategoriesRepository;
         private readonly ITokenService _tokenService;
-
-        public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository, ITokenService tokenService)
+        private readonly IValidationService _validationService;
+        public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository, ITokenService tokenService, IValidationService validationService)
         {
             _productsRepository = productsRepository;
             _productCategoriesRepository = productCategoriesRepository;
             _tokenService = tokenService;
+            _validationService = validationService;
         }
 
         public async Task<ProductResponse> CreateProductAsync(CreateProductForm createProductForm)
         {
+            var formValidation = _validationService.ValidateCreateProductForm(createProductForm);
+            if (!formValidation.IsValid)
+            {
+                IEnumerable<string> validationErrors = formValidation.Errors.Select(x => x.ErrorMessage).ToList();
+
+                throw new Exception($"Validation errors: {validationErrors}");
+            }
+
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
 
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
@@ -42,6 +53,14 @@ namespace PerfumeStore.Core.Services
 
         public async Task DeleteProductAsync(int productId)
         {
+            var idValidation = _validationService.ValidateEntityId(productId);
+            if (!idValidation.IsValid)
+            {
+                IEnumerable<string> validationErrors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
+
+                throw new Exception($"Validation errors: {validationErrors}");
+            }
+
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
             {
@@ -68,6 +87,14 @@ namespace PerfumeStore.Core.Services
 
         public async Task<ProductResponse> GetProductByIdAsync(int productId)
         {
+            var idValidation = _validationService.ValidateEntityId(productId);
+            if (!idValidation.IsValid)
+            {
+                IEnumerable<string> validationErrors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
+
+                throw new Exception($"Validation errors: {validationErrors}");
+            }
+
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
             {
@@ -81,6 +108,17 @@ namespace PerfumeStore.Core.Services
 
         public async Task<ProductResponse> UpdateProductAsync(UpdateProductForm updateForm, int productId)
         {
+            var formValidation = _validationService.ValidateUpdateProductForm(updateForm);
+            var idValidation = _validationService.ValidateEntityId(productId);
+
+            if (!formValidation.IsValid && !idValidation.IsValid)
+            {
+                IEnumerable<string> formErrors = formValidation.Errors.Select(x => x.ErrorMessage).ToList();
+                IEnumerable<string> idErrors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
+
+                throw new Exception($"Validation errors: Update form errors: {formErrors} Product Id errors: {idErrors}");
+            }
+
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
             {

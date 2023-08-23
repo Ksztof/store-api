@@ -21,6 +21,7 @@ builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<QuantityValidator>();
+builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();

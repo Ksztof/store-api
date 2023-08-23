@@ -12,23 +12,21 @@ namespace PerfumeStore.Core.Services
         private readonly ICartsRepository _cartsRepository;
         private readonly IProductsRepository _productsRepository;
         private readonly IGuestSessionService _guestSessionService;
-        private readonly QuantityValidator _quantityValidator;
-        private readonly EntityIntIdValidator _entityIntIdValidator;
+        private readonly IValidationService _validationService;
 
-        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, IGuestSessionService guestSessionService, QuantityValidator quantityValidator, EntityIntIdValidator entityIntIdValidator)
+        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, IGuestSessionService guestSessionService, IValidationService validationService)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
             _guestSessionService = guestSessionService;
-            _quantityValidator = quantityValidator;
-            _entityIntIdValidator = entityIntIdValidator;
+            _validationService = validationService;
         }
 
         public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
         {
-            var quantityValidation = _quantityValidator.Validate(productQuantity);
-            var idValidation = _entityIntIdValidator.Validate(productId);
-            if (!quantityValidation.IsValid)
+            var quantityValidation = _validationService.ValidateQuantity(productQuantity);
+            var idValidation = _validationService.ValidateEntityId(productId);
+            if (!quantityValidation.IsValid && !idValidation.IsValid)
             {
                 IEnumerable<string> idErrors = quantityValidation.Errors.Select(x => x.ErrorMessage).ToList();
                 IEnumerable<string> quantityErrors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
@@ -70,7 +68,7 @@ namespace PerfumeStore.Core.Services
 
         public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
         {
-            var idValidation = _entityIntIdValidator.Validate(productId);
+            var idValidation = _validationService.ValidateEntityId(productId);
             if (!idValidation.IsValid)
             {
                 IEnumerable<string> errors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
@@ -117,9 +115,9 @@ namespace PerfumeStore.Core.Services
 
         public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
-            var quantityValidation = _quantityValidator.Validate(productQuantity);
-            var idValidation = _entityIntIdValidator.Validate(productId);
-            if (!quantityValidation.IsValid)
+            var quantityValidation = _validationService.ValidateQuantity(productQuantity);
+            var idValidation = _validationService.ValidateEntityId(productId);
+            if (!quantityValidation.IsValid && !idValidation.IsValid)
             {
                 IEnumerable<string> idErrors = quantityValidation.Errors.Select(x => x.ErrorMessage).ToList();
                 IEnumerable<string> quantityErrors = idValidation.Errors.Select(x => x.ErrorMessage).ToList();
