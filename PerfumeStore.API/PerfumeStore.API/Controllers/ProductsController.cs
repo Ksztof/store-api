@@ -1,51 +1,54 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Core.Forms;
-using PerfumeStore.Core.Services.ProductsService;
+﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Core.DTOs.Response;
+using PerfumeStore.Core.Services;
+using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ProductsController : ControllerBase
-	{
-		private readonly IProductsService _productService;
-		public ProductsController(IProductsService productService)
-		{
-			_productService = productService;
-		}
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
+    {
+        private readonly IProductsService _productService;
 
-		[HttpPost]
-		public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
-		{
-			int createdProductId = await _productService.CreateProductAsync(createProductForm);
-			return Ok(createdProductId);
-		}
+        public ProductsController(IProductsService productService)
+        {
+            _productService = productService;
+        }
 
-		[HttpPut]
-		public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform)
-		{
-			int updatedProductId = await _productService.UpdateProductAsync(updateform);
-			return Ok(updatedProductId);
-		}
+        [HttpPost]
+        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
+        {
+            ProductResponse createdProduct = await _productService.CreateProductAsync(createProductForm);
+            return Ok(createdProduct);
+        }
 
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteProductAsync(int id)
-		{
-			int deletedProductId = await _productService.DeleteProductAsync(id);
-			return Ok(deletedProductId);
-		}
+        [HttpPut("{productId}")]
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
+        {
+            ProductResponse updatedProductId = await _productService.UpdateProductAsync(updateform, productId);
+            return Ok(updatedProductId);
+        }
 
-		[HttpGet("{id}")]
-		public async Task<IActionResult> GetProductByIdAsync(int id)
-		{
-			throw new NotImplementedException();
-		}
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> DeleteProductAsync(int productId)
+        {
+            await _productService.DeleteProductAsync(productId);
+            return NoContent();
+        }
 
-		[HttpGet]
-		public async Task<IActionResult> GetAllProductsAsync()
-		{
-			throw new NotImplementedException();
-		}
-	}
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductByIdAsync(int productId)
+        {
+            ProductResponse product = await _productService.GetProductByIdAsync(productId);
+            return Ok(product);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductsAsync()
+        {
+            IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
+            return Ok(products);
+        }
+    }
 }

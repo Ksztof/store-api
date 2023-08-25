@@ -1,45 +1,28 @@
-﻿using PerfumeStore.Core.GenericInterfaces;
+﻿using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Domain;
-using PerfumeStore.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-	public class ProductCategoriesRepository : IProductCategoriesRepository
-	{
-		public Task<int> CreateAsync(ProductCategories item)
-		{
-			throw new NotImplementedException();
-		}
+    public class ProductCategoriesRepository : IProductCategoriesRepository
+    {
+        private readonly ShopDbContext _shopDbContext;
 
-		public Task DeleteAsync(int id)
-		{
-			throw new NotImplementedException();
-		}
+        public ProductCategoriesRepository(ShopDbContext shopDbContext)
+        {
+            _shopDbContext = shopDbContext;
+        }
 
-		public Task<IEnumerable<ProductCategories>> GetAllAsync()
-		{
-			throw new NotImplementedException();
-		}
+        public async Task<ProductCategory?> GetByIdAsync(int id)
+        {
+            ProductCategory? ProductCategory = await _shopDbContext.ProductCategories.FindAsync(id);
+            return ProductCategory;
+        }
 
-		public Task<ProductCategories> GetById(int id)
-		{
-			ProductCategories productCategory = InMemoryDatabase.productCategories.First(x => x.ProductCategoryId == id);
-			return Task.FromResult(productCategory);
-		}
-
-		public async Task<ProductCategories> GetByIdAsync(int id)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task UpdateAsync(ProductCategories item)
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public async Task<ICollection<ProductCategory>> GetByIdsAsync(ICollection<int> ids)
+        {
+            ICollection<ProductCategory> ProductCategory = await _shopDbContext.ProductCategories.Where(x => ids.Contains(x.Id)).ToListAsync();
+            return ProductCategory;
+        }
+    }
 }

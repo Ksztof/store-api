@@ -1,62 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PerfumeStore.Domain;
-using PerfumeStore.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
     public class ProductsRepository : IProductsRepository
-	{
-		public ProductsRepository()
-		{
-		}
+    {
+        private readonly ShopDbContext _shopDbContext;
 
-		public async Task<int> CreateAsync(Products item) 		
-		{
-			item.ProductCategoryId = GetCurrentProductId();
-			InMemoryDatabase.products.Add(item);
-			int createdProductId = item.ProductId;
-			return await Task.FromResult(createdProductId);
-		}
+        public ProductsRepository(ShopDbContext shopDbContext)
+        {
+            _shopDbContext = shopDbContext;
+        }
 
-		public async Task<int> DeleteAsync(int id)
-		{
-			Products productToDelete = await GetByIdAsync(id);
-			InMemoryDatabase.products.Remove(productToDelete);
+        public async Task<Product> CreateAsync(Product item)
+        {
+            EntityEntry<Product> productEntry = await _shopDbContext.AddAsync(item);
+            await _shopDbContext.SaveChangesAsync();
 
-			return await Task.FromResult(productToDelete.ProductId);
-		}
+            return productEntry.Entity;
+        }
 
-		public async Task<IEnumerable<Products>> GetAllAsync()
-		{
-			throw new NotImplementedException();
-		}
+        public async Task DeleteAsync(int id)
+        {
+            Product product = await GetByIdAsync(id);
+            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(product);
+            await _shopDbContext.SaveChangesAsync();
+        }
 
-		public async Task<Products> GetByIdAsync(int id)
-		{
-			Products product = InMemoryDatabase.products.First(x => x.ProductId == id);
-			return await Task.FromResult(product);
-		}
+        public async Task<IEnumerable<Product>> GetAllAsync()
+        {
+            IEnumerable<Product> productsList = await _shopDbContext.Products
+                .Select(x => x).ToListAsync();
 
-		public async Task<int> UpdateAsync(Products item)
-		{
-			Products productById = await GetByIdAsync(item.ProductId); //temporary variable
-			int productToUpdateIndex = InMemoryDatabase.products.IndexOf(productById);
-			InMemoryDatabase.products[productToUpdateIndex] = item; 
+            return productsList;
+        }
 
-			return await Task.FromResult(item.ProductId);
-		}
+        public async Task<Product?> GetByIdAsync(int id)
+        {
+            Product? product = await _shopDbContext.Products
+                .AsSingleQuery()
+                .Include(x => x.ProductProductCategories)
+                .SingleOrDefaultAsync(x => x.Id == id);
+            return product;
+        }
 
-		private int GetCurrentProductId()
-		{
-			int lastProductId = InMemoryDatabase.products.Max(x => x.ProductId);
-			int currentProductId = lastProductId + 1;
-			return currentProductId;
-		}
-	}
+        public async Task<Product> UpdateAsync(Product item)
+        {
+            EntityEntry<Product> productEntry = _shopDbContext.Products.Update(item);
+            await _shopDbContext.SaveChangesAsync();
+
+            return productEntry.Entity;
+        }
+    }
 }

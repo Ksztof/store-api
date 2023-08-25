@@ -1,14 +1,11 @@
-﻿using PerfumeStore.Core.GenericInterfaces;
-using PerfumeStore.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Repositories
 {
-	public interface IProductCategoriesRepository : IRepository<ProductCategories>
-	{
-	}
+    public interface IProductCategoriesRepository
+    {
+        public Task<ProductCategory?> GetByIdAsync(int id);
+
+        public Task<ICollection<ProductCategory>> GetByIdsAsync(ICollection<int> ids);
+    }
 }
