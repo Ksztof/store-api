@@ -9,11 +9,11 @@ using PerfumeShop.Serv.Data;
 
 #nullable disable
 
-namespace PerfumeShop.Serv.Migrations.AspNetIdentityDb
+namespace PerfumeStore.DatabaseMigration.Migrations
 {
     [DbContext(typeof(AspNetIdentityDbContext))]
-    [Migration("20230830162429_InitialIdentityServerMigration")]
-    partial class InitialIdentityServerMigration
+    [Migration("20230830211832_Initial_AspNetIdentityDbContext")]
+    partial class Initial_AspNetIdentityDbContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

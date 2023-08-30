@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PerfumeStore.Domain.Migrations
+namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
 {
     /// <inheritdoc />
-    public partial class InitialPerfumeShopMigration : Migration
+    public partial class Initial_ShopDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

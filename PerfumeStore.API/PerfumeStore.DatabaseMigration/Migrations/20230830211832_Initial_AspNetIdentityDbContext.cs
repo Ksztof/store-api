@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PerfumeShop.Serv.Migrations.AspNetIdentityDb
+namespace PerfumeStore.DatabaseMigration.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentityServerMigration : Migration
+    public partial class Initial_AspNetIdentityDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

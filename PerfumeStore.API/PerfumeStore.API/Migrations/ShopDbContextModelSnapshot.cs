@@ -3,20 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PerfumeStore.Domain;
 
 #nullable disable
 
-namespace PerfumeStore.Domain.Migrations
+namespace PerfumeStore.API.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230816083333_InitialPerfumeShopMigration")]
-    partial class InitialPerfumeShopMigration
+    partial class ShopDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -42,15 +42,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
 
 var app = builder.Build();
-
-using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
-{
-    ShopDbContext shopContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
-    await shopContext.Database.MigrateAsync();
-}
 
 app.UseAuthentication();
 app.UseAuthorization();

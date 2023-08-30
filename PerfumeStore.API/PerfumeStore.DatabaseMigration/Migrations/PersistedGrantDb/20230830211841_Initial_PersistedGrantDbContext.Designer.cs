@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace PerfumeShop.Serv.Migrations
+namespace PerfumeStore.DatabaseMigration.Migrations.PersistedGrantDb
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20230830161609_InitialIdentityServerMigration")]
-    partial class InitialIdentityServerMigration
+    [Migration("20230830211841_Initial_PersistedGrantDbContext")]
+    partial class Initial_PersistedGrantDbContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

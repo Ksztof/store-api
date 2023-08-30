@@ -8,7 +8,7 @@ using PerfumeShop.Serv.Data;
 
 #nullable disable
 
-namespace PerfumeShop.Serv.Migrations.AspNetIdentityDb
+namespace PerfumeStore.DatabaseMigration.Migrations
 {
     [DbContext(typeof(AspNetIdentityDbContext))]
     partial class AspNetIdentityDbContextModelSnapshot : ModelSnapshot

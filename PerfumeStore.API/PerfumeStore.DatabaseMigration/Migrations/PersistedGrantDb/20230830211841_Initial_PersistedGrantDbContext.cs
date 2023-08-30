@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PerfumeShop.Serv.Migrations
+namespace PerfumeStore.DatabaseMigration.Migrations.PersistedGrantDb
 {
     /// <inheritdoc />
-    public partial class InitialIdentityServerMigration : Migration
+    public partial class Initial_PersistedGrantDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
