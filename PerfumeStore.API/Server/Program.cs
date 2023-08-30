@@ -1,6 +1,6 @@
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PerfumeShop.Serv;
 using PerfumeShop.Serv.Data;
 
 /*var seed = args.Contains("/seed");
@@ -43,6 +43,19 @@ builder.Services.AddIdentityServer()
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
+{
+    AspNetIdentityDbContext aspNetIdentityContext = scope.ServiceProvider.GetRequiredService<AspNetIdentityDbContext>();
+    await aspNetIdentityContext.Database.MigrateAsync();
+
+    ConfigurationDbContext configurationContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+    await configurationContext.Database.MigrateAsync();
+
+    PersistedGrantDbContext persistedGrantContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+    await persistedGrantContext.Database.MigrateAsync();
+}
+
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();

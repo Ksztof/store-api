@@ -21,6 +21,10 @@ builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<QuantityValidator>();
+builder.Services.AddTransient<EntityIntIdValidator>();
+builder.Services.AddTransient<EntityIntIdValidator>();
+builder.Services.AddTransient<CreateProductFormValidator>();
+builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -41,6 +45,12 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
+{
+    ShopDbContext shopContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    await shopContext.Database.MigrateAsync();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

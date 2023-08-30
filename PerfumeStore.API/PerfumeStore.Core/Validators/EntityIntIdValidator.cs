@@ -13,8 +13,8 @@ namespace PerfumeStore.Core.Validators
         {
 
             RuleFor(x => x)
-            .GreaterThan(0)
-                .WithMessage("Value must be greater than 0.");
+                .GreaterThan(0)
+                    .WithMessage("Value must be greater than 0.");
         }
     }
 }

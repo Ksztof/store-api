@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace PerfumeShop.Serv.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20230825130925_InitialIdentityServerMigration")]
+    [Migration("20230830161609_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         /// <inheritdoc />
