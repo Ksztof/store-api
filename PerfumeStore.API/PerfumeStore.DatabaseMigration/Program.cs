@@ -10,41 +10,44 @@ using PerfumeStore.Domain;
 
 string connectionString = "Server=.\\SQLEXPRESS;Database=PerfumeStore;Integrated Security=True;TrustServerCertificate=true;";
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
 var serviceProviderBuilder = new ServiceCollection();
 
-builder.Services
-    .AddDbContext<AspNetIdentityDbContext>(options => 
+builder.ConfigureServices(services =>
+{
+    services
+        .AddDbContext<AspNetIdentityDbContext>(options =>
+            options.UseSqlServer(
+                connectionString,
+                o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+
+    services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddEntityFrameworkStores<AspNetIdentityDbContext>();
+
+    services.AddIdentityServer()
+        .AddAspNetIdentity<IdentityUser>()
+        .AddConfigurationStore(options =>
+        {
+            options.ConfigureDbContext = b =>
+                b.UseSqlServer(
+                    connectionString,
+                    o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
+        })
+        .AddOperationalStore(options =>
+        {
+            options.ConfigureDbContext = b =>
+                b.UseSqlServer(
+                    connectionString,
+                    o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
+        })
+        .AddDeveloperSigningCredential();
+
+    services.AddDbContext<ShopDbContext>(options =>
         options.UseSqlServer(
             connectionString,
             o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AspNetIdentityDbContext>();
-
-builder.Services.AddIdentityServer()
-    .AddAspNetIdentity<IdentityUser>()
-    .AddConfigurationStore(options =>
-    {
-        options.ConfigureDbContext = b => 
-            b.UseSqlServer(
-                connectionString,
-                o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
-    })
-    .AddOperationalStore(options =>
-    {
-        options.ConfigureDbContext = b => 
-            b.UseSqlServer(
-                connectionString,
-                o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
-    })
-    .AddDeveloperSigningCredential();
-
-builder.Services.AddDbContext<ShopDbContext>(options => 
-    options.UseSqlServer(
-        connectionString,
-        o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+});
 
 var app = builder.Build();
 
@@ -58,7 +61,7 @@ using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 
     await MigrateAsync<ShopDbContext>(scope.ServiceProvider);
 
-    //SeedData.EnsureSeedData(connectionString);
+    SeedData.EnsureSeedData(scope.ServiceProvider);
 }
 
 async Task MigrateAsync<T>(IServiceProvider serviceProvider) where T : DbContext

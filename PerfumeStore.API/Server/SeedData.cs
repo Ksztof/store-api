@@ -11,52 +11,16 @@ namespace PerfumeShop.Serv
 {
     public class SeedData
     {
-        public static void EnsureSeedData(string connectionString)
+        public static void EnsureSeedData(IServiceProvider serviceProvider)
         {
-            var services = new ServiceCollection();
-            services.AddLogging();
-            services.AddDbContext<AspNetIdentityDbContext>(
-                options => options.UseSqlServer(connectionString)
-            );
-
-            services
-                .AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AspNetIdentityDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.AddOperationalDbContext(
-                options =>
-                {
-                    options.ConfigureDbContext = db =>
-                        db.UseSqlServer(
-                            connectionString,
-                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
-                        );
-                }
-            );
-            services.AddConfigurationDbContext(
-                options =>
-                {
-                    options.ConfigureDbContext = db =>
-                        db.UseSqlServer(
-                            connectionString,
-                            sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
-                        );
-                }
-            );
-
-            var serviceProvider = services.BuildServiceProvider();
-
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
-
+            
             var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
-            context.Database.Migrate();
 
             EnsureSeedData(context);
 
             var ctx = scope.ServiceProvider.GetService<AspNetIdentityDbContext>();
-            ctx.Database.Migrate();
+
             EnsureUsers(scope);
         }
 
