@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using PerfumeStore.Core.DTOs;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
@@ -30,11 +31,12 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication("Bearer")
-    .AddIdentityServerAuthentication("Bearer", options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.Authority = "https://localhost:5443";
-        options.ApiName = "PerfumeStoreAPI";
+      options.Authority = "https://localhost:5443";
+      options.Audience = "PerfumeStoreAPI";
+      options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -54,8 +56,8 @@ app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.UseSwagger();
+  app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

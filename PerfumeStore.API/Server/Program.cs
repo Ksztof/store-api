@@ -1,4 +1,3 @@
-using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PerfumeShop.Serv;
@@ -14,14 +13,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AspNetIdentityDbContext>();
 
 builder.Services.AddIdentityServer()
+    .AddInMemoryApiScopes(Config.ApiScopes)//only development
+    .AddInMemoryClients(Config.Clients)//only development
     .AddAspNetIdentity<IdentityUser>()
     .AddConfigurationStore(options =>
     {
-        options.ConfigureDbContext = b => b.UseSqlServer(defaultConnString);
+      options.ConfigureDbContext = b => b.UseSqlServer(defaultConnString);
     })
     .AddOperationalStore(options =>
     {
-        options.ConfigureDbContext = b => b.UseSqlServer(defaultConnString);
+      options.ConfigureDbContext = b => b.UseSqlServer(defaultConnString);
     })
     .AddDeveloperSigningCredential();
 
@@ -35,7 +36,7 @@ app.UseIdentityServer();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapDefaultControllerRoute();
+  endpoints.MapDefaultControllerRoute();
 });
 
 app.Run();
