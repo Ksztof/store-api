@@ -12,14 +12,14 @@ using PerfumeShop.Serv.Data;
 namespace PerfumeStore.DatabaseMigration.Migrations.AspNetIdentityDb
 {
     [DbContext(typeof(AspNetIdentityDbContext))]
-    [Migration("20230922165049_InitialAspNetIdentityMigration")]
+    [Migration("20230923153406_InitialAspNetIdentityMigration")]
     partial class InitialAspNetIdentityMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("ProductVersion", "6.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);

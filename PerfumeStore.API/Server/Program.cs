@@ -6,8 +6,16 @@ using PerfumeShop.Serv.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 var defaultConnString = builder.Configuration.GetConnectionString("DefaultConnection");
+var MyLoggerFactory = LoggerFactory.Create(builder =>
+{
+  builder.AddConsole();
+});
 
-builder.Services.AddDbContext<AspNetIdentityDbContext>(options => options.UseSqlServer(defaultConnString));
+builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
+options.UseSqlServer(defaultConnString)
+  .UseLoggerFactory(MyLoggerFactory)
+);
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AspNetIdentityDbContext>();

@@ -12,18 +12,17 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20230830211846_Initial_ShopDbContext")]
-    partial class Initial_ShopDbContext
+    [Migration("20230923153239_InitialPerfumeShopMigration")]
+    partial class InitialPerfumeShopMigration
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "6.0.22")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("PerfumeStore.Domain.DbModels.Cart", b =>
                 {
@@ -31,7 +30,7 @@ namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.HasKey("Id");
 
@@ -44,7 +43,7 @@ namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("CartId")
                         .HasColumnType("int");
@@ -70,7 +69,7 @@ namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("CartId")
                         .HasColumnType("int");
@@ -94,7 +93,7 @@ namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
@@ -124,7 +123,7 @@ namespace PerfumeStore.DatabaseMigration.Migrations.ShopDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()
