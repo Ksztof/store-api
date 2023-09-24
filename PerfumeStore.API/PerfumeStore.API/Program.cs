@@ -31,10 +31,12 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddControllers();
 
 builder.Services.AddAuthentication("Bearer")
-    .AddIdentityServerAuthentication("Bearer", options =>
+    .AddJwtBearer(options =>
     {
         options.Authority = "https://localhost:5443";
-        options.ApiName = "PerfumeStoreAPI";
+        options.Audience = "PerfumeStore";
+
+      options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
