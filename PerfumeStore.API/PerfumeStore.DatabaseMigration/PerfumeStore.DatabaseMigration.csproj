@@ -22,7 +22,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
-    <ProjectReference Include="..\Server\PerfumeShop.Serv.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\ConfigurationDb\" />
+    <Folder Include="Migrations\PersistedGrantDb\" />
+    <Folder Include="Migrations\ShopDb\" />
   </ItemGroup>
 
 </Project>
