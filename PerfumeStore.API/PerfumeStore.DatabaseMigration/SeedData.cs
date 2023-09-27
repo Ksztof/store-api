@@ -5,7 +5,6 @@ using IdentityServer4.EntityFramework.Storage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PerfumeShop.Serv.Data;
 using System.Security.Claims;
 
 namespace PerfumeStore.DatabaseMigration
