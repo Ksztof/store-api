@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.DatabaseMigration", "PerfumeStore.DatabaseMigration\PerfumeStore.DatabaseMigration.csproj", "{A7329E62-88DF-494A-9B2E-D43274500CFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfumeStore.DatabaseMigration", "PerfumeStore.DatabaseMigration\PerfumeStore.DatabaseMigration.csproj", "{A7329E62-88DF-494A-9B2E-D43274500CFE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuendeIs", "DuendeIs\DuendeIs.csproj", "{F81E3430-0791-4FDE-A1E0-996DE68BECC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

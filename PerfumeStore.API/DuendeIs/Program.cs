@@ -18,6 +18,7 @@ builder.Services.AddIdentityServer(options =>
   options.Events.RaiseSuccessEvents = true;
 
   options.EmitStaticAudienceClaim = true;
+
 }).AddConfigurationStore(options =>
     {
       options.ConfigureDbContext = b =>
@@ -30,8 +31,6 @@ builder.Services.AddIdentityServer(options =>
     })
   .AddDeveloperSigningCredential()
   .AddTestUsers(TestUsers.Users);
-
-
 
 var app = builder.Build();
 
