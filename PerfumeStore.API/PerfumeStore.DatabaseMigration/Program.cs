@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PerfumeShop.Serv;
-using PerfumeShop.Serv.Data;
 using PerfumeStore.Domain;
 
 string connectionString = "Server=.\\SQLEXPRESS;Database=PerfumeStore;Integrated Security=True;TrustServerCertificate=true;";
@@ -53,7 +51,7 @@ var app = builder.Build();
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
-    await MigrateAsync<AspNetIdentityDbContext>(scope.ServiceProvider);
+    //await MigrateAsync<AspNetIdentityDbContext>(scope.ServiceProvider);
 
     await MigrateAsync<ConfigurationDbContext>(scope.ServiceProvider);
 

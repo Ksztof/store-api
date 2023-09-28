@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PerfumeStore.API.Migrations
 {
-    /// <inheritdoc />
-    public partial class Initial3_ShopDbContext : Migration
+    public partial class InitialPerfumeShopMigration : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -145,7 +143,6 @@ namespace PerfumeStore.API.Migrations
                 column: "ProductCategoryId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
