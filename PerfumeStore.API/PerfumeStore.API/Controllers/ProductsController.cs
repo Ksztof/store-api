@@ -10,7 +10,7 @@ namespace PerfumeStore.API.Controllers
   [ApiController]
   [Authorize]
   public class ProductsController : ControllerBase
-  {
+  {  
     private readonly IProductsService _productService;
 
     public ProductsController(IProductsService productService)

@@ -1,9 +1,14 @@
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Test;
 using DuendeIs;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var assembly = typeof(Program).Assembly.GetName().Name;
+var configuration = builder.Configuration;
+var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddIdentityServer(options =>
 {
@@ -13,12 +18,19 @@ builder.Services.AddIdentityServer(options =>
   options.Events.RaiseSuccessEvents = true;
 
   options.EmitStaticAudienceClaim = true;
-}).AddTestUsers(TestUsers.Users)
-  .AddInMemoryClients(Config.Clients)
-  .AddInMemoryApiResources(Config.ApiResources)
-  .AddInMemoryApiScopes(Config.ApiScopes)
-  .AddInMemoryIdentityResources(Config.IdentityResources);
 
+}).AddConfigurationStore(options =>
+    {
+      options.ConfigureDbContext = b =>
+      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+    })
+  .AddOperationalStore(options =>
+    {
+      options.ConfigureDbContext = b =>
+      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+    })
+  .AddDeveloperSigningCredential()
+  .AddTestUsers(TestUsers.Users);
 
 var app = builder.Build();
 
