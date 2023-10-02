@@ -1,6 +1,8 @@
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Test;
 using DuendeIs;
+using DuendeIs.Database;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -14,6 +16,15 @@ var builder = WebApplication.CreateBuilder(args);
 var assembly = typeof(Program).Assembly.GetName().Name;
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+  options.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(assembly));
+});
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+  .AddEntityFrameworkStores<ApplicationDbContext>();
+
 
 builder.Services.AddIdentityServer(options =>
 {
@@ -41,18 +52,9 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-//TODO: Move to appsettingsjson now it s hardcoded
 builder.Host.UseSerilog((ctx, lc) =>
 {
-  lc.MinimumLevel.Debug()
-  .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-  .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-  .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-  .MinimumLevel.Override("System", LogEventLevel.Warning)
-  .WriteTo.Console(
-    outputTemplate:
-    "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Code)
-  .Enrich.FromLogContext();
+  lc.ReadFrom.Configuration(ctx.Configuration);
 });
 
 var app = builder.Build();
