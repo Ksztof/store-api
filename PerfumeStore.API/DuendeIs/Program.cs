@@ -47,7 +47,7 @@ builder.Services.AddIdentityServer(options =>
     })
   .AddDeveloperSigningCredential()
 
-  .AddTestUsers(TestUsers.Users);
+  .AddAspNetIdentity<IdentityUser>();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
