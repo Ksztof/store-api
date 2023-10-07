@@ -52,11 +52,11 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-builder.Host.UseSerilog((ctx, lc) =>
+/*builder.Host.UseSerilog((ctx, lc) =>
 {
   lc.ReadFrom.Configuration(ctx.Configuration);
 });
-
+*/
 var app = builder.Build();
 
 app.UseIdentityServer();
