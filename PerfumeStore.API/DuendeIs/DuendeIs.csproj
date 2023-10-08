@@ -16,5 +16,8 @@
         </PackageReference>
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Migrations\ApplicationDb\" />
+    </ItemGroup>
 
 </Project>

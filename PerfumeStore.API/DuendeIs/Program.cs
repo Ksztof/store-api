@@ -65,12 +65,12 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-if (args.Contains("/seed"))
+/*if (args.Contains("/seed"))
 {
   Log.Information("Seeding database...");
   SeedData.EnsureSeedData(app);
   Log.Information("Done seeding Database. Exiting.");
   return;
-}
+}*/
 
 app.Run();
