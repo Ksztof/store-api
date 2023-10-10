@@ -32,21 +32,16 @@ builder.Services.AddTransient<EntityIntIdValidator>();
 builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddJwtBearer(options =>
-  {
-    options.Authority = "https://localhost:5443";
-    options.Audience = "PerfumeStore";
-
-    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-  });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
     options.UseSqlServer(
@@ -88,6 +83,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
+
 builder.Services.AddAuthentication(opt =>
 {
   opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
