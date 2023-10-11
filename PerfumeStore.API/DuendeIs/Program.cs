@@ -9,7 +9,6 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-
 Log.Information("Starting Up");
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,28 +24,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
 builder.Services.AddIdentityServer(options =>
 {
   options.Events.RaiseErrorEvents = true;
   options.Events.RaiseInformationEvents = true;
   options.Events.RaiseFailureEvents = true;
   options.Events.RaiseSuccessEvents = true;
-
   options.EmitStaticAudienceClaim = true;
 
 }).AddConfigurationStore(options =>
-    {
-      options.ConfigureDbContext = b =>
-      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
-    })
+{
+  options.ConfigureDbContext = b =>
+  b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+})
   .AddOperationalStore(options =>
-    {
-      options.ConfigureDbContext = b =>
-      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
-    })
+  {
+    options.ConfigureDbContext = b =>
+    b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+  })
   .AddDeveloperSigningCredential()
-
   .AddAspNetIdentity<IdentityUser>();
 
 builder.Services.AddAuthentication();
@@ -57,12 +53,14 @@ builder.Services.AddAuthorization();
   lc.ReadFrom.Configuration(ctx.Configuration);
 });
 */
+
 var app = builder.Build();
 
-app.UseIdentityServer();
-
-app.UseStaticFiles(); 
+// Uporz?dkowana kolejno?? middleware
+app.UseStaticFiles();
 app.UseRouting();
+app.UseIdentityServer();
+app.UseAuthentication(); // Dodane, wa?ne aby by?o po UseIdentityServer a przed UseAuthorization
 app.UseAuthorization();
 
 /*if (args.Contains("/seed"))

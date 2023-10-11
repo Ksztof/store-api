@@ -23,7 +23,7 @@ namespace PerfumeStore.API.Controllers
     public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
     {
       AuthResponseDto authResponse = await _userService.Login(userForAuthentication);
-      if (authResponse != null)
+      if (authResponse.ErrorMessage != null)
       {
         return Unauthorized(authResponse.ErrorMessage);
       }

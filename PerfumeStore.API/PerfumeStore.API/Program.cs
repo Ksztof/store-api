@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 
+// Konfiguracja IdentityServerSettings
 builder.Services.Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"));
 
 // Add services to the container.
@@ -35,7 +36,6 @@ builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
@@ -44,9 +44,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+  options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+
 builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -81,26 +82,25 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-var jwtSettings = builder.Configuration.GetSection("JWTSettings");
+  .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddAuthentication(opt =>
-{
-  opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-  opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-  options.TokenValidationParameters = new TokenValidationParameters
+var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(options =>
   {
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidateLifetime = true,
-    ValidateIssuerSigningKey = true,
-    ValidIssuer = jwtSettings["validIssuer"],
-    ValidAudience = jwtSettings["validAudience"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
-  };
-});
+    options.Authority = identityServerSettings["DiscoveryUrl"];
+    options.RequireHttpsMetadata = identityServerSettings.GetValue<bool>("UseHttps");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+      ValidateIssuer = true,
+      ValidateAudience = true,
+      ValidateLifetime = true,
+      ValidateIssuerSigningKey = true,
+      ValidIssuer = builder.Configuration["JWTSettings:validIssuer"],
+      ValidAudience = builder.Configuration["JWTSettings:validAudience"]
+    };
+  });
 
 builder.Services.AddControllers();
 
@@ -122,8 +122,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
-
-app.UseAuthorization();
 app.UseAuthorization();
 
 app.MapControllers();
