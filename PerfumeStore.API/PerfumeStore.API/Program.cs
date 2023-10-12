@@ -52,7 +52,6 @@ builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-  // Dodaj definicję bezpieczeństwa
   c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
   {
     Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
@@ -61,25 +60,27 @@ builder.Services.AddSwaggerGen(c =>
     Type = SecuritySchemeType.ApiKey,
     Scheme = "Bearer"
   });
+
   //Swagger place for token 
   c.AddSecurityRequirement(new OpenApiSecurityRequirement
+  {
     {
+      new OpenApiSecurityScheme
+      {
+        Reference = new OpenApiReference
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
+          Type = ReferenceType.SecurityScheme,
+          Id = "Bearer"
+        },
+        Scheme = "Bearer",
+        Name = "Bearer",
+        In = ParameterLocation.Header
+      },
+      new List<string>()
+    }
+  });
 });
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -90,6 +91,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   .AddJwtBearer(options =>
   {
     options.Authority = identityServerSettings["DiscoveryUrl"];
+    options.Audience = "PerfumeStore"; 
     options.RequireHttpsMetadata = identityServerSettings.GetValue<bool>("UseHttps");
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -103,11 +105,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   });
 
 builder.Services.AddControllers();
+builder.Services.AddAuthorization(options =>
+{
+  options.AddPolicy("PerfumeStore.read", policy =>
+  {
+    policy.RequireAuthenticatedUser();
+    policy.RequireClaim("scope", "PerfumeStore.read");
+  });
+});
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -122,6 +130,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

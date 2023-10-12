@@ -8,7 +8,6 @@ namespace PerfumeStore.API.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  [Authorize]
   public class ProductsController : ControllerBase
   {  
     private readonly IProductsService _productService;
@@ -47,6 +46,7 @@ namespace PerfumeStore.API.Controllers
     }
 
     [HttpGet]
+    [Authorize("PerfumeStore.read")]
     public async Task<IActionResult> GetAllProductsAsync()
     {
       IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
