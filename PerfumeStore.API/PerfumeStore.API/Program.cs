@@ -43,12 +43,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 
+var configuration = builder.Configuration;
+var connectionString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
+  options.UseSqlServer(connectionString,
     o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
 
 builder.Services.AddSwaggerGen(c =>
