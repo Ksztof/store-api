@@ -51,23 +51,6 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
     builder.Configuration.GetConnectionString("DefaultConnection"),
     o => o.MigrationsAssembly(typeof(ShopDbContext).Assembly.GetName().Name)));
 
-builder.Services.AddDbContext<PersistedGrantDbContext>(options =>
-  options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
-    o => o.MigrationsAssembly(typeof(PersistedGrantDbContext).Assembly.GetName().Name)));
-
-builder.Services.AddDbContext<ConfigurationDbContext>(options =>
-  options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
-    o => o.MigrationsAssembly(typeof(ConfigurationDbContext).Assembly.GetName().Name)));
-
-builder.Services.AddDbContext<IdentityDbContext>(options =>
-  options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"),
-    o => o.MigrationsAssembly(typeof(IdentityDbContext).Assembly.GetName().Name)));
-
-
-
 builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -145,15 +128,6 @@ using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
     ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
     await shopDbContext.Database.MigrateAsync();
-
-    ApplicationDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await identityDbContext.Database.MigrateAsync();
-
-    PersistedGrantDbContext persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-    await persistedGrantDbContext.Database.MigrateAsync();
-
-    ConfigurationDbContext configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-    await configurationDbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

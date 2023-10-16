@@ -1,8 +1,10 @@
+using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Test;
 using DuendeIs;
 using DuendeIs.Database;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -17,9 +19,13 @@ var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-  options.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(assembly));
-});
+  options.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(assembly)));
+
+builder.Services.AddDbContext<PersistedGrantDbContext>(options =>
+  options.UseSqlServer(connectionString, o => o.MigrationsAssembly(assembly)));
+
+builder.Services.AddDbContext<ConfigurationDbContext>(options =>
+  options.UseSqlServer(connectionString, o => o.MigrationsAssembly(assembly)));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -55,6 +61,22 @@ builder.Services.AddAuthorization();
 */
 
 var app = builder.Build();
+
+//using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
+//{
+//    ApplicationDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//    await identityDbContext.Database.MigrateAsync();
+
+//    PersistedGrantDbContext persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+//    await persistedGrantDbContext.Database.MigrateAsync();
+
+//    ConfigurationDbContext configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+//    await configurationDbContext.Database.MigrateAsync();
+
+
+//}
+
+SeedData.EnsureSeedData(app);
 
 // Uporz?dkowana kolejno?? middleware
 app.UseStaticFiles();
