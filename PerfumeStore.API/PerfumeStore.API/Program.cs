@@ -9,6 +9,7 @@ using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,6 +117,11 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
+{
+    ShopDbContext dbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
