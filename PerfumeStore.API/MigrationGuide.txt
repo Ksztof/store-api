@@ -1,0 +1,24 @@
+==================================================================================
+
+For API:
+project > domain
+startup > API
+cli: 
+    1. Add-Migration InitialPerfumeShopMigration
+    2. Update-Database
+
+==================================================================================
+
+For Server:
+project > server
+startup > server
+cli:
+    1. Add-Migration InitialIdentityServerMigration -c PersistedGrantDbContext
+    2. Add-Migration InitialIdentityServerMigration -c ConfigurationDbContext
+    3. Update-database -Context PersistedGrantDbContext
+    4. Update-database -Context ConfigurationDbContext
+
+
+AspIdentity tables
+    1. Add-Migration InitialAspNetIdentityMigration -Context AspNetIdentityDbContext
+    2. Update-Database -Context AspNetIdentityDbContext
