@@ -21,4 +21,4 @@ cli:
 
 AspIdentity tables 
     1. Add-Migration InitialAspNetIdentityMigration -Context AspNetIdentityDbContext
-    2. Update-Database -Context AspNetIdentityDbContextontext 
+    2. Update-Database -Context ApplicationDbContext 

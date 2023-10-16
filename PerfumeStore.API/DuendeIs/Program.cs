@@ -54,43 +54,15 @@ builder.Services.AddIdentityServer(options =>
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 
-/*builder.Host.UseSerilog((ctx, lc) =>
-{
-  lc.ReadFrom.Configuration(ctx.Configuration);
-});
-*/
-
 var app = builder.Build();
 
-//using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
-//{
-//    ApplicationDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//    await identityDbContext.Database.MigrateAsync();
-
-//    PersistedGrantDbContext persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
-//    await persistedGrantDbContext.Database.MigrateAsync();
-
-//    ConfigurationDbContext configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-//    await configurationDbContext.Database.MigrateAsync();
-
-
-//}
 
 SeedData.EnsureSeedData(app);
 
-// Uporz?dkowana kolejno?? middleware
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
-app.UseAuthentication(); // Dodane, wa?ne aby by?o po UseIdentityServer a przed UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
-
-/*if (args.Contains("/seed"))
-{
-  Log.Information("Seeding database...");
-  SeedData.EnsureSeedData(app);
-  Log.Information("Done seeding Database. Exiting.");
-  return;
-}*/
 
 app.Run();
