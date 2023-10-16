@@ -119,8 +119,11 @@ var app = builder.Build();
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
-    ShopDbContext dbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
-    await dbContext.Database.MigrateAsync();
+    ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    await shopDbContext.Database.MigrateAsync();
+
+    ApplicationDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await identityDbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.
