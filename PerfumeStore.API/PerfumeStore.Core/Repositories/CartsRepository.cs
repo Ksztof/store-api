@@ -29,7 +29,6 @@ namespace PerfumeStore.Core.Repositories
 
             return cartEntry.Entity;
         }
-    `
         public async Task<Cart?> GetByIdAsync(int cartId)
         {
             Cart? cart = await _shopDbContext.Carts
