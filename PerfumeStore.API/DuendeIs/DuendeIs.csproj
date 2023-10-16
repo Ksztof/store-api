@@ -5,6 +5,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Migrations\ApplicationDb\**" />
+      <Content Remove="Migrations\ApplicationDb\**" />
+      <EmbeddedResource Remove="Migrations\ApplicationDb\**" />
+      <None Remove="Migrations\ApplicationDb\**" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.3.5" />
         <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.3.5" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.22" />
@@ -17,7 +23,7 @@
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Migrations\ApplicationDb\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>
