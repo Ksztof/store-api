@@ -88,11 +88,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+  {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+  })
   .AddJwtBearer(options =>
   {
     options.Authority = identityServerSettings["DiscoveryUrl"];
-    options.Audience = "PerfumeStore"; 
+    options.Audience = "PerfumeStore";
     options.RequireHttpsMetadata = identityServerSettings.GetValue<bool>("UseHttps");
     options.TokenValidationParameters = new TokenValidationParameters
     {
