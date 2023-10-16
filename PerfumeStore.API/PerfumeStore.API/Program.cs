@@ -11,6 +11,8 @@ using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
 using System;
 using System.Text;
+using Duende.IdentityServer.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +49,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection"),
-    o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+    o => o.MigrationsAssembly(typeof(ShopDbContext).Assembly.GetName().Name)));
+
+builder.Services.AddDbContext<PersistedGrantDbContext>(options =>
+  options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    o => o.MigrationsAssembly(typeof(PersistedGrantDbContext).Assembly.GetName().Name)));
+
+builder.Services.AddDbContext<ConfigurationDbContext>(options =>
+  options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    o => o.MigrationsAssembly(typeof(ConfigurationDbContext).Assembly.GetName().Name)));
+
+builder.Services.AddDbContext<IdentityDbContext>(options =>
+  options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    o => o.MigrationsAssembly(typeof(IdentityDbContext).Assembly.GetName().Name)));
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -129,6 +148,12 @@ using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 
     ApplicationDbContext identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await identityDbContext.Database.MigrateAsync();
+
+    PersistedGrantDbContext persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+    await persistedGrantDbContext.Database.MigrateAsync();
+
+    ConfigurationDbContext configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+    await configurationDbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

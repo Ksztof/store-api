@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PerfumeStore.API.Migrations
 {
-    public partial class InitialPerfumeShopMigration : Migration
+    public partial class InitialPerfumeShopMigration1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
