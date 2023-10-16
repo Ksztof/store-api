@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.DatabaseMigration", "PerfumeStore.DatabaseMigration\PerfumeStore.DatabaseMigration.csproj", "{A7329E62-88DF-494A-9B2E-D43274500CFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DuendeIs", "DuendeIs\DuendeIs.csproj", "{3E99B42A-8D93-460C-BC2D-1A0F5948CEA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +51,10 @@ Global
 		{E305DE59-C04E-4577-A929-F9090BF44EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E305DE59-C04E-4577-A929-F9090BF44EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E305DE59-C04E-4577-A929-F9090BF44EEE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7329E62-88DF-494A-9B2E-D43274500CFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7329E62-88DF-494A-9B2E-D43274500CFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7329E62-88DF-494A-9B2E-D43274500CFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7329E62-88DF-494A-9B2E-D43274500CFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E99B42A-8D93-460C-BC2D-1A0F5948CEA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E99B42A-8D93-460C-BC2D-1A0F5948CEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E99B42A-8D93-460C-BC2D-1A0F5948CEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E99B42A-8D93-460C-BC2D-1A0F5948CEA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
