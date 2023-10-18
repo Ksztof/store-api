@@ -61,7 +61,7 @@ namespace DuendeIs
           PostLogoutRedirectUris = {"https://localhost:5444/signout-callback-oidc"},
 
           AllowOfflineAccess = true,
-          AllowedScopes = {"openid", "profile", "PerfumeStore.read"},
+          AllowedScopes = {"openid", "profile", "PerfumeStore.read", "PerfumeStore"},
           RequirePkce = true,
           RequireConsent = true,
           AllowPlainTextPkce = false
