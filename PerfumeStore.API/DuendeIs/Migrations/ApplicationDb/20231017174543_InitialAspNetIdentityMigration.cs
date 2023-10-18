@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DuendeIs.Migrations
+namespace DuendeIs.Migrations.ApplicationDb
 {
-    public partial class InitialIdentityServerMigration : Migration
+    public partial class InitialAspNetIdentityMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

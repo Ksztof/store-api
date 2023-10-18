@@ -4,8 +4,8 @@ For API:
 project > domain
 startup > API
 cli: 
-    1. Add-Migration InitialPerfumeShopMigration
-    2. Update-Database
+    1. Add-Migration InitialPerfumeShopMigration -context ShopDbContext
+    2. Update-Database -context ShopDbContext
 
 ==================================================================================
 
@@ -20,5 +20,5 @@ cli:
 
 
 AspIdentity tables 
-    1. Add-Migration InitialAspNetIdentityMigration -Context AspNetIdentityDbContext
+    1. Add-Migration InitialAspNetIdentityMigration -Context ApplicationDbContext
     2. Update-Database -Context ApplicationDbContext 
