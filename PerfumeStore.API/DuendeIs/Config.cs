@@ -23,10 +23,12 @@ namespace DuendeIs
         new ApiScope("PerfumeStore.read"),
         new ApiScope("PerfumeStore.write"),
       };
+
     public static IEnumerable<ApiResource> ApiResources => new[]
     {
       new ApiResource("PerfumeStore")
       {
+        Name = "PerfumeStore",
         Scopes = new List<string> { "PerfumeStore.read", "PerfumeStore.write"},
         ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
         UserClaims = new List<string> {"role"}
