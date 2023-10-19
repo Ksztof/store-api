@@ -6,15 +6,10 @@ namespace DuendeIs
   public static class Config
   {
     public static IEnumerable<IdentityResource> IdentityResources =>
-      new[]
+      new IdentityResource[]
       {
         new IdentityResources.OpenId(),
         new IdentityResources.Profile(),
-        new IdentityResource
-        {
-          Name = "role",
-          UserClaims = new List<string> {"role"}
-        }
       };
 
     public static IEnumerable<ApiScope> ApiScopes =>
@@ -22,13 +17,13 @@ namespace DuendeIs
       {
         new ApiScope("PerfumeStore.read"),
         new ApiScope("PerfumeStore.write"),
+        new ApiScope("PerfumeStore")
       };
 
     public static IEnumerable<ApiResource> ApiResources => new[]
     {
       new ApiResource("PerfumeStore")
       {
-        Name = "PerfumeStore",
         Scopes = new List<string> { "PerfumeStore.read", "PerfumeStore.write"},
         ApiSecrets = new List<Secret> {new Secret("ScopeSecret".Sha256())},
         UserClaims = new List<string> {"role"}
@@ -45,7 +40,7 @@ namespace DuendeIs
           ClientName = "Client Credentials Client",
 
           AllowedGrantTypes = GrantTypes.ClientCredentials,
-          ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},//TODO: Change to real pswd?
+          ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
 
           AllowedScopes = { "PerfumeStore.read", "PerfumeStore.write" }
         },
@@ -54,19 +49,13 @@ namespace DuendeIs
         new Client
         {
           ClientId = "interactive",
-          ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},//TODO: Change to real pswd?
+          ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
 
           AllowedGrantTypes = GrantTypes.Code,
 
-          RedirectUris = {"https://localhost:5444/signin-oidc"},
-          FrontChannelLogoutUri = "https://localhost:5444/signout-oidc",
-          PostLogoutRedirectUris = {"https://localhost:5444/signout-callback-oidc"},
-
           AllowOfflineAccess = true,
           AllowedScopes = {"openid", "profile", "PerfumeStore.read", "PerfumeStore"},
-          RequirePkce = true,
           RequireConsent = true,
-          AllowPlainTextPkce = false
         },
       };
   }

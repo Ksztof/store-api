@@ -1,24 +1,23 @@
-==================================================================================
-
-For API:
-project > domain
-startup > API
-cli: 
-    1. Add-Migration InitialPerfumeShopMigration -context ShopDbContext
-    2. Update-Database -context ShopDbContext
-
-==================================================================================
-
 For Server:
 project > server
 startup > server
 cli:
+
+AspIdentity tables  - do it at begining
+    1. Add-Migration InitialAspNetIdentityMigration -Context ApplicationDbContext
+    2. Update-Database -Context ApplicationDbContext 
+    
+DUENDE
     1. Add-Migration InitialIdentityServerMigration -c PersistedGrantDbContext
     2. Add-Migration InitialIdentityServerMigration -c ConfigurationDbContext
     3. Update-database -Context PersistedGrantDbContext
     4. Update-database -Context ConfigurationDbContext
 
 
-AspIdentity tables 
-    1. Add-Migration InitialAspNetIdentityMigration -Context ApplicationDbContext
-    2. Update-Database -Context ApplicationDbContext 
+----------------------------------------------------------------------------------------------------------------
+For API:
+project > domain
+startup > API
+cli: 
+    1. Add-Migration InitialPerfumeShopMigration -context ShopDbContext
+    2. Update-Database -context ShopDbContext
