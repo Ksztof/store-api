@@ -105,7 +105,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
       ValidateIssuer = true,
-      ValidateAudience = true, // Tymczasowo żeby odblokować autentykację
+      ValidateAudience = true, 
       ValidateLifetime = true,
       ValidateIssuerSigningKey = true,
       ValidIssuer = builder.Configuration["JWTSettings:validIssuer"],
