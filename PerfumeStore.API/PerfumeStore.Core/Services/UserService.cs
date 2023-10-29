@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PerfumeStore.Core.Services
 {
@@ -52,6 +53,20 @@ namespace PerfumeStore.Core.Services
       };
 
       return authResponse;
+    }
+
+    public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)
+    {
+      var user = new IdentityUser {UserName = userForRegistration.UserName, Email = userForRegistration.Email };
+
+      var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+      if (!result.Succeeded)
+      {
+        var errors = result.Errors.Select(e => e.Description);
+        return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
+      }
+
+      return new RegistrationResponseDto { IsSuccessfulRegistration = true };
     }
 
     private SigningCredentials GetSigningCredentials()
