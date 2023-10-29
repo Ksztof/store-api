@@ -30,5 +30,21 @@ namespace PerfumeStore.API.Controllers
 
       return Ok(authResponse);
     }
+
+    [HttpPost("Registration")]
+    public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+    {
+      if (userForRegistration == null || !ModelState.IsValid)
+        return BadRequest();
+
+      RegistrationResponseDto registResponse = await _userService.RegisterUser(userForRegistration);
+
+      if (registResponse.IsSuccessfulRegistration != true)
+      {
+        return BadRequest(registResponse.Errors);
+      }
+
+      return StatusCode(201);
+    }
   }
 }

@@ -11,5 +11,6 @@ namespace PerfumeStore.Core.Services
   public interface IUserService
   {
     public Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication);
+    public Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration);
   }
 }
