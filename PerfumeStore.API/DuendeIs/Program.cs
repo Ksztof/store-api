@@ -18,50 +18,40 @@ var assembly = typeof(Program).Assembly.GetName().Name;
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(assembly)));
-
 builder.Services.AddDbContext<PersistedGrantDbContext>(options =>
   options.UseSqlServer(connectionString, o => o.MigrationsAssembly(assembly)));
 
 builder.Services.AddDbContext<ConfigurationDbContext>(options =>
   options.UseSqlServer(connectionString, o => o.MigrationsAssembly(assembly)));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-  .AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.AddIdentityServer(options =>
-{
-  options.Events.RaiseErrorEvents = true;
-  options.Events.RaiseInformationEvents = true;
-  options.Events.RaiseFailureEvents = true;
-  options.Events.RaiseSuccessEvents = true;
+  {
+    options.Events.RaiseErrorEvents = true;
+    options.Events.RaiseInformationEvents = true;
+    options.Events.RaiseFailureEvents = true;
+    options.Events.RaiseSuccessEvents = true;
 
-}).AddConfigurationStore(options =>
-{
-  options.ConfigureDbContext = b =>
-  b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
-})
+  }).AddConfigurationStore(options =>
+  {
+    options.ConfigureDbContext = b =>
+      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+  })
   .AddOperationalStore(options =>
   {
     options.ConfigureDbContext = b =>
-    b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+      b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
   })
-  .AddDeveloperSigningCredential()
+  .AddDeveloperSigningCredential();
+  /*
   .AddAspNetIdentity<IdentityUser>();
-
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
+  */
 
 var app = builder.Build();
-
 
 SeedData.EnsureSeedData(app);
 
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.Run();

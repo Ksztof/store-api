@@ -45,12 +45,13 @@ builder.Services.AddHttpContextAccessor();
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(connectionString));
+string migrationAssemblyName = typeof(ApplicationDbContext).Assembly.GetName().Name;
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(connectionString,
-    o => o.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+  options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(connectionString, o => o.MigrationsAssembly(migrationAssemblyName)));
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -85,11 +86,11 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
+var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 
 builder.Services.AddAuthentication(options =>
   {
@@ -100,7 +101,7 @@ builder.Services.AddAuthentication(options =>
   .AddJwtBearer(options =>
   {
     options.Authority = identityServerSettings["DiscoveryUrl"];
-    options.Audience = "PerfumeStore";
+    options.Audience = jwtSettings["validAudience"];
     options.RequireHttpsMetadata = identityServerSettings.GetValue<bool>("UseHttps");
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -109,8 +110,8 @@ builder.Services.AddAuthentication(options =>
       ValidateLifetime = true,
       ValidateIssuerSigningKey = true,
       ValidIssuer = builder.Configuration["JWTSettings:validIssuer"],
-      ValidAudience = builder.Configuration["JWTSettings:validAudience"]
-    };
+      ValidAudience = jwtSettings["validAudience"]
+  };
   });
 
 builder.Services.AddControllers();
