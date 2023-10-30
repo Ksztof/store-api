@@ -13,6 +13,7 @@ using System;
 using System.Text;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using PerfumeStore.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,7 +87,7 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })//TODO:USE SIGNINMANAGER
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
@@ -125,6 +126,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+SeedUserData.EnsureUsers(app.Services);
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
