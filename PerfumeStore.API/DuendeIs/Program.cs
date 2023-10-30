@@ -46,18 +46,12 @@ builder.Services.AddIdentityServer(options =>
   .AddAspNetIdentity<IdentityUser>();
   */
 
-/*builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();*/
-
 var app = builder.Build();
-
 
 SeedData.EnsureSeedData(app);
 
 app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
-/*app.UseAuthentication();
-app.UseAuthorization();*/
 
 app.Run();
