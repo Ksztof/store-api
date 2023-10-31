@@ -14,7 +14,6 @@ namespace PerfumeStore.API
       {
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-        // Dodaj użytkownika Alice, jeśli nie istnieje
         var alice = userManager.FindByNameAsync("alice").Result;
         if (alice == null)
         {
@@ -31,7 +30,6 @@ namespace PerfumeStore.API
           }
         }
 
-        // Dodaj użytkownika Bob, jeśli nie istnieje
         var bob = userManager.FindByNameAsync("bob").Result;
         if (bob == null)
         {

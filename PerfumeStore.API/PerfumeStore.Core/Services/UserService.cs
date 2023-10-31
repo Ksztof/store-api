@@ -40,6 +40,11 @@ namespace PerfumeStore.Core.Services
         return failedResponse;
       }
 
+      if (!user.EmailConfirmed)
+      {
+        return new AuthResponseDto { ErrorMessage = "Please activate your account" };
+      }
+
       var tokenResponse = await _tokenService.GetToken("PerfumeStore.read");
 
       if (tokenResponse.IsError)
