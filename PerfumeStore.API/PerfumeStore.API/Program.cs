@@ -87,7 +87,7 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })//TODO:USE SIGNINMANAGER
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
