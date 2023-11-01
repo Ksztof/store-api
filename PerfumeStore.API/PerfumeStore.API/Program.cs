@@ -14,6 +14,10 @@ using System.Text;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PerfumeStore.API;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,13 +42,23 @@ builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEmailSender, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+  var factory = x.GetRequiredService<IUrlHelperFactory>();
+  return factory.GetUrlHelper(actionContext);
+});
 var configuration = builder.Configuration;
+
+var emailConfig = builder.Services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
+builder.Services.AddSingleton(emailConfig);
+
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 string migrationAssemblyName = typeof(ApplicationDbContext).Assembly.GetName().Name;
 
@@ -87,8 +101,12 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-  .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+  {
+    options.SignIn.RequireConfirmedEmail = true;
+  })
+  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
