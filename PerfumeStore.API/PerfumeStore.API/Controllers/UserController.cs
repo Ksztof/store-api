@@ -1,5 +1,4 @@
-﻿using Duende.IdentityServer.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Request;
@@ -46,17 +45,6 @@ namespace PerfumeStore.API.Controllers
       }
 
       return StatusCode(201);
-    }
-
-    [HttpGet("ConfirmEmail")]
-    public async Task<IActionResult> ConfirmEmail(string userId, string token)
-    {
-      bool status = await _userService.ConfirmEmail(userId, token);
-
-      if (!status)
-        return BadRequest();  
-
-      return Ok();
     }
   }
 }
