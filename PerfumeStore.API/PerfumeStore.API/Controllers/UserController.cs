@@ -46,5 +46,20 @@ namespace PerfumeStore.API.Controllers
 
       return StatusCode(201);
     }
+
+    [HttpGet("ConfirmEmail")]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token)
+    {
+      if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+        return BadRequest("Validation token and user id are required");
+
+      bool result = await _userService.ConfirmEmail(userId, token);
+      if (!result)
+      {
+        return BadRequest();
+      }
+
+      return Ok();
+    }
   }
 }
