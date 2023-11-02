@@ -1,4 +1,3 @@
-﻿using PerfumeStore.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,6 @@ namespace PerfumeStore.Core.Services
 {
   public interface IEmailSender
   {
-    void SendEmail(Message message);
-    Task SendEmailAsync(Message message);
+    Task SendEmailAsync(string to, string subject, string body);
   }
 }

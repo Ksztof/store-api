@@ -1,114 +1,71 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PerfumeStore.Domain.Models;
-using MailKit.Net.Smtp;
-using MimeKit;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Services
 {
-  public class EmailService : IEmailSender
+  public class EmailService : IEmailService
   {
-    private readonly EmailConfiguration _emailConfig;
-    public EmailService(IOptions<EmailConfiguration> emailConfig)
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IEmailSender _emailSender;
+    private readonly IUrlHelper _urlHelper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public EmailService(UserManager<IdentityUser> userManager, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
     {
-      _emailConfig = emailConfig.Value;
+      _userManager = userManager;
+      _emailSender = emailSender;
+      _urlHelper = urlHelper;
+      _httpContextAccessor = httpContextAccessor;
     }
-    public void SendEmail(Message message)
+
+    public async Task SendActivationEmailAsync(IdentityUser user)
     {
-      var emailMessage = CreateEmailMessage(message);
-
-      Send(emailMessage);
-    }
-
-    public async Task SendEmailAsync(Message message)
-    {
-      var mailMessage = CreateEmailMessage(message);
-
-      await SendAsync(mailMessage);
-    }
-    private MimeMessage CreateEmailMessage(Message message)
-    {
-      var emailMessage = new MimeMessage();
-      emailMessage.From.Add(new MailboxAddress("API",_emailConfig.From));
-      emailMessage.To.AddRange(message.To);
-      emailMessage.Subject = message.Subject;
-
-      var bodyBuilder = new BodyBuilder { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
-
-      if (message.Attachments != null && message.Attachments.Any())
+      try
       {
-        byte[] fileBytes;
-        foreach (var attachment in message.Attachments)
-        {
-          using (var ms = new MemoryStream())
-          {
-            attachment.CopyTo(ms);
-            fileBytes = ms.ToArray();
-          }
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = _urlHelper.Action(
+          "ConfirmEmail",
+          "User",
+          new { userId = user.Id, token = token },
+          _httpContextAccessor.HttpContext.Request.Scheme);
+        string message = $@"
+          <h2>Hello {user.UserName},</h2>
+          <p>We invite you to start using our service.</p>
+          <a href='{confirmationLink}' style='display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px;'>Activate Account</a>
+          <p style='margin-top: 20px;'>Instead, you can copy/paste this link into your browser:</p>
+          <div style='background-color: #f3f3f3; padding: 10px; border-radius: 5px;'>
+              <a href='{confirmationLink}' style='color: #3498db; text-decoration: none;'>{confirmationLink}</a>
+          </div>";
 
-          bodyBuilder.Attachments.Add(attachment.FileName, fileBytes, ContentType.Parse(attachment.ContentType));
-        }
+        await _emailSender.SendEmailAsync(
+          user.Email,
+          "Account activation",
+          message);
       }
-
-      emailMessage.Body = bodyBuilder.ToMessageBody();
-      return emailMessage;
-    }
-    private void Send(MimeMessage mailMessage)
-    {
-      using (var client = new SmtpClient())
+      catch (Exception e)
       {
-        try
-        {
-          client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, true);
-          client.AuthenticationMechanisms.Remove("XOAUTH2");
-          client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
-
-          client.Send(mailMessage);
-        }
-        catch
-        {
-          //log an error message or throw an exception, or both.
-          throw;
-        }
-        finally
-        {
-          client.Disconnect(true);
-          client.Dispose();
-        }
+        throw new InvalidOperationException("Can't send an email", e);
       }
     }
 
-    private async Task SendAsync(MimeMessage mailMessage)
+    public async Task ConfirmEmail(string userId, string token)//TODO: exceptions are stupid
     {
-      using (var client = new SmtpClient())
-      {
-        try
-        {
-          await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, true);
-          client.AuthenticationMechanisms.Remove("XOAUTH2");
-          await client.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+      var user = await _userManager.FindByIdAsync(userId);
+      if (user == null)
+        throw new KeyNotFoundException($"The User with Id: {user.Id} was not found.");
 
-          await client.SendAsync(mailMessage);
-        }
-        catch
-        {
-          //log an error message or throw an exception, or both.
-          throw;
-        }
-        finally
-        {
-          await client.DisconnectAsync(true);
-          client.Dispose();
-        }
-      }
+      var result = await _userManager.ConfirmEmailAsync(user, token);
+
+      if (!result.Succeeded)
+        throw new KeyNotFoundException($"Email confirmation failed");
     }
   }
 }

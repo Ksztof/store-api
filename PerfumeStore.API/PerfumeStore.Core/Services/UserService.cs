@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace PerfumeStore.Core.Services
 {
@@ -22,19 +22,15 @@ namespace PerfumeStore.Core.Services
     private readonly IConfiguration _configuration;
     private readonly IConfigurationSection _jwtSettings;
     private readonly ITokenService _tokenService;
-    private readonly IUrlHelper _urlHelper;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailService _emailService;
 
-
-    public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ITokenService tokenService, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+    public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
     {
       _userManager = userManager;
       _configuration = configuration;
-      _jwtSettings = _configuration.GetSection("JwtSettings");
+      _jwtSettings = _configuration.GetSection("JwtSettings"); //TODO: change for strong typed
       _tokenService = tokenService;
-      _urlHelper = urlHelper;
-      _httpContextAccessor = httpContextAccessor;
+      _emailService = emailService;
     }
 
     public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
@@ -78,39 +74,15 @@ namespace PerfumeStore.Core.Services
         return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
       }
 
-      var userName = userForRegistration.UserName;
-      var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-      var confirmationLink = _urlHelper.Action(
-        action: "ConfirmEmail",
-        controller: "User",
-        values: new { userId = user.Id, token = token },
-        protocol: _httpContextAccessor.HttpContext.Request.Scheme);
-      var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink, null, userName);
-      await _emailSender.SendEmailAsync(message);
+      await _emailService.SendActivationEmailAsync(user);
 
       return new RegistrationResponseDto { IsSuccessfulRegistration = true };
     }
 
-    public async Task<bool> ConfirmEmail(string userId, string token)
+    public async Task<bool> ConfirmEmail(string userId, string emailToken)
     {
-      if (userId == null || token == null)
-      {
-        return false;
-      }
-
-      var user = await _userManager.FindByIdAsync(userId);
-      if (user == null)
-      {
-        return false;
-      }
-
-      var result = await _userManager.ConfirmEmailAsync(user, token);
-      if (result.Succeeded)
-      {
-        return true;
-      }
-
-      return false;
+      await _emailService.ConfirmEmail(userId, emailToken);
+      return true; //TODO: Add error handling etc
     }
 
     private SigningCredentials GetSigningCredentials()

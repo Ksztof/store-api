@@ -14,10 +14,10 @@ using System.Text;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PerfumeStore.API;
+using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +42,21 @@ builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IEmailSender, EmailService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Email:Smtp"));
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddScoped<IEmailSender, EmailSender>(serviceProvider =>
+{
+  var smtpSettings = serviceProvider.GetRequiredService<IOptions<SmtpSettings>>().Value;
+  return new EmailSender(smtpSettings);
+});
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+  var factory = x.GetRequiredService<IUrlHelperFactory>();
+  return factory.GetUrlHelper(actionContext);
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
@@ -101,10 +114,7 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-  {
-    options.SignIn.RequireConfirmedEmail = true;
-  })
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
   .AddEntityFrameworkStores<ApplicationDbContext>()
   .AddDefaultTokenProviders();
 
