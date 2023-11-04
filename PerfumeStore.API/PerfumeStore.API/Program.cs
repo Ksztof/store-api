@@ -60,8 +60,18 @@ builder.Services.AddTransient<IUrlHelper>(x =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+  var factory = x.GetRequiredService<IUrlHelperFactory>();
+  return factory.GetUrlHelper(actionContext);
+});
 var configuration = builder.Configuration;
+
+var emailConfig = builder.Services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
+builder.Services.AddSingleton(emailConfig);
+
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 string migrationAssemblyName = typeof(ApplicationDbContext).Assembly.GetName().Name;
 

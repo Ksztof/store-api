@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -22,7 +23,6 @@ namespace PerfumeStore.Core.Services
     private readonly IConfigurationSection _jwtSettings;
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
-
 
     public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor, IEmailService emailService)
     {
@@ -67,7 +67,6 @@ namespace PerfumeStore.Core.Services
     public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)
     {
       var user = new IdentityUser {UserName = userForRegistration.UserName, Email = userForRegistration.Email };
-
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
       if (!result.Succeeded)
       {
