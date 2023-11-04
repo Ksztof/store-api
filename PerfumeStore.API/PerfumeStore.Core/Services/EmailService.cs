@@ -1,44 +1,42 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Core.CustomExceptions;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Services
 {
   public class EmailService : IEmailService
   {
-    private readonly IEmailSender _emailSender;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IEmailSender _emailSender;
     private readonly IUrlHelper _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public EmailService(IEmailSender emailSender, UserManager<IdentityUser> userManager, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+    public EmailService(UserManager<IdentityUser> userManager, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
     {
-      _emailSender = emailSender;
       _userManager = userManager;
+      _emailSender = emailSender;
       _urlHelper = urlHelper;
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task SendActivationLink(IdentityUser user)
+    public async Task SendActivationEmailAsync(IdentityUser user)
     {
-      string subject = "Activate you account";
-      var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-      var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
-      var confirmationLink = _urlHelper.Action(
-        action: "ConfirmEmail", 
-        controller: "User",
-        values: new { userId = user.Id, code = encodedToken },
-        protocol: _httpContextAccessor.HttpContext.Request.Scheme);
-
-      string message = $@"
+      try
+      {
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmationLink = _urlHelper.Action(
+          "ConfirmEmail",
+          "User",
+          new { userId = user.Id, token = token },
+          _httpContextAccessor.HttpContext.Request.Scheme);
+        string message = $@"
           <h2>Hello {user.UserName},</h2>
           <p>We invite you to start using our service.</p>
           <a href='{confirmationLink}' style='display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px;'>Activate Account</a>
@@ -46,19 +44,25 @@ namespace PerfumeStore.Core.Services
           <div style='background-color: #f3f3f3; padding: 10px; border-radius: 5px;'>
               <a href='{confirmationLink}' style='color: #3498db; text-decoration: none;'>{confirmationLink}</a>
           </div>";
-      await _emailSender.SendEmailAsync(user.Email, subject, message);
+
+        await _emailSender.SendEmailAsync(
+          user.Email,
+          "Account activation",
+          message);
+      }
+      catch (Exception e)
+      {
+        throw new InvalidOperationException("Can't send an email", e);
+      }
     }
 
-    public async Task ConfirmEmail(string userId, string encodedEmailToken)//TODO: exceptions are stupid
+    public async Task ConfirmEmail(string userId, string token)//TODO: exceptions are stupid
     {
       var user = await _userManager.FindByIdAsync(userId);
       if (user == null)
         throw new KeyNotFoundException($"The User with Id: {user.Id} was not found.");
 
-      var decodedTokenBytes = WebEncoders.Base64UrlDecode(encodedEmailToken);
-      var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
-
-      var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+      var result = await _userManager.ConfirmEmailAsync(user, token);
 
       if (!result.Succeeded)
         throw new KeyNotFoundException($"Email confirmation failed");

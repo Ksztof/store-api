@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,6 @@ namespace PerfumeStore.Core.Services
 {
   public interface IEmailSender
   {
-    public Task SendEmailAsync(string toEmail, string subject, string message);
-    public Task Execute(string apiKey, string subject, string message, string toEmail);
+    Task SendEmailAsync(string to, string subject, string body);
   }
 }
