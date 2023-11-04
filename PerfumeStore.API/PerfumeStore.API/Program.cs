@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PerfumeStore.Core.DTOs;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
@@ -14,6 +13,10 @@ using System.Text;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using PerfumeStore.API;
+using PerfumeStore.Core.Configuration;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,10 +42,20 @@ builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+  var factory = x.GetRequiredService<IUrlHelperFactory>();
+  return factory.GetUrlHelper(actionContext);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -87,8 +100,12 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-  .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+  {
+    options.SignIn.RequireConfirmedEmail = true;
+  })
+  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");

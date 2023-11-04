@@ -1,12 +1,11 @@
-﻿using Castle.Core.Logging;
-using IdentityModel.Client;
+﻿using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PerfumeStore.Core.DTOs;
+using PerfumeStore.Core.Configuration;
 
 namespace PerfumeStore.Core.Services
 {
-  public class TokenService : ITokenService
+    public class TokenService : ITokenService
   {
     private readonly ILogger<TokenService> _logger;
     public readonly IOptions<IdentityServerSettings> _identityServerSettings;

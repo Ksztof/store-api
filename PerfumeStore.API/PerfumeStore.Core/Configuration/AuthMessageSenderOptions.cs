@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Core.Email
+namespace PerfumeStore.Core.Configuration
 {
   public class AuthMessageSenderOptions
   {
