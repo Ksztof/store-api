@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PerfumeStore.Core.DTOs;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;

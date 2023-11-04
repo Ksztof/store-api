@@ -1,4 +1,4 @@
-﻿namespace PerfumeStore.Core.DTOs
+﻿namespace PerfumeStore.Core.Configuration
 {
     public class IdentityServerSettings
     {
