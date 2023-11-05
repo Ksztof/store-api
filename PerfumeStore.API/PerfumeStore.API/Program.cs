@@ -17,6 +17,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Core.Configuration;
+using PerfumeStore.Core.DTOs;
+using PerfumeStore.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

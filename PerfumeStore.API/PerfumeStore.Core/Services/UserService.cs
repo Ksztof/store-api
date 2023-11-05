@@ -84,12 +84,6 @@ namespace PerfumeStore.Core.Services
       return true; //TODO: Add error handling etc
     }
 
-    public async Task<bool> ConfirmEmail(string userId, string emailToken)
-    {
-      await _emailService.ConfirmEmail(userId, emailToken);
-      return true; //TODO: Add error handling etc
-    }
-
     private SigningCredentials GetSigningCredentials()
     {
       var key = Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]);
