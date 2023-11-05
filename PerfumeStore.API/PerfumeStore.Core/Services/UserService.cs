@@ -65,6 +65,11 @@ namespace PerfumeStore.Core.Services
 
     public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)
     {
+      var userExists = await  _userManager.FindByEmailAsync(userForRegistration.Email);
+      if (userExists != null)
+      {
+        return new RegistrationResponseDto { Message = "Email is already taken." };
+      }
       var user = new IdentityUser {UserName = userForRegistration.UserName, Email = userForRegistration.Email };
 
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
@@ -78,6 +83,7 @@ namespace PerfumeStore.Core.Services
 
       return new RegistrationResponseDto { IsSuccessfulRegistration = true };
     }
+
     public async Task<bool> ConfirmEmail(string userId, string emailToken)
     {
       await _emailService.ConfirmEmail(userId, emailToken);
@@ -91,6 +97,7 @@ namespace PerfumeStore.Core.Services
 
       return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
+
     private List<Claim> GetClaims(IdentityUser user)
     {
       var claims = new List<Claim>
@@ -100,6 +107,7 @@ namespace PerfumeStore.Core.Services
 
       return claims;
     }
+
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
       var tokenOptions = new JwtSecurityToken(

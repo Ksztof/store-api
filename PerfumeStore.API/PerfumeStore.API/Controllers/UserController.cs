@@ -39,6 +39,11 @@ namespace PerfumeStore.API.Controllers
 
       RegistrationResponseDto registResponse = await _userService.RegisterUser(userForRegistration);
 
+      if (registResponse.Message != null)
+      {
+        return Conflict(registResponse.Message);
+      }
+
       if (registResponse.IsSuccessfulRegistration != true)
       {
         return BadRequest(registResponse.Errors);

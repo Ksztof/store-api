@@ -35,7 +35,7 @@ namespace PerfumeStore.Core.Services
       var confirmationLink = _urlHelper.Action(
         action: "ConfirmEmail", 
         controller: "User",
-        values: new { userId = user.Id, code = encodedToken },
+        values: new { userId = user.Id, token = encodedToken },
         protocol: _httpContextAccessor.HttpContext.Request.Scheme);
 
       string message = $@"
