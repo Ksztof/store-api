@@ -4,9 +4,8 @@ startup > server
 cli:
 
 AspIdentity tables  - do it at begining
-    1. Add-Migration InitialAspNetIdentityMigration -Context ApplicationDbContext
-    2. Update-Database -Context ApplicationDbContext 
-    
+    1. Add-Migration AspIdentityUser -Context ApplicationDbContext
+    2. Update-Database -Context ApplicationDbContext  
 DUENDE
     1. Add-Migration InitialIdentityServerMigration -c PersistedGrantDbContext
     2. Add-Migration InitialIdentityServerMigration -c ConfigurationDbContext

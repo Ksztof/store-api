@@ -23,8 +23,12 @@
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Database\" />
       <Folder Include="Migrations\ConfigurationDb\" />
       <Folder Include="Migrations\PersistedGrantDb\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
     </ItemGroup>
 
 </Project>

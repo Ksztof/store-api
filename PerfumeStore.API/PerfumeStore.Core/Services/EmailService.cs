@@ -2,23 +2,19 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using PerfumeStore.Domain.DbModels;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PerfumeStore.Core.Services
 {
   public class EmailService : IEmailService
   {
     private readonly IEmailSender _emailSender;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<StoreUser> _userManager;
     private readonly IUrlHelper _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public EmailService(IEmailSender emailSender, UserManager<IdentityUser> userManager, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+    public EmailService(IEmailSender emailSender, UserManager<StoreUser> userManager, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
     {
       _emailSender = emailSender;
       _userManager = userManager;
@@ -26,14 +22,14 @@ namespace PerfumeStore.Core.Services
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task SendActivationLink(IdentityUser user)
+    public async Task SendActivationLink(StoreUser user)
     {
       string subject = "Activate you account";
       var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
       var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
       var confirmationLink = _urlHelper.Action(
-        action: "ConfirmEmail", 
+        action: "ConfirmEmail",
         controller: "User",
         values: new { userId = user.Id, token = encodedToken },
         protocol: _httpContextAccessor.HttpContext.Request.Scheme);

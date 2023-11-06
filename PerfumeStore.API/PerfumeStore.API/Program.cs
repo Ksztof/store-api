@@ -1,22 +1,18 @@
-﻿using DuendeIs.Database;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PerfumeStore.API;
+using PerfumeStore.Core.Configuration;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
-using System;
-using System.Text;
-using Duende.IdentityServer.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using PerfumeStore.API;
-using PerfumeStore.Core.Configuration;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Domain.DbModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,13 +55,13 @@ builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
-string migrationAssemblyName = typeof(ApplicationDbContext).Assembly.GetName().Name;
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(connectionString));
+  options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(connectionString, o => o.MigrationsAssembly(migrationAssemblyName)));
+  options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -100,7 +96,7 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   {
     options.SignIn.RequireConfirmedEmail = true;
   })
@@ -124,12 +120,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
       ValidateIssuer = true,
-      ValidateAudience = true, 
+      ValidateAudience = true,
       ValidateLifetime = true,
       ValidateIssuerSigningKey = true,
       ValidIssuer = builder.Configuration["JWTSettings:validIssuer"],
       ValidAudience = jwtSettings["validAudience"]
-  };
+    };
   });
 
 builder.Services.AddControllers();
@@ -147,8 +143,8 @@ SeedUserData.EnsureUsers(app.Services);
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
-    ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
-    await shopDbContext.Database.MigrateAsync();
+  ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+  await shopDbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

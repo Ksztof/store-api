@@ -1,15 +1,7 @@
 using Duende.IdentityServer.EntityFramework.DbContexts;
-using Duende.IdentityServer.Models;
-using Duende.IdentityServer.Test;
 using DuendeIs;
-using DuendeIs.Database;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
 
 Log.Information("Starting Up");
 var builder = WebApplication.CreateBuilder(args);
@@ -42,9 +34,7 @@ builder.Services.AddIdentityServer(options =>
       b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
   })
   .AddDeveloperSigningCredential();
-  /*
-  .AddAspNetIdentity<IdentityUser>();
-  */
+
 
 var app = builder.Build();
 

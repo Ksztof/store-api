@@ -1,27 +1,23 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Core.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
-using System;
-using System.Collections.Generic;
+using PerfumeStore.Domain.DbModels;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PerfumeStore.Core.Services
 {
   public class UserService : IUserService
   {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<StoreUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly IConfigurationSection _jwtSettings;
     private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
-    public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailService emailService)
+    public UserService(UserManager<StoreUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailService emailService)
     {
       _userManager = userManager;
       _configuration = configuration;
@@ -34,7 +30,7 @@ namespace PerfumeStore.Core.Services
     {
       var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
       if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
-        //    var signInResult = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
+      //    var signInResult = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
 
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" };
@@ -65,12 +61,12 @@ namespace PerfumeStore.Core.Services
 
     public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)
     {
-      var userExists = await  _userManager.FindByEmailAsync(userForRegistration.Email);
+      var userExists = await _userManager.FindByEmailAsync(userForRegistration.Email);
       if (userExists != null)
       {
         return new RegistrationResponseDto { Message = "Email is already taken." };
       }
-      var user = new IdentityUser {UserName = userForRegistration.UserName, Email = userForRegistration.Email };
+      var user = new StoreUser { UserName = userForRegistration.UserName, Email = userForRegistration.Email };
 
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
       if (!result.Succeeded)
@@ -98,7 +94,7 @@ namespace PerfumeStore.Core.Services
       return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private List<Claim> GetClaims(IdentityUser user)
+    private List<Claim> GetClaims(StoreUser user)
     {
       var claims = new List<Claim>
       {

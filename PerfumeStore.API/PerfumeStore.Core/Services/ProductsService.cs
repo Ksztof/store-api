@@ -2,10 +2,8 @@
 using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Repositories;
-using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 namespace PerfumeStore.Core.Services
 {

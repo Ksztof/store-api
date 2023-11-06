@@ -5,7 +5,7 @@ using PerfumeStore.Core.Configuration;
 
 namespace PerfumeStore.Core.Services
 {
-    public class TokenService : ITokenService
+  public class TokenService : ITokenService
   {
     private readonly ILogger<TokenService> _logger;
     public readonly IOptions<IdentityServerSettings> _identityServerSettings;
@@ -45,4 +45,4 @@ namespace PerfumeStore.Core.Services
       return tokenResponse;
     }
   }
-}     
+}
