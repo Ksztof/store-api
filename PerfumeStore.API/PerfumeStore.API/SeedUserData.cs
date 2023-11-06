@@ -1,7 +1,5 @@
-﻿using System.Security.Claims;
-using IdentityModel;
-using Microsoft.AspNetCore.Identity;
-using Serilog;
+﻿using Microsoft.AspNetCore.Identity;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.API
 {
@@ -12,12 +10,12 @@ namespace PerfumeStore.API
     {
       using (var scope = serviceProvider.CreateScope())
       {
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<StoreUser>>();
 
         var alice = userManager.FindByNameAsync("alice").Result;
         if (alice == null)
         {
-          alice = new IdentityUser
+          alice = new StoreUser
           {
             UserName = "alice",
             Email = "AliceSmith@email.com",
@@ -33,7 +31,7 @@ namespace PerfumeStore.API
         var bob = userManager.FindByNameAsync("bob").Result;
         if (bob == null)
         {
-          bob = new IdentityUser
+          bob = new StoreUser
           {
             UserName = "bob",
             Email = "BobSmith@email.com",

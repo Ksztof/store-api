@@ -1,5 +1,5 @@
-﻿using Duende.IdentityServer.Test;
-using Duende.IdentityServer;
+﻿using Duende.IdentityServer;
+using Duende.IdentityServer.Test;
 using IdentityModel;
 using System.Security.Claims;
 using System.Text.Json;

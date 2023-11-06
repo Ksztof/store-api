@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PerfumeStore.API.Migrations
+namespace PerfumeStore.Domain.Migrations.ShopDb
 {
     public partial class InitialPerfumeShopMigration : Migration
     {

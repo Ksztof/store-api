@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DuendeIs.Migrations.PersistedGrantDb
+namespace DuendeIs.Migrations
 {
     public partial class InitialIdentityServerMigration : Migration
     {
