@@ -30,8 +30,6 @@ namespace PerfumeStore.Core.Services
     {
       var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
       if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
-      //    var signInResult = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
-
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" };
         return failedResponse;
