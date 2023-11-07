@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DuendeIs.Core.DTOs.Request;
+using DuendeIs.Core.DTOs.Response;
+using DuendeIs.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Core.DTOs.Request;
-using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Core.Services;
 
-namespace PerfumeStore.API.Controllers
+namespace DuendeIs.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using DuendeIs.Core.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -47,7 +48,6 @@ builder.Services.AddTransient<IUrlHelper>(x =>
   var factory = x.GetRequiredService<IUrlHelperFactory>();
   return factory.GetUrlHelper(actionContext);
 });
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
@@ -58,11 +58,6 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-  options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
-
-
 builder.Services.AddSwaggerGen(c =>
 {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -96,13 +91,6 @@ builder.Services.AddSwaggerGen(c =>
   });
 });
 
-builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
-  {
-    options.SignIn.RequireConfirmedEmail = true;
-  })
-  .AddEntityFrameworkStores<ApplicationDbContext>()
-  .AddDefaultTokenProviders();
-
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 
@@ -127,7 +115,6 @@ builder.Services.AddAuthentication(options =>
       ValidAudience = jwtSettings["validAudience"]
     };
   });
-
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>
 {
@@ -139,7 +126,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
-SeedUserData.EnsureUsers(app.Services);
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {

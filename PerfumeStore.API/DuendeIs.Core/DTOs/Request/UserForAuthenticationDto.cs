@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeStore.Core.DTOs.Request
+namespace DuendeIs.Core.DTOs.Request
 {
   public class UserForAuthenticationDto
   {
