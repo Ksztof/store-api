@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using PerfumeStore.Core.DTOs.Request;
-using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Domain.DbModels;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
+using DuendeIs.Core.DTOs.Request;
+using DuendeIs.Core.DTOs.Response;
 
-namespace PerfumeStore.Core.Services
+namespace DuendeIs.Core.Services
 {
   public class UserService : IUserService
   {

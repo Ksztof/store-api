@@ -5,9 +5,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Database\**" />
       <Compile Remove="Migrations\ApplicationDb\**" />
+      <Content Remove="Database\**" />
       <Content Remove="Migrations\ApplicationDb\**" />
+      <EmbeddedResource Remove="Database\**" />
       <EmbeddedResource Remove="Migrations\ApplicationDb\**" />
+      <None Remove="Database\**" />
       <None Remove="Migrations\ApplicationDb\**" />
     </ItemGroup>
     <ItemGroup>
@@ -23,12 +27,12 @@
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Database\" />
       <Folder Include="Migrations\ConfigurationDb\" />
       <Folder Include="Migrations\PersistedGrantDb\" />
+      <Folder Include="Services\" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
+      <ProjectReference Include="..\DuendeIs.Core\DuendeIs.Core.csproj" />
     </ItemGroup>
 
 </Project>

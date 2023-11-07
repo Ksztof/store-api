@@ -1,7 +1,7 @@
-﻿using PerfumeStore.Core.DTOs.Request;
-using PerfumeStore.Core.DTOs.Response;
+﻿using DuendeIs.Core.DTOs.Request;
+using DuendeIs.Core.DTOs.Response;
 
-namespace PerfumeStore.Core.Services
+namespace DuendeIs.Core.Services
 {
   public interface IUserService
   {

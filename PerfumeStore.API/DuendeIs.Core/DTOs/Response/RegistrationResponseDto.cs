@@ -1,4 +1,4 @@
-﻿namespace PerfumeStore.Core.DTOs.Response
+﻿namespace DuendeIs.Core.DTOs.Response
 {
   public class RegistrationResponseDto
   {
