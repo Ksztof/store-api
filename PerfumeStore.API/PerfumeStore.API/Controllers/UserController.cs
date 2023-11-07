@@ -63,5 +63,13 @@ namespace PerfumeStore.API.Controllers
 
       return Ok();
     }
+
+    [Authorize("PerfumeStore.read")]
+    [HttpGet("RequestDeletion")]
+    public async Task<IActionResult> RequestDeletion(string userId, string token)
+    {
+
+      return Ok();
+    }
   }
 }
