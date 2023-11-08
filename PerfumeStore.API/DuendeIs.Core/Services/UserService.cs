@@ -2,6 +2,9 @@
 using System.Text;
 using DuendeIs.Core.DTOs.Request;
 using DuendeIs.Core.DTOs.Response;
+using DuendeIs.Core.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace DuendeIs.Core.Services
 {
@@ -10,14 +13,14 @@ namespace DuendeIs.Core.Services
     private readonly UserManager<StoreUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly IConfigurationSection _jwtSettings;
-    private readonly ITokenService _tokenService;
+    //private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
-    public UserService(UserManager<StoreUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailService emailService)
+    public UserService(UserManager<StoreUser> userManager, IConfiguration configuration,/* ITokenService tokenService,*/ IEmailService emailService)
     {
       _userManager = userManager;
       _configuration = configuration;
       _jwtSettings = _configuration.GetSection("JwtSettings");
-      _tokenService = tokenService;
+      //_tokenService = tokenService;
       _emailService = emailService;
     }
 
@@ -35,9 +38,9 @@ namespace DuendeIs.Core.Services
         return new AuthResponseDto { ErrorMessage = "Please activate your account" };
       }
 
-      var tokenResponse = await _tokenService.GetToken("PerfumeStore.read");
+      //var tokenResponse = await _tokenService.GetToken("PerfumeStore.read");
 
-      if (tokenResponse.IsError)
+      /*if (tokenResponse.IsError)
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Error obtaining token" };
         return failedResponse;
@@ -47,9 +50,9 @@ namespace DuendeIs.Core.Services
       {
         IsAuthSuccessful = true,
         Token = tokenResponse.AccessToken
-      };
+      };*/
 
-      return authResponse;
+      //return authResponse;
     }
 
     public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)

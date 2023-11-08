@@ -1,4 +1,4 @@
-﻿namespace PerfumeStore.Core.Services
+﻿namespace DuendeIs.Core.Services
 {
   public interface IEmailSender
   {

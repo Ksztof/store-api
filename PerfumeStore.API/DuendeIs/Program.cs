@@ -1,13 +1,30 @@
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using DuendeIs;
+using DuendeIs.Core.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain;
-using PerfumeStore.Domain.DbModels;
 using Serilog;
+using DuendeIs.Core.Configuration;
+using DuendeIs.DbContexts;
+using DuendeIs.Core.Models;
 
 Log.Information("Starting Up");
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IUrlHelper>(x =>
+{
+  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+  var factory = x.GetRequiredService<IUrlHelperFactory>();
+  return factory.GetUrlHelper(actionContext);
+});
+builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var assembly = typeof(Program).Assembly.GetName().Name;
 var configuration = builder.Configuration;

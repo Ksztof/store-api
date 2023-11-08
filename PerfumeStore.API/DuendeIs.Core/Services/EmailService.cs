@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Text;
+using DuendeIs.Core.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using PerfumeStore.Domain.DbModels;
-using System.Text;
 
-namespace PerfumeStore.Core.Services
+namespace DuendeIs.Core.Services
 {
   public class EmailService : IEmailService
   {

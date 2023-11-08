@@ -1,4 +1,5 @@
-﻿using DuendeIs.Core.Services;
+﻿using DuendeIs.Core.Configuration;
+using DuendeIs.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -37,21 +38,11 @@ builder.Services.AddTransient<EntityIntIdValidator>();
 builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
-builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
-builder.Services.AddTransient<IUrlHelper>(x =>
-{
-  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
-  var factory = x.GetRequiredService<IUrlHelperFactory>();
-  return factory.GetUrlHelper(actionContext);
-});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");

@@ -1,6 +1,6 @@
-﻿using PerfumeStore.Domain.DbModels;
+﻿using DuendeIs.Core.Models;
 
-namespace PerfumeStore.Core.Services
+namespace DuendeIs.Core.Services
 {
   public interface IEmailService
   {

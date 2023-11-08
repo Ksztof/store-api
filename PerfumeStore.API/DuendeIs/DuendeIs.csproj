@@ -3,7 +3,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+      <UserSecretsId>cdfb3117-baaf-4f3a-82c5-739e91633dc9</UserSecretsId>
+  </PropertyGroup>
     <ItemGroup>
       <Compile Remove="Database\**" />
       <Compile Remove="Migrations\ApplicationDb\**" />

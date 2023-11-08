@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using DuendeIs.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain.DbModels;
 
-namespace PerfumeStore.Domain
+namespace DuendeIs.DbContexts
 {
   public class ApplicationDbContext : IdentityDbContext<StoreUser>
   {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Security.Claims;
-using PerfumeStore.Domain.DbModels;
+using DuendeIs.Core.Models;
 
 namespace DuendeIs
 {

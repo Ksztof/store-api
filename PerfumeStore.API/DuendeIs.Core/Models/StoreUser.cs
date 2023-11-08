@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace PerfumeStore.Domain.DbModels
+namespace DuendeIs.Core.Models
 {
   public class StoreUser : IdentityUser
   {
