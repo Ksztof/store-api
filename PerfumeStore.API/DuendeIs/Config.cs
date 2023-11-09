@@ -41,7 +41,6 @@ namespace DuendeIs
 
           AllowedGrantTypes = GrantTypes.ClientCredentials,
           ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
-
           AllowedScopes = { "PerfumeStore.read", "PerfumeStore.write" }
         },
 
@@ -52,6 +51,10 @@ namespace DuendeIs
           ClientSecrets = {new Secret("SuperSecretPassword".Sha256())},
 
           AllowedGrantTypes = GrantTypes.Code,
+
+          RedirectUris = {"https://localhost:5445/api/products/1"},
+          FrontChannelLogoutUri = "https://localhost:5445/signout-oidc",
+          PostLogoutRedirectUris = {"https://localhost:5445/signout-callback-oidc"},
 
           AllowOfflineAccess = true,
           AllowedScopes = {"openid", "profile", "PerfumeStore.read", "PerfumeStore"},
