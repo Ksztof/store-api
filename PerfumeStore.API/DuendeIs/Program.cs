@@ -8,6 +8,7 @@ using Serilog;
 
 Log.Information("Starting Up");
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorPages();
 
 var assembly = typeof(Program).Assembly.GetName().Name;
 var configuration = builder.Configuration;
@@ -21,7 +22,6 @@ builder.Services.AddDbContext<PersistedGrantDbContext>(options =>
 
 builder.Services.AddDbContext<ConfigurationDbContext>(options =>
   options.UseSqlServer(connectionString, o => o.MigrationsAssembly(assembly)));
-
 builder.Services.AddIdentityServer(options =>
   {
     options.Events.RaiseErrorEvents = true;
@@ -52,8 +52,12 @@ var app = builder.Build();
 
 SeedData.EnsureSeedData(app);
 
+app.UseIdentityServer();
+
 app.UseStaticFiles();
 app.UseRouting();
-app.UseIdentityServer();
+app.UseAuthorization();
+app.MapRazorPages().RequireAuthorization();
+
 
 app.Run();
