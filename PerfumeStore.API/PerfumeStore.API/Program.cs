@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Duende.IdentityServer.AspNetIdentity;
+using Duende.IdentityServer.Services;
+using Duende.IdentityServer.Validation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -13,6 +16,7 @@ using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
+using ITokenService = PerfumeStore.Core.Services.ITokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +56,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator<StoreUser>>()
+  .AddTransient<IProfileService, ProfileService<StoreUser>>();
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -102,7 +108,7 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   })
   .AddEntityFrameworkStores<ApplicationDbContext>()
   .AddDefaultTokenProviders();
-
+  
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 

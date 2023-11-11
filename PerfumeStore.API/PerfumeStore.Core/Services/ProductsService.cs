@@ -71,14 +71,6 @@ namespace PerfumeStore.Core.Services
 
     public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
     {
-      using var client = new HttpClient();
-
-      var token = await _tokenService.GetToken("PerfumeStore.read");
-
-      client.SetBearerToken(token.AccessToken);
-
-      //var result = await client.GetAsync("https://localhost:5445/api/Products");
-
       IEnumerable<Product> products = await _productsRepository.GetAllAsync();
       IEnumerable<ProductResponse> productsResponse = MapProductsToResponse(products);
 

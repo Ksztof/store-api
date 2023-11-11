@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DuendeIs.Migrations
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20231106133200_InitialIdentityServerMigration")]
+    [Migration("20231111124612_InitialIdentityServerMigration")]
     partial class InitialIdentityServerMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

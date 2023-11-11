@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
@@ -69,8 +70,15 @@ namespace PerfumeStore.API.Controllers
     [HttpGet("RequestDeletion")]
     public async Task<IActionResult> RequestDeletion(string userId, string token)
     {
+      var client = new HttpClient();
+      var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5443");
 
-      return Ok();
+      var response = await client.GetUserInfoAsync(new UserInfoRequest
+      {
+        Address = disco.UserInfoEndpoint,
+        Token = token
+      });
+      return Ok(response.Claims);
     }
   }
 }
