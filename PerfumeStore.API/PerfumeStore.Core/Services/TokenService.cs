@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PerfumeStore.Core.Configuration;
+using PerfumeStore.Core.DTOs.Request;
 
 namespace PerfumeStore.Core.Services
 {
@@ -20,22 +21,24 @@ namespace PerfumeStore.Core.Services
       _discoveryDocument = httpClient.GetDiscoveryDocumentAsync(identityServerSettings.Value.DiscoveryUrl).Result;
 
       if (_discoveryDocument.IsError)
-      {
-        logger.LogError($"Unable to get discovery document. Error is: {_discoveryDocument.Error}");
+      {        logger.LogError($"Unable to get discovery document. Error is: {_discoveryDocument.Error}");
+
         throw new Exception("Unable to get discovery document", _discoveryDocument.Exception);
       }
     }
 
-    public async Task<TokenResponse> GetToken(string scope)
+    public async Task<TokenResponse> GetToken(string scope, UserForAuthenticationDto userForAuthentication)
     {
-      var tokenResponse = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+      var tokenResponse = await _httpClient.RequestPasswordTokenAsync(new d
       {
         Address = _discoveryDocument.TokenEndpoint,
         ClientId = _identityServerSettings.Value.ClientName,
         ClientSecret = _identityServerSettings.Value.ClientPassword,
-        Scope = scope
-      });
-
+        UserName = userForAuthentication.Email,
+        Password = userForAuthentication.Password,
+        Scope = scope // Dodaj odpowiednie zakresy
+      }); ;
+      
       if (tokenResponse.IsError)
       {
         _logger.LogError($"Unable to get token. Error is: {tokenResponse.Error}");

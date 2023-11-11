@@ -29,6 +29,7 @@ namespace PerfumeStore.Core.Services
     public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
     {
       var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
+
       if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" };
@@ -40,7 +41,10 @@ namespace PerfumeStore.Core.Services
         return new AuthResponseDto { ErrorMessage = "Please activate your account" };
       }
 
-      var tokenResponse = await _tokenService.GetToken("PerfumeStore.read");
+      var tokenResponse = await _tokenService.GetToken("PerfumeStore.read PerfumeStore offline_access", userForAuthentication);
+      using var client = new HttpClient();
+
+      var result = await client.GetAsync("https://localhost:5445/api/Products");
 
       if (tokenResponse.IsError)
       {
@@ -64,7 +68,7 @@ namespace PerfumeStore.Core.Services
       {
         return new RegistrationResponseDto { Message = "Email is already taken." };
       }
-      var user = new StoreUser { UserName = userForRegistration.UserName, Email = userForRegistration.Email };
+      var user = new StoreUser { UserName = userForRegistration.UserName, Email = userForRegistration.Email, EmailConfirmed = true};
 
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
       if (!result.Succeeded)
@@ -81,7 +85,7 @@ namespace PerfumeStore.Core.Services
     public async Task<bool> ConfirmEmail(string userId, string emailToken)
     {
       await _emailService.ConfirmEmail(userId, emailToken);
-      return true; //TODO: Add error handling etc
+      return true; 
     }
 
     private SigningCredentials GetSigningCredentials()

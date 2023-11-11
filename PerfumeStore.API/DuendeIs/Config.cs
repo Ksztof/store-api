@@ -54,9 +54,21 @@ namespace DuendeIs
           AllowedGrantTypes = GrantTypes.Code,
 
           AllowOfflineAccess = true,
-          AllowedScopes = {"openid", "profile", "PerfumeStore.read", "PerfumeStore"},
+          AllowedScopes = {"openid", "PerfumeStore.read", "PerfumeStore"},
           RequireConsent = true,
         },
+
+
+        new Client
+        {
+          ClientId = "res.owner",
+          ClientName = "Resource Owner Password Client",
+          AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+          ClientSecrets = { new Secret("SuperSecretPassword".Sha256()) },
+          AllowedScopes = { "openid", "profile", "PerfumeStore.read", "PerfumeStore", "offline_access" },
+          AllowOfflineAccess = true,
+        },
+
       };
   }
 }

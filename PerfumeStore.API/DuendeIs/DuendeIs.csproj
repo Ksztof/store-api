@@ -5,14 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
     <ItemGroup>
-      <Compile Remove="Migrations\ApplicationDb\**" />
-      <Content Remove="Migrations\ApplicationDb\**" />
-      <EmbeddedResource Remove="Migrations\ApplicationDb\**" />
-      <None Remove="Migrations\ApplicationDb\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.3.5" />
-        <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.3.5" />
+        <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.3.6" />
+        <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.3.6" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.23" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.23" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.23" />
@@ -24,8 +18,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Database\" />
-      <Folder Include="Migrations\ConfigurationDb\" />
-      <Folder Include="Migrations\PersistedGrantDb\" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
