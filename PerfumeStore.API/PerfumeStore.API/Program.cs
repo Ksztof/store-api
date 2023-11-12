@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -8,20 +9,21 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.API;
 using PerfumeStore.Core.Configuration;
+using PerfumeStore.Core.Mapper;
 using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
 using PerfumeStore.Domain.DbModels;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 
-// Konfiguracja IdentityServerSettings
-builder.Services.Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"));
 
-// Add services to the container.
+// Add services to the container.\
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
@@ -37,9 +39,10 @@ builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
@@ -114,32 +117,22 @@ builder.Services.AddAuthentication(options =>
   })
   .AddJwtBearer(options =>
   {
-    options.Authority = identityServerSettings["DiscoveryUrl"];
-    options.Audience = jwtSettings["validAudience"];
-    options.RequireHttpsMetadata = identityServerSettings.GetValue<bool>("UseHttps");
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
       ValidateIssuer = true,
       ValidateAudience = true,
-      ValidateLifetime = true,
-      ValidateIssuerSigningKey = true,
-      ValidIssuer = builder.Configuration["JWTSettings:validIssuer"],
-      ValidAudience = jwtSettings["validAudience"]
+      ValidAudience = jwtSettings["validAudience"],
+      ValidIssuer = jwtSettings["validIssuer"],
+      ClockSkew = TimeSpan.Zero,
+      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
     };
   });
 
 builder.Services.AddControllers();
-builder.Services.AddAuthorization(options =>
-{
-  options.AddPolicy("PerfumeStore.read", policy =>
-  {
-    policy.RequireAuthenticatedUser();
-    policy.RequireClaim("scope", "PerfumeStore.read");
-  });
-});
 
 var app = builder.Build();
-SeedUserData.EnsureUsers(app.Services);
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
@@ -158,11 +151,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

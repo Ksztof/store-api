@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Core.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.EnumsEtc;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace PerfumeStore.Core.Services
@@ -15,15 +19,19 @@ namespace PerfumeStore.Core.Services
     private readonly UserManager<StoreUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly IConfigurationSection _jwtSettings;
-    private readonly ITokenService _tokenService;
     private readonly IEmailService _emailService;
-    public UserService(UserManager<StoreUser> userManager, IConfiguration configuration, ITokenService tokenService, IEmailService emailService)
+    private readonly IMapper _mapper;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ITokenService _tokenService;
+    public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService)
     {
+      _mapper = mapper;
       _userManager = userManager;
       _configuration = configuration;
       _jwtSettings = _configuration.GetSection("JwtSettings");
-      _tokenService = tokenService;
       _emailService = emailService;
+      _roleManager = roleManager;
+      _tokenService = tokenService;
     }
 
     public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
@@ -40,9 +48,9 @@ namespace PerfumeStore.Core.Services
         return new AuthResponseDto { ErrorMessage = "Please activate your account" };
       }
 
-      var tokenResponse = await _tokenService.GetToken("PerfumeStore.read");
+      var tokenResponse = await _tokenService.GetToken(user);
 
-      if (tokenResponse.IsError)
+      if (tokenResponse == string.Empty)
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Error obtaining token" };
         return failedResponse;
@@ -51,7 +59,7 @@ namespace PerfumeStore.Core.Services
       AuthResponseDto authResponse = new AuthResponseDto
       {
         IsAuthSuccessful = true,
-        Token = tokenResponse.AccessToken
+        Token = tokenResponse
       };
 
       return authResponse;
@@ -64,14 +72,22 @@ namespace PerfumeStore.Core.Services
       {
         return new RegistrationResponseDto { Message = "Email is already taken." };
       }
-      var user = new StoreUser { UserName = userForRegistration.UserName, Email = userForRegistration.Email };
 
+      var user = _mapper.Map<StoreUser>(userForRegistration);
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
       if (!result.Succeeded)
       {
         var errors = result.Errors.Select(e => e.Description);
         return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
       }
+
+      string visitorRole = Roles.Visitor;
+
+      if (!await _roleManager.RoleExistsAsync(visitorRole))
+        await _roleManager.CreateAsync(new IdentityRole(visitorRole));
+
+      if (await _roleManager.RoleExistsAsync(visitorRole))
+        await _userManager.AddToRoleAsync(user, visitorRole);
 
       await _emailService.SendActivationLink(user);
 

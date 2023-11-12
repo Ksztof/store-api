@@ -12,7 +12,7 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations.ShopDb
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20231106133328_InitialPerfumeShopMigration")]
+    [Migration("20231112095746_InitialPerfumeShopMigration")]
     partial class InitialPerfumeShopMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

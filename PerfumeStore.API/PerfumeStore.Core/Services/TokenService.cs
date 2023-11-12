@@ -1,48 +1,66 @@
 ﻿using IdentityModel.Client;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using PerfumeStore.Core.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+using PerfumeStore.Domain.DbModels;
 
 namespace PerfumeStore.Core.Services
 {
   public class TokenService : ITokenService
   {
-    private readonly ILogger<TokenService> _logger;
-    public readonly IOptions<IdentityServerSettings> _identityServerSettings;
-    public readonly DiscoveryDocumentResponse _discoveryDocument;
-    private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<StoreUser> _userManager;
 
-    public TokenService(IOptions<IdentityServerSettings> identityServerSettings, ILogger<TokenService> logger, HttpClient httpClient)
+    public TokenService(IConfiguration configuration, RoleManager<IdentityRole> roleManager, UserManager<StoreUser> userManager)
     {
-      _logger = logger;
-      _identityServerSettings = identityServerSettings;
-      _httpClient = httpClient;
-      _discoveryDocument = httpClient.GetDiscoveryDocumentAsync(identityServerSettings.Value.DiscoveryUrl).Result;
-
-      if (_discoveryDocument.IsError)
-      {
-        logger.LogError($"Unable to get discovery document. Error is: {_discoveryDocument.Error}");
-        throw new Exception("Unable to get discovery document", _discoveryDocument.Exception);
-      }
+      _configuration = configuration;
+      _roleManager = roleManager;
+      _userManager = userManager;
     }
 
-    public async Task<TokenResponse> GetToken(string scope)
+    public async Task<string> GetToken(StoreUser user)
     {
-      var tokenResponse = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+      var userRoles = await _userManager.GetRolesAsync(user);
+      var authClaims = new List<Claim>
       {
-        Address = _discoveryDocument.TokenEndpoint,
-        ClientId = _identityServerSettings.Value.ClientName,
-        ClientSecret = _identityServerSettings.Value.ClientPassword,
-        Scope = scope
-      });
+          new Claim(ClaimTypes.Name, user.UserName),
+          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+      };
 
-      if (tokenResponse.IsError)
+      foreach (var userRole in userRoles)
       {
-        _logger.LogError($"Unable to get token. Error is: {tokenResponse.Error}");
-        throw new Exception("Unable to get token", tokenResponse.Exception);
+        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
       }
 
-      return tokenResponse;
+      string token = GenerateToken(authClaims);
+
+      return token;
+    }
+
+    private string GenerateToken(IEnumerable<Claim> claims)
+    {
+      string securityKeyString = _configuration["JWTSettings:securityKey"];
+      var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
+
+      var tokenDescriptor = new SecurityTokenDescriptor
+      {
+        Issuer = _configuration["JWTSettings:validIssuer"],
+        Audience = _configuration["JWTSettings:validAudience"],
+        Expires = DateTime.UtcNow.AddHours(3),
+        SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
+        Subject = new ClaimsIdentity(claims)
+      };
+
+      var tokenHandler = new JwtSecurityTokenHandler();
+      var token = tokenHandler.CreateToken(tokenDescriptor);
+
+      return tokenHandler.WriteToken(token);
     }
   }
 }

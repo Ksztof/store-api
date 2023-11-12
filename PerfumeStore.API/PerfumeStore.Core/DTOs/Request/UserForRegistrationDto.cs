@@ -4,9 +4,8 @@ namespace PerfumeStore.Core.DTOs.Request
 {
   public class UserForRegistrationDto
   {
-    [Required(ErrorMessage = "Chose your login.")]
-    public string UserName { get; set; }
-
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
     [Required(ErrorMessage = "Email is required.")]
     [EmailAddress]
     public string Email { get; set; }
