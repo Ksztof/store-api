@@ -12,7 +12,7 @@ using PerfumeStore.Domain;
 namespace PerfumeStore.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231106133113_AspIdentityUser")]
+    [Migration("20231112095727_AspIdentityUser")]
     partial class AspIdentityUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

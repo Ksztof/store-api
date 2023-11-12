@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DuendeIs\DuendeIs.csproj" />
     <ProjectReference Include="..\PerfumeStore.Core\PerfumeStore.Core.csproj" />
     <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
   </ItemGroup>
