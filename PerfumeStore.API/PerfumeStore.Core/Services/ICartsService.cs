@@ -1,4 +1,5 @@
 ﻿using PerfumeStore.Core.DTOs.Response;
+using PerfumeStore.Domain.DbModels;
 using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.Core.Services
@@ -7,7 +8,8 @@ namespace PerfumeStore.Core.Services
   {
     public Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity);
 
-    public Task<CartResponse> GetCartByIdAsync(int cartId);
+    public Task<CartResponse> GetCartResponseByIdAsync(int cartId);
+    public Task<Cart> GetCartByIdAsync(int cartId);
 
     public Task<CartResponse> DeleteCartLineFromCartAsync(int productId);
 

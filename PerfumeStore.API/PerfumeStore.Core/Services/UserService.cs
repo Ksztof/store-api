@@ -26,8 +26,10 @@ namespace PerfumeStore.Core.Services
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ITokenService _tokenService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IGuestSessionService _guestSessionService;
+    private readonly ICartsService _cartsService;
 
-    public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
+    public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IGuestSessionService guestSessionService, ICartsService cartsService)
     {
       _mapper = mapper;
       _userManager = userManager;
@@ -36,7 +38,9 @@ namespace PerfumeStore.Core.Services
       _emailService = emailService;
       _roleManager = roleManager;
       _tokenService = tokenService;
-      _httpContextAccessor = httpContextAccessor; 
+      _httpContextAccessor = httpContextAccessor;
+      _guestSessionService = guestSessionService;
+      _cartsService = cartsService;
     }
 
     public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
@@ -59,6 +63,16 @@ namespace PerfumeStore.Core.Services
       {
         AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Error obtaining token" };
         return failedResponse;
+      }
+
+      int? cartId = _guestSessionService.GetCartId();
+      if (cartId is not null)
+      {
+        var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
+        user.Carts.Add(cart);
+        var updateUser = await _userManager.UpdateAsync(user);
+        if (!updateUser.Succeeded)
+          throw new UserModificationException("UpdateAsync", user.Id);
       }
 
       AuthResponseDto authResponse = new AuthResponseDto
@@ -84,6 +98,13 @@ namespace PerfumeStore.Core.Services
       {
         var errors = result.Errors.Select(e => e.Description);
         return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
+      }
+
+      int? cartId = _guestSessionService.GetCartId();
+      if (cartId is not null)
+      {
+        var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
+        user.Carts.Add(cart);
       }
 
       string visitorRole = Roles.Visitor;

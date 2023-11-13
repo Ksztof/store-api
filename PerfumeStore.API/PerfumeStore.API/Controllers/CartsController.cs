@@ -65,7 +65,7 @@ namespace PerfumeStore.API.Controllers
     [HttpGet("{cartId}", Name = "GetCartById")]
     public async Task<IActionResult> GetCartByIdAsync(int cartId)
     {
-      CartResponse cart = await _cartsService.GetCartByIdAsync(cartId);
+      CartResponse cart = await _cartsService.GetCartResponseByIdAsync(cartId);
       return Ok(cart);
     }
   }

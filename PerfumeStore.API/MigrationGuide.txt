@@ -20,3 +20,9 @@ startup > API
 cli: 
     1. Add-Migration InitialPerfumeShopMigration -context ShopDbContext
     2. Update-Database -context ShopDbContext
+
+INSERTS 
+
+insert into dbo.ProductCategories(Id, Name) values (3, 'catc');
+
+SET IDENTITY_INSERT dbo.ProductCategories ON
