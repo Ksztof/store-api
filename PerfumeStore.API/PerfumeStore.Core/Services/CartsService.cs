@@ -105,7 +105,7 @@ namespace PerfumeStore.Core.Services
       Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
       if (cart == null)
       {
-        throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
+        throw new EntityNotFoundException<Cart, int>($"No cart with given cart id. Value: {cart.Id}");
       }
       CartResponse cartResponse = MapCartResponse(cart);
 
@@ -134,7 +134,7 @@ namespace PerfumeStore.Core.Services
       Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
       if (cart == null)
       {
-        throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
+        throw new EntityNotFoundException<Cart, int>($"No cart with given cart id. Value: id. Value: {cart.Id}");
       }
       cart.SetProductQuantity(productId, productQuantity);
       cart = await _cartsRepository.UpdateAsync(cart);
@@ -154,7 +154,7 @@ namespace PerfumeStore.Core.Services
       Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
       if (cart == null)
       {
-        throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
+        throw new EntityNotFoundException<Cart, int>($"No cart with given cart id. Value: {cart.Id}");
       }
 
       AboutCartResponse aboutCartResposne = cart.CheckCart();
@@ -173,7 +173,7 @@ namespace PerfumeStore.Core.Services
       Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
       if (cart == null)
       {
-        throw new EntityNotFoundException<Cart, int>($"Cart id is present but there isn't cart with given cart id. Value: {cart}");
+        throw new EntityNotFoundException<Cart, int>($"No cart with given cart id. Value: {cart.Id}");
       }
 
       ICollection<CartLine> cartLines = cart.CartLines;

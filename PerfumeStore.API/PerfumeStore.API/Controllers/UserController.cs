@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Core.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Core.Services;
+using System.Security.Claims;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -67,10 +68,24 @@ namespace PerfumeStore.API.Controllers
 
     [Authorize]
     [HttpGet("RequestDeletion")]
-    public async Task<IActionResult> RequestDeletion(string userId, string token)
+    public async Task<IActionResult> RequestDeletion()
     {
+      bool requested = await _userService.RequestDeletion();
+      if (!requested) 
+        return BadRequest("Can't request deletion");
 
       return Ok();
+    }
+
+    [Authorize]//TODO: Authorize("Admin")
+    [HttpGet("SubmitDeletion/{id}")]
+    public async Task<IActionResult> SubmitDeletion(string id)
+    {
+      bool deleted = await _userService.SubmitDeletion(id);
+      if (!deleted)
+        return BadRequest("Can't delete account");
+
+      return NoContent();
     }
   }
 }
