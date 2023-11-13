@@ -100,7 +100,7 @@ namespace PerfumeStore.Core.Services
       return cartResponse;
     }
 
-    public async Task<CartResponse> GetCartByIdAsync(int cartId)
+    public async Task<CartResponse> GetCartResponseByIdAsync(int cartId)
     {
       Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
       if (cart == null)
@@ -110,6 +110,17 @@ namespace PerfumeStore.Core.Services
       CartResponse cartResponse = MapCartResponse(cart);
 
       return cartResponse;
+    }
+
+    public async Task<Cart> GetCartByIdAsync(int cartId)
+    {
+      Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
+      if (cart == null)
+      {
+        throw new EntityNotFoundException<Cart, int>($"No cart with given cart id. Value: {cart.Id}");
+      }
+      
+      return cart;
     }
 
     public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
