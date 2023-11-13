@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Domain.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
+using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,9 +9,10 @@ namespace PerfumeStore.Domain.DbModels
   {
     [Key]
     public int Id { get; set; }
-
     public ICollection<Order>? Orders { get; set; }
     public ICollection<CartLine>? CartLines { get; set; } = new List<CartLine>();
+    public string? UserId { get; set; } 
+    public StoreUser? User { get; set; }
 
     public void AddProduct(int productId)
     {

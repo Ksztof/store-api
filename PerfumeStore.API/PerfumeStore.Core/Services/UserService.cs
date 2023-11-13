@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
 using PerfumeStore.Domain.DbModels;
@@ -23,7 +25,9 @@ namespace PerfumeStore.Core.Services
     private readonly IMapper _mapper;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly ITokenService _tokenService;
-    public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
     {
       _mapper = mapper;
       _userManager = userManager;
@@ -32,6 +36,7 @@ namespace PerfumeStore.Core.Services
       _emailService = emailService;
       _roleManager = roleManager;
       _tokenService = tokenService;
+      _httpContextAccessor = httpContextAccessor; 
     }
 
     public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
@@ -98,6 +103,47 @@ namespace PerfumeStore.Core.Services
     {
       await _emailService.ConfirmEmail(userId, emailToken);
       return true; //TODO: Add error handling etc
+    }
+
+    public async Task<bool> RequestDeletion()
+    {
+      var userEmail = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+      if (string.IsNullOrEmpty(userEmail))
+      {
+        throw new MissingClaimInTokenException(ClaimTypes.Email);
+      }
+
+      var user = await _userManager.FindByEmailAsync(userEmail);
+      if (user == null)
+        throw new RequestForUserException($"User with email: {userEmail} - not found.");
+
+      user.IsDeleteRequested = true;
+
+      var updateResult = await _userManager.UpdateAsync(user);
+      if (!updateResult.Succeeded)
+        throw new UserModificationException("UpdateAsync", user.Id);
+
+      return true;
+    }
+
+    public async Task<bool> SubmitDeletion(string Id)
+    {
+      StoreUser user = await _userManager.FindByIdAsync(Id);
+      if (user is null)
+      {
+        throw new RequestForUserException("Can't find user");
+      }
+
+      if (user.IsDeleteRequested is not true)
+      {
+        throw new InvalidOperationException("You can't delete active user");
+      }
+
+      var deleteResul = await _userManager.DeleteAsync(user);    
+      if (!deleteResul.Succeeded)
+        throw new UserModificationException("DeleteAsync", user.Id);
+
+      return true;
     }
 
     private SigningCredentials GetSigningCredentials()

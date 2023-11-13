@@ -62,7 +62,7 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
 
 
@@ -103,7 +103,7 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   {
     options.SignIn.RequireConfirmedEmail = true;
   })
-  .AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddEntityFrameworkStores<ShopDbContext>()
   .AddDefaultTokenProviders();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
