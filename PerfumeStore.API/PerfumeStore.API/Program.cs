@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PerfumeStore.API;
 using PerfumeStore.Core.Configuration;
 using PerfumeStore.Core.Mapper;
 using PerfumeStore.Core.Repositories;
@@ -46,9 +44,9 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
-  var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
-  var factory = x.GetRequiredService<IUrlHelperFactory>();
-  return factory.GetUrlHelper(actionContext);
+    var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+    var factory = x.GetRequiredService<IUrlHelperFactory>();
+    return factory.GetUrlHelper(actionContext);
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -68,19 +66,19 @@ builder.Services.AddDbContext<ShopDbContext>(options =>
 
 builder.Services.AddSwaggerGen(c =>
 {
-  c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-  c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-  {
-    Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below. ",
-    Name = "Authorization",
-    In = ParameterLocation.Header,
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer"
-  });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below. ",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
-  //Swagger place for token 
-  c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //Swagger place for token 
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
   {
     {
       new OpenApiSecurityScheme
@@ -101,7 +99,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   {
-    options.SignIn.RequireConfirmedEmail = true;
+      options.SignIn.RequireConfirmedEmail = true;
   })
   .AddEntityFrameworkStores<ShopDbContext>()
   .AddDefaultTokenProviders();
@@ -111,23 +109,23 @@ var jwtSettings = builder.Configuration.GetSection("JWTSettings");
 
 builder.Services.AddAuthentication(options =>
   {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
   })
   .AddJwtBearer(options =>
   {
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
-    {
-      ValidateIssuer = true,
-      ValidateAudience = true,
-      ValidAudience = jwtSettings["validAudience"],
-      ValidIssuer = jwtSettings["validIssuer"],
-      ClockSkew = TimeSpan.Zero,
-      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
-    };
+      options.SaveToken = true;
+      options.RequireHttpsMetadata = false;
+      options.TokenValidationParameters = new TokenValidationParameters()
+      {
+          ValidateIssuer = true,
+          ValidateAudience = true,
+          ValidAudience = jwtSettings["validAudience"],
+          ValidIssuer = jwtSettings["validIssuer"],
+          ClockSkew = TimeSpan.Zero,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
+      };
   });
 
 builder.Services.AddControllers();
@@ -136,18 +134,18 @@ var app = builder.Build();
 
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
-  ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
-  await shopDbContext.Database.MigrateAsync();
+    ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();
+    await shopDbContext.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-  app.UseSwagger();
-  app.UseSwaggerUI(c =>
-  {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-  });
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    });
 }
 
 app.UseHttpsRedirection();
