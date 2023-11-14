@@ -114,7 +114,7 @@ namespace PerfumeStore.Core.Services
       Product? product = await _productsRepository.GetByIdAsync(productId);
       if (product is null)
       {
-        throw new EntityNotFoundException<Product, int>($"Can't find entity {typeof(Product)} with Id: {productId}");
+        throw new EntityNotFoundException<Product, int>(product.Id);
       }
 
       ICollection<ProductCategory> newProductCategories = await _productCategoriesRepository.GetByIdsAsync(updateForm.ProductCategoriesIds);
@@ -124,7 +124,7 @@ namespace PerfumeStore.Core.Services
         var notFoundIds = updateForm.ProductCategoriesIds.Except(foundIds);
         string notFoundIdsString = string.Join(", ", notFoundIds);
 
-        throw new EntityNotFoundException<ProductCategory, int>($"Can't find entities {typeof(ProductCategory)} with Ids: {notFoundIdsString}");
+        throw new EntityNotFoundException<ProductCategory, int>(notFoundIdsString);
       }
 
       product.UpdateProduct(updateForm, newProductCategories);
