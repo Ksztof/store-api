@@ -51,7 +51,8 @@ namespace PerfumeStore.API.Controllers
       return StatusCode(201);
     }
 
-    [HttpGet("ConfirmEmail")]
+    [HttpGet("ConfirmEmail")] //KM to nazewnictwo jest średnie, lepiej zostaw samo "confirm". Nikt nie musi wiedzieć, że potwierdzneie odbywa się przez email
+    //KM równie dobrze kiedyś na wejściu możesz przekazać metodę potwierdzenia email/sms/telefon
     public async Task<IActionResult> ConfirmEmail(string userId, string token)
     {
       if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))

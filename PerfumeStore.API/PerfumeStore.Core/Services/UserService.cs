@@ -11,7 +11,7 @@ using PerfumeStore.Domain.EnumsEtc;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.X509Certificates; //KM do usunięcia
 using System.Text;
 
 namespace PerfumeStore.Core.Services
@@ -20,7 +20,7 @@ namespace PerfumeStore.Core.Services
   {
     private readonly UserManager<StoreUser> _userManager;
     private readonly IConfiguration _configuration;
-    private readonly IConfigurationSection _jwtSettings;
+    private readonly IConfigurationSection _jwtSettings; //KM skorzystaj z Options Pattern np. JwtSettings klasa, którą uzupełnisz w program.cs z konfiguracji
     private readonly IEmailService _emailService;
     private readonly IMapper _mapper;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -48,7 +48,7 @@ namespace PerfumeStore.Core.Services
       var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
       if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
       {
-        AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" };
+        AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" }; //KM wpisałbym bardziej opisową wiadomość w stylu "User not found or password is incorrect"
         return failedResponse;
       }
 
@@ -69,7 +69,7 @@ namespace PerfumeStore.Core.Services
       if (cartId is not null)
       {
         var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
-        user.Carts.Add(cart);
+        user.Carts.Add(cart); //KM Użytkownik może mieć wiele koszyków?
         var updateUser = await _userManager.UpdateAsync(user);
         if (!updateUser.Succeeded)
           throw new UserModificationException("UpdateAsync", user.Id);
@@ -92,7 +92,9 @@ namespace PerfumeStore.Core.Services
         return new RegistrationResponseDto { Message = "Email is already taken." };
       }
 
-      var user = _mapper.Map<StoreUser>(userForRegistration);
+      var user = _mapper.Map<StoreUser>(userForRegistration); //KM nie wiem czy mappera nie lepiej używać na poziomie kontrolera
+            //wtedy mógłbyś przekazywać bezpośrednio do serwisu RegisterUser(StoreUser user), według mnie to lepsze podejście
+            // dzięki temu twój serwis aplikacyjny serwisy i domena są całkowicie odseparowane od API
       var result = await _userManager.CreateAsync(user, userForRegistration.Password);
       if (!result.Succeeded)
       {
@@ -108,7 +110,9 @@ namespace PerfumeStore.Core.Services
       }
 
       string visitorRole = Roles.Visitor;
-
+      
+    //KM Uważam, że powinieneś mieć klasę PermissionService, która będzie Ci zarządzać uprawnieniami.
+    // Mógłbyś mieć wtedy metodę PermissionService.AssignRole(Roles.Visitor), która by Ci obsłużyła kod poniżej
       if (!await _roleManager.RoleExistsAsync(visitorRole))
         await _roleManager.CreateAsync(new IdentityRole(visitorRole));
 
@@ -167,7 +171,7 @@ namespace PerfumeStore.Core.Services
       return true;
     }
 
-    private SigningCredentials GetSigningCredentials()
+    private SigningCredentials GetSigningCredentials() //KM nieużywane
     {
       var key = Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]);
       var secret = new SymmetricSecurityKey(key);
@@ -175,7 +179,7 @@ namespace PerfumeStore.Core.Services
       return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private List<Claim> GetClaims(StoreUser user)
+    private List<Claim> GetClaims(StoreUser user) //KM nieużywane
     {
       var claims = new List<Claim>
       {
@@ -185,6 +189,7 @@ namespace PerfumeStore.Core.Services
       return claims;
     }
 
+    //KM nieużywane
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
       var tokenOptions = new JwtSecurityToken(

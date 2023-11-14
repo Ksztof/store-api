@@ -17,7 +17,24 @@ namespace PerfumeStore.API.Controllers
       _cartsService = cartsService;
     }
 
-    [HttpPost("products/{productId}")]
+    //public class AddProductsToCartRequest
+    //{
+    //    public ProductInCart[] Products { get; set; }
+    //}
+
+    //public class ProductInCart
+    //{
+    //    public int ProductId { get; set; }
+
+    //    public int Quantity { get; set; }
+    //}
+
+    //public async Task<IActionResult> AddProductsToCartAsync([FromBody] AddProductsToCartRequest request)
+    //{
+    //    return null;
+    //}
+
+    [HttpPost("products/{productId}")] //KM Według mnie trochę się ograniczasz mają endpoint do jednego produktu
     public async Task<IActionResult> AddProductToCartAsync(int productId, [FromBody] QuantityRequest productQuantity)
     {
       CartResponse cart = await _cartsService.AddProductToCartAsync(productId, productQuantity.Quantity);
@@ -36,7 +53,8 @@ namespace PerfumeStore.API.Controllers
       return Ok(updatedCart);
     }
 
-    [HttpPut("products/{productId}/quantity")]
+    [HttpPut("products/{productId}/quantity")] //KM quantity jest tutaj zbędne, lepiej dać bez tego i jako klasy FromBody użyć ProductInCartRequest i dzięki temu jeśli keidyś pojawi Ci sie inny parametr do edycji to obsłużysz to tutaj
+    // W tej chwili każda modyfikacja produktu w koszyku to będzie osobna metoda
     public async Task<IActionResult> SetProductQuantityAsync(int productId, [FromBody] QuantityRequest productQuantity)
     {
       CartResponse updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity.Quantity);
@@ -69,4 +87,6 @@ namespace PerfumeStore.API.Controllers
       return Ok(cart);
     }
   }
+
+
 }

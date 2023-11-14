@@ -13,7 +13,7 @@ namespace PerfumeStore.Core.Services
 {
   public class TokenService : ITokenService
   {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration; //KM Zdecydowanie powinieneś tu mieć jakąś klasę żeby bezpośrednio nie czytać z konfiguracji
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<StoreUser> _userManager;
 
@@ -52,7 +52,7 @@ namespace PerfumeStore.Core.Services
       {
         Issuer = _configuration["JWTSettings:validIssuer"],
         Audience = _configuration["JWTSettings:validAudience"],
-        Expires = DateTime.UtcNow.AddHours(3),
+        Expires = DateTime.UtcNow.AddHours(3), //KM Ważność tokena powinna być konfigurowalna i być częścią settingów
         SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
         Subject = new ClaimsIdentity(claims)
       };
