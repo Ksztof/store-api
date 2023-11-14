@@ -27,7 +27,7 @@ namespace PerfumeStore.Core.Services
       Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
       if (cart == null)
       {
-        throw new EntityNotFoundException<Cart, int>($"Entity of type: {typeof(Cart)} not found. Entity id: {GuestCartId.Value}");
+        throw new EntityNotFoundException<Cart, int>(cart.Id);
       }
 
       Order order = new Order();
@@ -51,7 +51,7 @@ namespace PerfumeStore.Core.Services
       Order? order = await _ordersRepository.GetByIdAsync(orderId);
       if (order == null)
       {
-        throw new EntityNotFoundException<Order, int>($"Can't find entity of type: {typeof(Order)}, Entity Id: {orderId}");
+        throw new EntityNotFoundException<Order, int>(order.Id);
       }
 
       AboutCartResponse aboutCart = order.Cart.CheckCart();
@@ -72,7 +72,7 @@ namespace PerfumeStore.Core.Services
       Order? order = await _ordersRepository.GetByIdAsync(orderId);
       if (order == null)
       {
-        throw new EntityNotFoundException<Order, int>($"Can't find entity of type: {typeof(Order)}, Entity Id: {orderId}");
+        throw new EntityNotFoundException<Order, int>(order.Id);
       }
 
       await _ordersRepository.DeleteOrderAsync(order);
@@ -90,7 +90,7 @@ namespace PerfumeStore.Core.Services
       Order? order = await _ordersRepository.GetByIdAsync(orderId);
       if (order == null)
       {
-        throw new EntityNotFoundException<Order, int>($"Can't find entity of type: {typeof(Order)}, Entity Id: {orderId}");
+        throw new EntityNotFoundException<Order, int>(order.Id);
       }
 
       order.MarkAsDeleted();
