@@ -1,8 +1,9 @@
 ﻿using PerfumeStore.Core.CustomExceptions;
 using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Core.Repositories;
-using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Core.Models;
+using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Products;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Core.Services

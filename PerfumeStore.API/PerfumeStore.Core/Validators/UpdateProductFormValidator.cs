@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Core.Models;
 
 namespace PerfumeStore.Core.Validators
 {

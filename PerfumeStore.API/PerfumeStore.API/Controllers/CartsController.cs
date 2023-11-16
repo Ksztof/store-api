@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Core.DTOs.Response;
+using PerfumeStore.Core.Models;
 using PerfumeStore.Core.Services;
-using PerfumeStore.Domain.Models;
 
 namespace PerfumeStore.API.Controllers
 {

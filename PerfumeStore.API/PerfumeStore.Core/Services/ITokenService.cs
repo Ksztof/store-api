@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.DbModels;
+﻿using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Core.Services
 {

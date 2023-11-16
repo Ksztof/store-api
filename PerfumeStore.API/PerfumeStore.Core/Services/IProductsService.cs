@@ -1,5 +1,5 @@
 ﻿using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Core.Models;
 
 namespace PerfumeStore.Core.Services
 {

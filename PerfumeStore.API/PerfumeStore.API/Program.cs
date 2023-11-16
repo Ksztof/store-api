@@ -8,11 +8,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.Core.Configuration;
 using PerfumeStore.Core.Mapper;
-using PerfumeStore.Core.Repositories;
 using PerfumeStore.Core.Services;
 using PerfumeStore.Core.Validators;
 using PerfumeStore.Domain;
-using PerfumeStore.Domain.DbModels;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.StoreUsers;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

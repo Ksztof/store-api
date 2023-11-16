@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.Domain.EnumsEtc
 {
-    public enum OrderStatusE
+    public enum OrderStatus
     {
         New,
         Processing,

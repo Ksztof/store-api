@@ -1,5 +1,5 @@
 ﻿using FluentValidation.Results;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Core.Models;
 
 namespace PerfumeStore.Core.Services
 {

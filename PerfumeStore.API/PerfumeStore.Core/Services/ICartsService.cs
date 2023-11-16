@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Core.DTOs.Response;
-using PerfumeStore.Domain.DbModels;
-using PerfumeStore.Domain.Models;
+using PerfumeStore.Core.Models;
+using PerfumeStore.Domain.Carts;
 
 namespace PerfumeStore.Core.Services
 {
