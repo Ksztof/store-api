@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Core.GenericInterfaces;
+﻿using PerfumeStore.Domain.Core;
 
 namespace PerfumeStore.Domain.Products
 {

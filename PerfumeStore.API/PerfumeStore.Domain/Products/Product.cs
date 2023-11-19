@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.Interfaces;
-using PerfumeStore.Domain.Models;
 using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.ProductProductCategories;
 using System.ComponentModel.DataAnnotations;

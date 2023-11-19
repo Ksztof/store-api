@@ -6,17 +6,19 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PerfumeStore.Core.Configuration;
-using PerfumeStore.Core.Mapper;
-using PerfumeStore.Core.Services;
-using PerfumeStore.Core.Validators;
-using PerfumeStore.Domain;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.ProductCategories;
-using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.StoreUsers;
 using System.Text;
+using PerfumeStore.Application;
+using PerfumeStore.Application.Products;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Application.Carts;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Application.Orders;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Application.Validators;
+using PerfumeStore.Application.Users;
+using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Application.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,17 +34,14 @@ builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
-builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<QuantityValidator>();
 builder.Services.AddTransient<EntityIntIdValidator>();
 builder.Services.AddTransient<EntityIntIdValidator>();
 builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
-builder.Services.AddTransient<IValidationService, ValidationService>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.AddTransient<IEmailService, EmailService>();
-builder.Services.AddTransient<ITokenService, TokenService>();
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>

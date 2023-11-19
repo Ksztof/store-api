@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Domain.CarLines;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Infrastructure;
-
-namespace PerfumeStore.Infrastructure.Repositories
+﻿namespace PerfumeStore.Infrastructure.Repositories
 {
     public class CartsRepository : ICartsRepository
     {

@@ -1,6 +1,4 @@
-﻿using PerfumeStore.Domain.StoreUsers;
-
-namespace PerfumeStore.Infrastructure.Emails
+﻿namespace PerfumeStore.Infrastructure.Emails
 {
     public interface IEmailService
     {

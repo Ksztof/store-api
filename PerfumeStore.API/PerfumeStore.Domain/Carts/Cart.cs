@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.Interfaces;
-using PerfumeStore.Domain.Models;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.StoreUsers;
 using System.ComponentModel.DataAnnotations;
@@ -55,12 +55,12 @@ namespace PerfumeStore.Domain.Carts
             CartLines.Clear();
         }
 
-        public AboutCartResponse CheckCart()
+        public AboutCartRes CheckCart()
         {
             decimal totalCartValue = CartLines.Sum(x => x.Product.Price * x.Quantity);
             IEnumerable<CheckCartDto> aboutProducts = GetInformationAboutProducts();
 
-            AboutCartResponse aboutCart = new AboutCartResponse
+            AboutCartRes aboutCart = new AboutCartRes
             {
                 AboutProductsInCart = aboutProducts,
                 TotalCartValue = totalCartValue

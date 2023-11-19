@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using PerfumeStore.Domain.ProductCategories;
+﻿using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
+using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.ProductProductCategories
 {
