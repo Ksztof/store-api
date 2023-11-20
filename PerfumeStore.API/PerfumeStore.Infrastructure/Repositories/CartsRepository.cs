@@ -1,4 +1,9 @@
-﻿namespace PerfumeStore.Infrastructure.Repositories
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Carts;
+
+namespace PerfumeStore.Infrastructure.Repositories
 {
     public class CartsRepository : ICartsRepository
     {

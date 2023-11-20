@@ -1,4 +1,7 @@
-﻿namespace PerfumeStore.Infrastructure.Repositories
+﻿using Microsoft.EntityFrameworkCore;
+using PerfumeStore.Domain.ProductCategories;
+
+namespace PerfumeStore.Infrastructure.Repositories
 {
     public class ProductCategoriesRepository : IProductCategoriesRepository
     {

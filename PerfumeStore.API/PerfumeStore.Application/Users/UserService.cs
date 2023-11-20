@@ -5,10 +5,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
+using PerfumeStore.Application.Core;
+using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -72,7 +75,7 @@ namespace PerfumeStore.Application.Users
                 user.Carts.Add(cart); //KM Użytkownik może mieć wiele koszyków?
                 var updateUser = await _userManager.UpdateAsync(user);
                 if (!updateUser.Succeeded)
-                    throw new UserModificationException("UpdateAsync", user.Id);
+                    throw new UserModificationEx("UpdateAsync", user.Id);
             }
 
             AuthResponseDto authResponse = new AuthResponseDto
@@ -135,18 +138,18 @@ namespace PerfumeStore.Application.Users
             var userEmail = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userEmail))
             {
-                throw new MissingClaimInTokenException(ClaimTypes.Email);
+                throw new MissingClaimInTokenEx(ClaimTypes.Email);
             }
 
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
-                throw new RequestForUserException($"User with email: {userEmail} - not found.");
+                throw new RequestForUserEx($"User with email: {userEmail} - not found.");
 
             user.IsDeleteRequested = true;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                throw new UserModificationException("UpdateAsync", user.Id);
+                throw new UserModificationEx("UpdateAsync", user.Id);
 
             return true;
         }
@@ -156,7 +159,7 @@ namespace PerfumeStore.Application.Users
             StoreUser user = await _userManager.FindByIdAsync(Id);
             if (user is null)
             {
-                throw new RequestForUserException("Can't find user");
+                throw new RequestForUserEx("Can't find user");
             }
 
             if (user.IsDeleteRequested is not true)
@@ -166,7 +169,7 @@ namespace PerfumeStore.Application.Users
 
             var deleteResul = await _userManager.DeleteAsync(user);
             if (!deleteResul.Succeeded)
-                throw new UserModificationException("DeleteAsync", user.Id);
+                throw new UserModificationEx("DeleteAsync", user.Id);
 
             return true;
         }

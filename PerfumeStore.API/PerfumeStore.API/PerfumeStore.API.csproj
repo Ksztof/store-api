@@ -20,7 +20,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PerfumeStore.Application\PerfumeStore.Application.csproj" />
+    <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
+    <ProjectReference Include="..\PerfumeStore.Infrastructure\PerfumeStore.Infrastructure.csproj" />
   </ItemGroup>
+
+  
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/azure-deviceupdate-import-manifest-5.0.json" /></VisualStudio></ProjectExtensions>
 

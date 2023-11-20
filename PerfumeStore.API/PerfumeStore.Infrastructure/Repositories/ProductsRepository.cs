@@ -1,4 +1,8 @@
-﻿namespace PerfumeStore.Infrastructure.Repositories
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Domain.Products;
+
+namespace PerfumeStore.Infrastructure.Repositories
 {
     public class ProductsRepository : IProductsRepository
     {

@@ -1,4 +1,9 @@
-﻿namespace PerfumeStore.Infrastructure.Emails
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+
+namespace PerfumeStore.Infrastructure.Emails
 {
     public class EmailSender : IEmailSender
     {

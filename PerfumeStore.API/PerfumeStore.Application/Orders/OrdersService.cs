@@ -1,9 +1,9 @@
 ﻿using PerfumeStore.Application.Cookies;
+using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Application.CustomExceptions;
+using PerfumeStore.Domain.Orders;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -67,7 +67,7 @@ namespace PerfumeStore.Application.Orders
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
-            {S
+            {
                 throw new EntityNotFoundEx<Order, int>(order.Id);
             }
 

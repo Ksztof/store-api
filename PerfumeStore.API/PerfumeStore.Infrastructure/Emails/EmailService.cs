@@ -1,4 +1,10 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using PerfumeStore.Application.Core;
+using PerfumeStore.Domain.StoreUsers;
+using System.Text;
 
 namespace PerfumeStore.Infrastructure.Emails
 {

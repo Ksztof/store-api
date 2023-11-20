@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
+using PerfumeStore.Application.Carts;
+using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Domain.Core.DTO;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -66,7 +69,7 @@ namespace PerfumeStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> CheckCartAsync()
         {
-            AboutCartResponse products = await _cartsService.CheckCartAsync();
+            AboutCartRes products = await _cartsService.CheckCartAsync();
             return Ok(products);
         }
 

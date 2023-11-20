@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.API", "PerfumeStore.API\PerfumeStore.API.csproj", "{D0AA7F02-F9A7-461E-A680-DE12B2AA3557}"
 	ProjectSection(ProjectDependencies) = postProject
+		{13372485-7E36-4FB8-96FA-F25DBEC19830} = {13372485-7E36-4FB8-96FA-F25DBEC19830}
 		{3EFB75CB-7C3C-44E9-B8D2-BBF03F917F81} = {3EFB75CB-7C3C-44E9-B8D2-BBF03F917F81}
+		{D027300B-74BD-44F3-9CCD-56601EE2BDC5} = {D027300B-74BD-44F3-9CCD-56601EE2BDC5}
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F0292408-F75A-49AE-979C-EFF67AFF72D3}"
@@ -26,6 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.Infrastructure
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.Application", "PerfumeStore.Application\PerfumeStore.Application.csproj", "{3EFB75CB-7C3C-44E9-B8D2-BBF03F917F81}"
+	ProjectSection(ProjectDependencies) = postProject
+		{13372485-7E36-4FB8-96FA-F25DBEC19830} = {13372485-7E36-4FB8-96FA-F25DBEC19830}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

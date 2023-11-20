@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Application.DTOs.Request;
+using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.Users;
 
 namespace PerfumeStore.API.Controllers
 {

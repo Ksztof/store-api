@@ -1,9 +1,9 @@
-﻿using PerfumeStore.Application.DTOs.Response;
+﻿using PerfumeStore.Application.CustomExceptions;
+using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.Tokens;
-using PerfumeStore.Application.CustomExceptions;
 
 namespace PerfumeStore.Application.Products
 {
@@ -43,7 +43,7 @@ namespace PerfumeStore.Application.Products
 
         public async Task DeleteProductAsync(int productId)
         {
-        Product? product = await _productsRepository.GetByIdAsync(productId);
+            Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
             {
                 throw new EntityNotFoundEx<Product, int>($"Entity of type: {typeof(Product)} is missing. Entity Id: {productId}");

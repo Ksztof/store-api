@@ -6,19 +6,26 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using PerfumeStore.Application;
-using PerfumeStore.Application.Products;
-using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Application.Carts;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Application.Orders;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Application.Validators;
-using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Application.Cookies;
+using PerfumeStore.Application.Core;
 using PerfumeStore.Application.Mapper;
+using PerfumeStore.Application.Orders;
+using PerfumeStore.Application.Products;
+using PerfumeStore.Application.Users;
+using PerfumeStore.Application.Validators;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Infrastructure;
+using PerfumeStore.Infrastructure.Emails;
+using PerfumeStore.Infrastructure.Repositories;
+using PerfumeStore.Infrastructure.Tokens;
+using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +33,14 @@ builder.Services.AddHttpClient();
 
 
 // Add services to the container.\
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
 builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
-builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
+builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
+builder.Services.AddTransient<ICookieService, CookiesService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<QuantityValidator>();
 builder.Services.AddTransient<EntityIntIdValidator>();
@@ -40,9 +48,11 @@ builder.Services.AddTransient<EntityIntIdValidator>();
 builder.Services.AddTransient<CreateProductFormValidator>();
 builder.Services.AddTransient<UpdateProductFormValidator>();
 builder.Services.AddTransient<IUserService, UserService>();
-
-builder.Services.AddInfrastructure(builder.Configuration);
-
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
@@ -59,11 +69,14 @@ builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
+var assembly =  typeof(ShopDbContext).Assembly.GetName().Name;
+
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(connectionString, b => b.MigrationsAssembly("PerfumeStore.Domain")));
+  options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
+
+builder.Services.AddDbContext<ShopDbContext>(options =>
+  options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
 
 
 builder.Services.AddSwaggerGen(c =>

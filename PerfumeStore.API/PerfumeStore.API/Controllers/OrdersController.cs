@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.Orders;
 
 namespace PerfumeStore.API.Controllers
 {
