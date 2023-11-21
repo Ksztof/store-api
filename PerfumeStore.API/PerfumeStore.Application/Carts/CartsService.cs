@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Application.Cookies;
+﻿using Microsoft.AspNetCore.Authorization;
+using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.CarLines;
@@ -12,13 +13,12 @@ namespace PerfumeStore.Application.Carts
     {
         private readonly ICartsRepository _cartsRepository;
         private readonly IProductsRepository _productsRepository;
-        private readonly ICookieService _guestSessionService;
-
-        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookieService guestSessionService)
+        private readonly ICookiesService _cookiesService;
+        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
-            _guestSessionService = guestSessionService;
+            _cookiesService = guestSessionService;
         }
 
         public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
@@ -29,7 +29,7 @@ namespace PerfumeStore.Application.Carts
                 throw new EntityNotFoundEx<Product, int>(product.Id);
             }
 
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
             Cart? cart;
             if (GuestCartId != null)
             {
@@ -49,7 +49,7 @@ namespace PerfumeStore.Application.Carts
                 cart.AddProduct(productId);
                 cart.UpdateProductQuantity(productId, productQuantity);
                 cart = await _cartsRepository.CreateAsync(cart);
-                _guestSessionService.SendCartIdToGuest(cart.Id);
+                _cookiesService.SendCartIdToGuest(cart.Id);
             }
             CartResponse cartResponse = MapCartResponse(cart);
 
@@ -58,7 +58,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
         {
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
             if (GuestCartId == null)
             {
                 throw new MissingDataInCookieEx($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
@@ -110,7 +110,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity)
         {
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
 
             if (GuestCartId == null)
             {
@@ -132,7 +132,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<AboutCartRes> CheckCartAsync()
         {
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
             if (GuestCartId == null)
             {
                 throw new MissingDataInCookieEx($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");
@@ -151,7 +151,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<CartResponse> ClearCartAsync()
         {
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
             if (GuestCartId == null)
             {
                 throw new MissingDataInCookieEx($"Guest Cookie doesn't contain cart id. Value: {GuestCartId}");

@@ -29,10 +29,10 @@ namespace PerfumeStore.Application.Users
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICookieService _guestSessionService;
+        private readonly ICookiesService _guestSessionService;
         private readonly ICartsService _cartsService;
 
-        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICookieService guestSessionService, ICartsService cartsService)
+        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICookiesService guestSessionService, ICartsService cartsService)
         {
             _mapper = mapper;
             _userManager = userManager;
