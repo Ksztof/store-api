@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Products;
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.EnumsEtc;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -18,24 +20,34 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles.Administrator)]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
         {
-            ProductResponse createdProduct = await _productService.CreateProductAsync(createProductForm);
-            return Ok(createdProduct);
-        }
+            Result result = await _productService.CreateProductAsync(createProductForm);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
-        [HttpPut("{productId}")]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
-        {
-            ProductResponse updatedProductId = await _productService.UpdateProductAsync(updateform, productId);
-            return Ok(updatedProductId);
+            return Ok();// How to return Entity while success
         }
 
         [HttpDelete("{productId}")]
+        [Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProductAsync(int productId)
         {
-            await _productService.DeleteProductAsync(productId);
+            Result result = await _productService.DeleteProductAsync(productId);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
             return NoContent();
+        }
+
+        [HttpPut("{productId}")]
+        [Authorize(Roles.Administrator)]
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
+        {
+            ProductResponse updatedProductId = await _productService.UpdateProductAsync(updateform, productId);
+
+            return Ok(updatedProductId);
         }
 
         [HttpGet("{productId}")]

@@ -40,7 +40,7 @@ builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRep
 builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
-builder.Services.AddTransient<ICookieService, CookiesService>();
+builder.Services.AddTransient<ICookiesService, CookiesService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<QuantityValidator>();
 builder.Services.AddTransient<EntityIntIdValidator>();

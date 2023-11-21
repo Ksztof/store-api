@@ -17,8 +17,8 @@ namespace PerfumeStore.Domain.Products
         public string Description { get; set; }
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
-        public ICollection<CartLine> CartLines { get; set; }
-        public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
+        public ICollection<CartLine> CartLines { get; set; } = new List<CartLine>();
+        public ICollection<ProductProductCategory> ProductProductCategories { get; set; } = new List<ProductProductCategory>();
 
         public void CreateProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
         {
