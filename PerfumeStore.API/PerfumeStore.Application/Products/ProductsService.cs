@@ -23,7 +23,7 @@ namespace PerfumeStore.Application.Products
             _tokenService = tokenService;
         }
 
-        public async Task<Result> CreateProductAsync(CreateProductForm createProductForm)
+        public async Task<Result<Product>> CreateProductAsync(CreateProductForm createProductForm)
         {
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
 
@@ -33,7 +33,7 @@ namespace PerfumeStore.Application.Products
                 IEnumerable<int> notFoundIds = createProductForm.ProductCategoriesIds.Except(foundIds);
                 string notFoundIdsString = string.Join(", ", notFoundIds);
 
-                return EntityErrors<ProductCategory, int>.MissingEntities(notFoundIds);
+                return Result<Product>.Failure(EntityErrors<ProductCategory, int>.MissingEntities(notFoundIds));
             }
 
             Product product = new Product();
@@ -41,20 +41,20 @@ namespace PerfumeStore.Application.Products
             product = await _productsRepository.CreateAsync(product);
             ProductResponse productResponse = MapProductResponse(product);
 
-            return Result.Success();// How to return Entity while success
+            return Result<Product>.Success(product);
         }
 
-        public async Task<Result> DeleteProductAsync(int productId)
+        public async Task<Result<Product>> DeleteProductAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
             {
-                return EntityErrors<Product, int>.MissingEntity(product.Id);
+                return Result<Product>.Success(product);
             }
 
             await _productsRepository.DeleteAsync(productId);
 
-            return Result.Success();
+            return Result<Product>.Success(product);
         }
 
         public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()

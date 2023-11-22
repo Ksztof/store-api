@@ -20,21 +20,21 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles.Administrator)]
+        //[Authorize(Roles.Administrator)]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
         {
-            Result result = await _productService.CreateProductAsync(createProductForm);
+            var result = await _productService.CreateProductAsync(createProductForm);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok();// How to return Entity while success
+            return Ok(result);// How to return Entity while success
         }
 
         [HttpDelete("{productId}")]
         [Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProductAsync(int productId)
         {
-            Result result = await _productService.DeleteProductAsync(productId);
+            var result = await _productService.DeleteProductAsync(productId);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
