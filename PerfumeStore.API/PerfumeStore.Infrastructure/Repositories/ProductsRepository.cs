@@ -45,6 +45,17 @@ namespace PerfumeStore.Infrastructure.Repositories
             return product;
         }
 
+        public async Task<IEnumerable<Product>> GetByIdsAsync(int[] ids)
+        {
+            IEnumerable<Product> product = await _shopDbContext.Products
+                .AsSingleQuery()
+                .Include(x => x.ProductProductCategories)
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            return product;
+        }
+
         public async Task<Product> UpdateAsync(Product item)
         {
             EntityEntry<Product> productEntry = _shopDbContext.Products.Update(item);

@@ -29,8 +29,8 @@ namespace PerfumeStore.Application.Products
 
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
             {
-                IEnumerable<int> foundIds = productCategories.Select(pc => pc.Id);
-                IEnumerable<int> notFoundIds = createProductForm.ProductCategoriesIds.Except(foundIds);
+                int[] foundIds = productCategories.Select(pc => pc.Id).ToArray();
+                int[] notFoundIds = createProductForm.ProductCategoriesIds.Except(foundIds).ToArray();
 
                 return Result<ProductResponse>.Failure(EntityErrors<ProductCategory, int>.MissingEntities(notFoundIds));
             }

@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.Results;
 
 namespace PerfumeStore.Application.Carts
 {
@@ -21,12 +25,16 @@ namespace PerfumeStore.Application.Carts
             _cookiesService = guestSessionService;
         }
 
-        public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
+        public async Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartRequest request)
         {
-            Product? product = await _productsRepository.GetByIdAsync(productId);
-            if (product == null)
+            int[] requestProductsIds = request.Products.Select(product => product.ProductId).ToArray();
+            IEnumerable<Product> products = await _productsRepository.GetByIdsAsync(requestProductsIds);
+            int[] dbProductsIds = products.Select(x => x.Id).ToArray();
+
+            if (requestProductsIds.Count() != dbProductsIds.Count())
             {
-                throw new EntityNotFoundEx<Product, int>(product.Id);
+                var missingIds = requestProductsIds.Except(dbProductsIds).ToArray();
+                return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
             int? GuestCartId = _cookiesService.GetCartId();
@@ -36,7 +44,7 @@ namespace PerfumeStore.Application.Carts
                 cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
                 if (cart is null)
                 {
-                    throw new EntityNotFoundEx<Product, int>(cart.Id);
+                    return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
                 cart.AddProduct(productId);
