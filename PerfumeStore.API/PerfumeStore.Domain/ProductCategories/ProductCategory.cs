@@ -10,6 +10,6 @@ namespace PerfumeStore.Domain.ProductCategories
         public int Id { get; set; }
 
         public string Name { get; set; }
-        public ICollection<ProductProductCategory> ProductProductCategories { get; set; }
+        public ICollection<ProductProductCategory> ProductProductCategories { get; set; } = new List<ProductProductCategory>();
     }
 }
