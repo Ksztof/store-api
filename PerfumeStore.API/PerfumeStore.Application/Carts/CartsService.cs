@@ -18,6 +18,7 @@ namespace PerfumeStore.Application.Carts
         private readonly ICartsRepository _cartsRepository;
         private readonly IProductsRepository _productsRepository;
         private readonly ICookiesService _cookiesService;
+
         public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService)
         {
             _cartsRepository = cartsRepository;
@@ -27,13 +28,15 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartRequest request)
         {
-            int[] requestProductsIds = request.Products.Select(product => product.ProductId).ToArray();
-            IEnumerable<Product> products = await _productsRepository.GetByIdsAsync(requestProductsIds);
+            int[] newProductsIds = request.Products.Select(product => product.ProductId).ToArray();
+
+            IEnumerable<Product> products = await _productsRepository.GetByIdsAsync(newProductsIds);
+
             int[] dbProductsIds = products.Select(x => x.Id).ToArray();
 
-            if (requestProductsIds.Count() != dbProductsIds.Count())
+            if (newProductsIds.Count() != dbProductsIds.Count())
             {
-                var missingIds = requestProductsIds.Except(dbProductsIds).ToArray();
+                var missingIds = newProductsIds.Except(dbProductsIds).ToArray();
                 return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
@@ -47,8 +50,10 @@ namespace PerfumeStore.Application.Carts
                     return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
-                cart.AddProduct(productId);
-                cart.UpdateProductQuantity(productId, productQuantity);
+                Dictionary<int, decimal> productsWithQuantity = request.Products.ToDictionary(product => product.ProductId, x => x.Quantity);
+
+                cart.AddProduct(newProductsIds);
+                cart.UpdateProductQuantity(productsWithQuantity);
                 cart = await _cartsRepository.UpdateAsync(cart);
             }
             else

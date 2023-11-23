@@ -23,15 +23,14 @@ namespace PerfumeStore.Infrastructure.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            Product product = await GetByIdAsync(id);
+            Product? product = await GetByIdAsync(id);
             EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(product);
             await _shopDbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            IEnumerable<Product> productsList = await _shopDbContext.Products
-                .Select(x => x).ToListAsync();
+            IEnumerable<Product> productsList = await _shopDbContext.Products.ToListAsync();
 
             return productsList;
         }
