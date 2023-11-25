@@ -41,6 +41,9 @@ namespace PerfumeStore.Application.Carts
             }
 
             int? GuestCartId = _cookiesService.GetCartId();
+
+            Dictionary<int, decimal> productsWithQuantity = request.Products
+                .ToDictionary(product => product.ProductId, x => x.Quantity);
             Cart? cart;
             if (GuestCartId != null)
             {
@@ -50,8 +53,6 @@ namespace PerfumeStore.Application.Carts
                     return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
-                Dictionary<int, decimal> productsWithQuantity = request.Products.ToDictionary(product => product.ProductId, x => x.Quantity);
-
                 cart.AddProduct(newProductsIds);
                 cart.UpdateProductQuantity(productsWithQuantity);
                 cart = await _cartsRepository.UpdateAsync(cart);
@@ -59,14 +60,14 @@ namespace PerfumeStore.Application.Carts
             else
             {
                 cart = new Cart();
-                cart.AddProduct(productId);
-                cart.UpdateProductQuantity(productId, productQuantity);
+                cart.AddProduct(newProductsIds);
+                cart.UpdateProductQuantity(productsWithQuantity);
                 cart = await _cartsRepository.CreateAsync(cart);
                 _cookiesService.SendCartIdToGuest(cart.Id);
             }
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return cartResponse;
+            return Result<CartResponse>.Success(cartResponse);
         }
 
         public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)
