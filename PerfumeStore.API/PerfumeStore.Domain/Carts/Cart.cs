@@ -2,6 +2,7 @@
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.StoreUsers;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,24 +13,20 @@ namespace PerfumeStore.Domain.Carts
         [Key]
         public int Id { get; set; }
         public ICollection<Order>? Orders { get; set; }
-        public ICollection<CartLine>? CartLines { get; set; } = new List<CartLine>();
+        public List<CartLine>? CartLines { get; set; } = new List<CartLine>();
         public string? UserId { get; set; }
         public StoreUser? User { get; set; }
 
-        public void AddProduct(int productId)
+        public void AddProduct(int[] productsIdsRequest)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
-            if (cartLine == null)
-            {
-                CartLine newLine = new CartLine
-                {
-                    ProductId = productId,
-                };
-                CartLines.Add(newLine);
-            }
+            int[] newProductIds = GetNewProductsIds(productsIdsRequest);
+
+            IEnumerable<CartLine> newCartLines = BuildNewCartLines(newProductIds);
+
+            CartLines.AddRange(newCartLines);
         }
 
-        public void UpdateProductQuantity(int productId, decimal quantity)
+        public void UpdateProductQuantity(Dictionary<int, decimal> productsWithQuantity)
         {
             CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
             if (cartLine != null)
@@ -77,6 +74,22 @@ namespace PerfumeStore.Domain.Carts
                 ProductTotalPrice = x.Product.Price * x.Quantity,
                 Quantity = x.Quantity,
             });
+        }
+
+        private static IEnumerable<CartLine> BuildNewCartLines(int[] newProductIds)
+        {
+            return newProductIds
+                .Select(newProductId => new CartLine
+                {
+                    ProductId = newProductId
+                });
+        }
+
+        private int[] GetNewProductsIds(int[] productsIdsRequest)
+        {
+            return productsIdsRequest
+                .Except(CartLines.Select(cartline => cartline.ProductId))
+                .ToArray();
         }
     }
 }

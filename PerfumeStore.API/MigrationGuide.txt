@@ -23,6 +23,8 @@ cli:
 
 INSERTS 
 
-insert into dbo.ProductCategories(Id, Name) values (3, 'catc');
+insert into dbo.ProductCategories(Id, Name) values (1, 'catA');
+insert into dbo.ProductCategories(Id, Name) values (2, 'catB');
+insert into dbo.ProductCategories(Id, Name) values (3, 'catC');
 
 SET IDENTITY_INSERT dbo.ProductCategories ON

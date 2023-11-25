@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.Results;
 
 namespace PerfumeStore.Application.Carts
 {
@@ -14,6 +18,7 @@ namespace PerfumeStore.Application.Carts
         private readonly ICartsRepository _cartsRepository;
         private readonly IProductsRepository _productsRepository;
         private readonly ICookiesService _cookiesService;
+
         public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService)
         {
             _cartsRepository = cartsRepository;
@@ -21,39 +26,48 @@ namespace PerfumeStore.Application.Carts
             _cookiesService = guestSessionService;
         }
 
-        public async Task<CartResponse> AddProductToCartAsync(int productId, decimal productQuantity)
+        public async Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartRequest request)
         {
-            Product? product = await _productsRepository.GetByIdAsync(productId);
-            if (product == null)
+            int[] newProductsIds = request.Products.Select(product => product.ProductId).ToArray();
+
+            IEnumerable<Product> products = await _productsRepository.GetByIdsAsync(newProductsIds);
+
+            int[] dbProductsIds = products.Select(x => x.Id).ToArray();
+
+            if (newProductsIds.Count() != dbProductsIds.Count())
             {
-                throw new EntityNotFoundEx<Product, int>(product.Id);
+                var missingIds = newProductsIds.Except(dbProductsIds).ToArray();
+                return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
             int? GuestCartId = _cookiesService.GetCartId();
+
+            Dictionary<int, decimal> productsWithQuantity = request.Products
+                .ToDictionary(product => product.ProductId, x => x.Quantity);
             Cart? cart;
             if (GuestCartId != null)
             {
                 cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
                 if (cart is null)
                 {
-                    throw new EntityNotFoundEx<Product, int>(cart.Id);
+                    return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
-                cart.AddProduct(productId);
-                cart.UpdateProductQuantity(productId, productQuantity);
+                cart.AddProduct(newProductsIds);
+                cart.UpdateProductQuantity(productsWithQuantity);
                 cart = await _cartsRepository.UpdateAsync(cart);
             }
             else
             {
                 cart = new Cart();
-                cart.AddProduct(productId);
-                cart.UpdateProductQuantity(productId, productQuantity);
+                cart.AddProduct(newProductsIds);
+                cart.UpdateProductQuantity(productsWithQuantity);
                 cart = await _cartsRepository.CreateAsync(cart);
                 _cookiesService.SendCartIdToGuest(cart.Id);
             }
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return cartResponse;
+            return Result<CartResponse>.Success(cartResponse);
         }
 
         public async Task<CartResponse> DeleteCartLineFromCartAsync(int productId)

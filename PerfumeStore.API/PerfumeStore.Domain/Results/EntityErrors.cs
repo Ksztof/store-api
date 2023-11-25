@@ -15,6 +15,10 @@ namespace PerfumeStore.Domain.Results
         {
             return new($"{typeof(T).Name}.MissingEntity", $"Entity with ID: {entityId} is missing");
         }
+        public static Error MissingEntities()
+        {
+            return new Error($"{typeof(T).Name}.MissingEntities", $"There are no entities");
+        }
 
         public static Error MissingEntities(IEnumerable<TId> entityIds)
         {
