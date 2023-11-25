@@ -1,4 +1,4 @@
-﻿using Castle.Core.Internal;
+using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Application.DTOs.Response;

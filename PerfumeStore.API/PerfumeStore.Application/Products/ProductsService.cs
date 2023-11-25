@@ -1,4 +1,4 @@
-﻿using Castle.Core.Internal;
+using Castle.Core.Internal;
 using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;

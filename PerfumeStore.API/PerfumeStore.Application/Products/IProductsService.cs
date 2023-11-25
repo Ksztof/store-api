@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.Products;
