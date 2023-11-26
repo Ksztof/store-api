@@ -8,16 +8,16 @@ namespace PerfumeStore.Application.Carts
 {
     public interface ICartsService
     {
-        public Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartRequest request);
-        public Task<CartResponse> GetCartResponseByIdAsync(int cartId);
-        public Task<Cart> GetCartByIdAsync(int cartId);
+        public Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApplication request);
+        public Task<Result<CartResponse>> GetCartResponseByIdAsync(int cartId);
+        public Task<Result<Cart>> GetCartByIdAsync(int cartId);
 
-        public Task<CartResponse> DeleteCartLineFromCartAsync(int productId);
+        public Task<Result<CartResponse>> DeleteCartLineFromCartAsync(int productId);
 
-        public Task<CartResponse> SetProductQuantityAsync(int productId, decimal productQuantity);
+        public Task<Result<CartResponse>> ModifyProductAsync(ModifyProductDtoApplication productModification);
 
-        public Task<AboutCartRes> CheckCartAsync();
+        public Task<Result<AboutCartRes>> CheckCartAsync();
 
-        public Task<CartResponse> ClearCartAsync();
+        public Task<Result<CartResponse>> ClearCartAsync();
     }
 }

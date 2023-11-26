@@ -29,6 +29,6 @@ namespace PerfumeStore.Domain.Abstractions
 
         public static Result<TEntity> Success() => new(true, Error.None);
         public static Result<TEntity> Success(TEntity entity) => new(true, Error.None, entity);
-        public static Result<TEntity> Failure(Error error) => new(false, error , default);
+        public static Result<TEntity> Failure(Error error) => new(false, error, default);
     }
 }

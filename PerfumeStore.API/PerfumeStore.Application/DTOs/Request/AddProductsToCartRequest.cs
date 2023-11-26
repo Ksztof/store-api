@@ -1,7 +1,7 @@
 ﻿namespace PerfumeStore.Application.DTOs.Request
 {
-    public class AddProductsToCartRequest
+    public class AddProductsToCartDtoApplication
     {
-        public ProductInCart[] Products { get; set; }
+        public ProductInCartApplication[] Products { get; set; }
     }
 }

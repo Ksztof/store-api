@@ -48,7 +48,7 @@ namespace PerfumeStore.Application.Products
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product == null)
             {
-                return Result<Product>.Failure(EntityErrors<ProductCategory, int>.MissingEntity(productId));
+                return Result<Product>.Failure(EntityErrors<Product, int>.MissingEntity(productId));
             }
 
             await _productsRepository.DeleteAsync(productId);

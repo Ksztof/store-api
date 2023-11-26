@@ -1,6 +1,6 @@
-﻿namespace PerfumeStore.Application.DTOs.Request
+﻿namespace PerfumeStore.Domain.DTOs.Request
 {
-    public class ProductInCart
+    public class ProductInCartDomain
     {
         public int ProductId { get; set; }
         public decimal Quantity { get; set; }
