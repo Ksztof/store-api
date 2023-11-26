@@ -1,5 +1,6 @@
-﻿using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.DTOs.Request;
 using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.Products;
@@ -17,7 +18,7 @@ namespace PerfumeStore.Domain.Carts
         public string? UserId { get; set; }
         public StoreUser? User { get; set; }
 
-        public void AddProduct(int[] productsIdsRequest)
+        public void AddProducts(int[] productsIdsRequest)
         {
             int[] newProductIds = GetNewProductsIds(productsIdsRequest);
 
@@ -26,25 +27,27 @@ namespace PerfumeStore.Domain.Carts
             CartLines.AddRange(newCartLines);
         }
 
-        public void UpdateProductQuantity(Dictionary<int, decimal> productsWithQuantity)
+        public void UpdateProductsQuantity(AddProductsToCartDtoDomain productsWithQuantities)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
-            if (cartLine != null)
+            foreach (var productWithQuantity in productsWithQuantities.Products)
             {
-                cartLine.Quantity += quantity;
+                CartLine cartLine = CartLines.First(cl => cl.ProductId == productWithQuantity.ProductId);
+                cartLine.Quantity += productWithQuantity.Quantity;
             }
         }
 
         public void DeleteCartLineFromCart(int productId)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
+            CartLine? cartLine = CartLines.FirstOrDefault(cl => cl.ProductId == productId);
+
             bool deleteSuccess = CartLines.Remove(cartLine);
         }
 
-        public void SetProductQuantity(int productId, decimal productQuantity)
+        public void ModifyProduct(ModifyProductDtoDomain productModification)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(x => x.ProductId == productId);
-            cartLine.Quantity = productQuantity;
+            CartLine? cartLine = CartLines.FirstOrDefault(cl => cl.ProductId == productModification.Product.ProductId);
+
+            cartLine.Quantity = productModification.Product.Quantity;
         }
 
         public void ClearCart()
@@ -54,7 +57,7 @@ namespace PerfumeStore.Domain.Carts
 
         public AboutCartRes CheckCart()
         {
-            decimal totalCartValue = CartLines.Sum(x => x.Product.Price * x.Quantity);
+            decimal totalCartValue = CartLines.Sum(cl => cl.Product.Price * cl.Quantity);
             IEnumerable<CheckCartDto> aboutProducts = GetInformationAboutProducts();
 
             AboutCartRes aboutCart = new AboutCartRes
@@ -68,11 +71,11 @@ namespace PerfumeStore.Domain.Carts
 
         private IEnumerable<CheckCartDto> GetInformationAboutProducts()
         {
-            return CartLines.Select(x => new CheckCartDto
+            return CartLines.Select(cl => new CheckCartDto
             {
-                ProductUnitPrice = x.Product.Price,
-                ProductTotalPrice = x.Product.Price * x.Quantity,
-                Quantity = x.Quantity,
+                ProductUnitPrice = cl.Product.Price,
+                ProductTotalPrice = cl.Product.Price * cl.Quantity,
+                Quantity = cl.Quantity,
             });
         }
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
@@ -12,16 +14,20 @@ namespace PerfumeStore.API.Controllers
     public class CartsController : ControllerBase
     {
         private readonly ICartsService _cartsService;
+        private readonly IMapper _mapper;
 
-        public CartsController(ICartsService cartsService)
+        public CartsController(ICartsService cartsService, IMapper mapper)
         {
             _cartsService = cartsService;
+            _mapper = mapper;
         }
 
         [HttpPost("products")]
         public async Task<IActionResult> AddProductToCartAsync([FromBody] AddProductsToCartRequest request)
         {
-            Result<CartResponse> result = await _cartsService.AddProductsToCartAsync(request);
+            AddProductsToCartDtoApplication modifyProductDto = _mapper.Map<AddProductsToCartDtoApplication>(request);
+
+            Result<CartResponse> result = await _cartsService.AddProductsToCartAsync(modifyProductDto);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);
@@ -33,42 +39,51 @@ namespace PerfumeStore.API.Controllers
         [HttpPut("products/{productId}")]
         public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId)
         {
-            CartResponse updatedCart = await _cartsService.DeleteCartLineFromCartAsync(productId);
-            return Ok(updatedCart);
+            Result<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Entity);
         }
 
-        [HttpPut("products/{productId}/quantity")] //KM quantity jest tutaj zbędne, lepiej dać bez tego i jako klasy FromBody użyć ProductInCartRequest i dzięki temu jeśli keidyś pojawi Ci sie inny parametr do edycji to obsłużysz to tutaj
-                                                   // W tej chwili każda modyfikacja produktu w koszyku to będzie osobna metoda
-        public async Task<IActionResult> SetProductQuantityAsync(int productId, [FromBody] AddProductsToCartRequest productQuantity)
+        [HttpPut("products")]
+        public async Task<IActionResult> ModifyProductAsync([FromBody] ModifyProductRequest modifiedProduct)
         {
-            CartResponse updatedCart = await _cartsService.SetProductQuantityAsync(productId, productQuantity.Quantity);
-            if (updatedCart.Errors is not null)
-            {
-                return BadRequest(updatedCart.Errors);
-            }
+            ModifyProductDtoApplication modifyProductDto = _mapper.Map<ModifyProductDtoApplication>(modifiedProduct);
 
-            return Ok(updatedCart);
+            Result<CartResponse> result = await _cartsService.ModifyProductAsync(modifyProductDto);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Entity);
         }
 
         [HttpGet]
         public async Task<IActionResult> CheckCartAsync()
         {
-            AboutCartRes products = await _cartsService.CheckCartAsync();
+            Result<AboutCartRes> products = await _cartsService.CheckCartAsync();
+
             return Ok(products);
         }
 
         [HttpDelete]
         public async Task<IActionResult> ClearCartAsync()
         {
-            CartResponse updatedCart = await _cartsService.ClearCartAsync();
-            return Ok(updatedCart);
+            Result<CartResponse> result = await _cartsService.ClearCartAsync();
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Entity);
         }
 
         [HttpGet("{cartId}", Name = "GetCartById")]
         public async Task<IActionResult> GetCartByIdAsync(int cartId)
         {
-            CartResponse cart = await _cartsService.GetCartResponseByIdAsync(cartId);
-            return Ok(cart);
+            Result<CartResponse> result = await _cartsService.GetCartResponseByIdAsync(cartId);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Entity);
         }
     }
 
