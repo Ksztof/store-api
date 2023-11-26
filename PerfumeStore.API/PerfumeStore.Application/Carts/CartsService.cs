@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
