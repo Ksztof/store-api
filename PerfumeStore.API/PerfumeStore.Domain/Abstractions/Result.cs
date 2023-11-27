@@ -16,7 +16,7 @@ namespace PerfumeStore.Domain.Abstractions
 
         private Result(bool isSuccess, Error error, TEntity? entity = default)
         {
-            if (isSuccess && error != Error.None || 
+            if (isSuccess && error != Error.None ||
                 !isSuccess && error == Error.None)
             {
                 throw new ArgumentException("Invalid error", nameof(error));
@@ -25,6 +25,11 @@ namespace PerfumeStore.Domain.Abstractions
             IsSuccess = isSuccess;
             Error = error;
             Entity = entity;
+        }
+
+        public static implicit operator Result<TEntity>(Error error)
+        {
+            return new Result<TEntity>(false, error);
         }
 
         public static Result<TEntity> Success() => new(true, Error.None);

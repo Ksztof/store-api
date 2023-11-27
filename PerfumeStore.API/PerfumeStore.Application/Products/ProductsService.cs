@@ -53,7 +53,7 @@ namespace PerfumeStore.Application.Products
 
             await _productsRepository.DeleteAsync(productId);
 
-            return Result<Product>.Success(product);
+            return Result<Product>.Success();
         }
         
         public async Task<Result<ProductResponse>> GetProductByIdAsync(int productId)
@@ -61,7 +61,8 @@ namespace PerfumeStore.Application.Products
             Product? product = await _productsRepository.GetByIdAsync(productId);
             if (product is null)
             {
-                return Result<ProductResponse>.Failure(EntityErrors<Product, int>.MissingEntity(productId));
+                var productError = EntityErrors<Product, int>.MissingEntity(productId);
+                return Result<ProductResponse>.Failure(productError);
             }
 
             ProductResponse productResponse = MapProductResponse(product);
