@@ -1,5 +1,6 @@
 ﻿using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.StoreUsers;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.CarLines

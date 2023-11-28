@@ -48,7 +48,7 @@ namespace PerfumeStore.Application.Users
             _cartsService = cartsService;
         }
 
-        public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
+        public async Task<Result<StoreUser>> Login(UserForAuthenticationDto userForAuthentication)
         {
             StoreUser user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
@@ -141,15 +141,15 @@ namespace PerfumeStore.Application.Users
 
         public async Task<bool> RequestDeletion()
         {
-            var userEmail = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
-            if (string.IsNullOrEmpty(userEmail))
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+            if (string.IsNullOrEmpty(userId))
             {
-                throw new MissingClaimInTokenEx(ClaimTypes.Email);
+                throw new MissingClaimInTokenEx(ClaimTypes.NameIdentifier);
             }
 
-            var user = await _userManager.FindByEmailAsync(userEmail);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                throw new RequestForUserEx($"User with email: {userEmail} - not found.");
+                throw new RequestForUserEx($"User with Id: {userId} - not found.");
 
             user.IsDeleteRequested = true;
 
@@ -191,9 +191,10 @@ namespace PerfumeStore.Application.Users
         private List<Claim> GetClaims(StoreUser user) //KM nieużywane
         {
             var claims = new List<Claim>
-      {
-        new Claim(ClaimTypes.Name, user.Email)
-      };
+            {
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            //new Claim(ClaimTypes.Name, user.Email)
+            };
 
             return claims;
         }

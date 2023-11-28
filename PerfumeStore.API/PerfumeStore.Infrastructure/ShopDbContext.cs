@@ -53,11 +53,10 @@ namespace PerfumeStore.Infrastructure
                 .WithMany(c => c.ProductProductCategories)
                 .HasForeignKey(pc => pc.ProductCategoryId);
 
-            modelBuilder.Entity<Cart>()
-              .HasOne(c => c.User)
-              .WithMany(u => u.Carts)
-              .HasForeignKey(c => c.UserId)
-              .IsRequired(false);
+            modelBuilder.Entity<StoreUser>()
+                .HasOne(su => su.Cart)
+                .WithOne(c => c.StoreUser)
+                .HasForeignKey<Cart>(c => c.StoreUserId);
         }
     }
 }

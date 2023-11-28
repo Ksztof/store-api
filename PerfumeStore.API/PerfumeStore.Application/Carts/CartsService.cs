@@ -1,9 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Carts;
@@ -12,6 +15,7 @@ using PerfumeStore.Domain.DTOs.Request;
 using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.Results;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Carts
 {
@@ -21,13 +25,19 @@ namespace PerfumeStore.Application.Carts
         private readonly IProductsRepository _productsRepository;
         private readonly ICookiesService _cookiesService;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextService _httpContextService;
+        private readonly UserManager<StoreUser> _userManager;
 
-        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService, IMapper mapper)
+        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService, IMapper mapper, IHttpContextAccessor httpContextAccessor, IHttpContextService httpContextService, UserManager<StoreUser> userManager)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
             _cookiesService = guestSessionService;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+            _httpContextService = httpContextService;
+            _userManager = userManager;
         }
 
         public async Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApplication request)
@@ -44,10 +54,36 @@ namespace PerfumeStore.Application.Carts
                 return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
+            AddProductsToCartDtoDomain addProductsToCartDtoDomain = _mapper.Map<AddProductsToCartDtoDomain>(request);
+
+            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            if (isUserAuthenticated)
+            {
+                string userId = _httpContextService.GetUserNameIdentifierClaim();
+
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                if (userCart == null)
+                {
+                    userCart = new Cart { StoreUserId = userId };
+                    userCart.AddProducts(newProductsIds);
+                    userCart.UpdateProductsQuantity(addProductsToCartDtoDomain);
+                    userCart = await _cartsRepository.CreateAsync(userCart);
+                }
+                else
+                {
+                    userCart.AddProducts(newProductsIds);
+                    userCart.UpdateProductsQuantity(addProductsToCartDtoDomain);
+                    userCart = await _cartsRepository.UpdateAsync(userCart);
+                }
+
+                CartResponse userCartResponse = MapCartResponse(userCart);
+
+                return Result<CartResponse>.Success(userCartResponse);
+            }
+
             int? GuestCartId = _cookiesService.GetCartId();
 
             Cart? cart;
-            AddProductsToCartDtoDomain addProductsToCartDtoDomain = _mapper.Map<AddProductsToCartDtoDomain>(request);
             if (GuestCartId != null)
             {
                 cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);

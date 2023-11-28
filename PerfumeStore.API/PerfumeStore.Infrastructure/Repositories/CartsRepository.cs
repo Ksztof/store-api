@@ -51,5 +51,13 @@ namespace PerfumeStore.Infrastructure.Repositories
             _shopDbContext.CartsLine.RemoveRange(cartLines);
             await _shopDbContext.SaveChangesAsync();
         }
+
+        public async Task<Cart> GetByUserIdAsync(string userId)
+        {
+            Cart cart = await _shopDbContext.Carts
+                .SingleOrDefaultAsync(x => x.StoreUserId == userId);
+
+            return cart;
+        }
     }
 }
