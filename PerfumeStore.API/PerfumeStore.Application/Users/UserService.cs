@@ -9,6 +9,8 @@ using PerfumeStore.Application.Core;
 using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
@@ -29,10 +31,10 @@ namespace PerfumeStore.Application.Users
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICookieService _guestSessionService;
+        private readonly ICookiesService _guestSessionService;
         private readonly ICartsService _cartsService;
 
-        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICookieService guestSessionService, ICartsService cartsService)
+        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICookiesService guestSessionService, ICartsService cartsService)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -48,7 +50,7 @@ namespace PerfumeStore.Application.Users
 
         public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
         {
-            var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
+            StoreUser user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
             {
                 AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" }; //KM wpisałbym bardziej opisową wiadomość w stylu "User not found or password is incorrect"
@@ -71,8 +73,12 @@ namespace PerfumeStore.Application.Users
             int? cartId = _guestSessionService.GetCartId();
             if (cartId is not null)
             {
-                var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
-                user.Carts.Add(cart); //KM Użytkownik może mieć wiele koszyków?
+                Result<Cart>? cart = await _cartsService.GetCartByIdAsync(cartId.Value);
+                if (cart == null)
+                {
+
+                }
+                user.Carts.Add(cart.Entity); //KM Użytkownik może mieć wiele koszyków?
                 var updateUser = await _userManager.UpdateAsync(user);
                 if (!updateUser.Succeeded)
                     throw new UserModificationEx("UpdateAsync", user.Id);

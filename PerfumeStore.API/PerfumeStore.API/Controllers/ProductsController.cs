@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Products;
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.EnumsEtc;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -18,39 +21,61 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles.Administrator)]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
         {
-            ProductResponse createdProduct = await _productService.CreateProductAsync(createProductForm);
-            return Ok(createdProduct);
-        }
+            Result<ProductResponse> result = await _productService.CreateProductAsync(createProductForm);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
-        [HttpPut("{productId}")]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
-        {
-            ProductResponse updatedProductId = await _productService.UpdateProductAsync(updateform, productId);
-            return Ok(updatedProductId);
+            return Ok(result.Entity);
         }
 
         [HttpDelete("{productId}")]
+        [Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProductAsync(int productId)
         {
-            await _productService.DeleteProductAsync(productId);
+            var result = await _productService.DeleteProductAsync(productId);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
             return NoContent();
         }
 
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetProductByIdAsync(int productId)
         {
-            ProductResponse product = await _productService.GetProductByIdAsync(productId);
-            return Ok(product);
+            Result<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
+            if (result.IsFailure)
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok(result.Entity);
         }
 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAllProductsAsync()
         {
-            IEnumerable<ProductResponse> products = await _productService.GetAllProductsAsync();
-            return Ok(products);
+            IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
+            if (!result.Any())
+                return Ok("The list of products is empty");
+
+            return Ok(result);
+        }
+
+        [HttpPut("{productId}")]
+        [Authorize(Roles.Administrator)]
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
+        {
+            Result<ProductResponse> result = await _productService.UpdateProductAsync(updateform, productId);
+            if (result.IsFailure)
+            {
+                return NotFound(result.Error);
+            }
+
+            return Ok(result.Entity);
         }
     }
 }

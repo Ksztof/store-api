@@ -10,19 +10,19 @@ namespace PerfumeStore.Application.Orders
     public class OrdersService : IOrdersService
     {
         public readonly IOrdersRepository _ordersRepository;
-        private readonly ICookieService _guestSessionService;
+        private readonly ICookiesService _cookiesService;
         private readonly ICartsRepository _cartsRepository;
 
-        public OrdersService(IOrdersRepository ordersRepository, ICookieService guestSessionService, ICartsRepository cartsRepository)
+        public OrdersService(IOrdersRepository ordersRepository, ICookiesService _cookiesService, ICartsRepository cartsRepository)
         {
             _ordersRepository = ordersRepository;
-            _guestSessionService = guestSessionService;
+            _cookiesService = _cookiesService;
             _cartsRepository = cartsRepository;
         }
 
         public async Task<OrderResponse> CreateOrderAsync()
         {
-            int? GuestCartId = _guestSessionService.GetCartId();
+            int? GuestCartId = _cookiesService.GetCartId();
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
