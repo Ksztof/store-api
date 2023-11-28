@@ -10,6 +10,7 @@ using PerfumeStore.API.Mapper;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
+using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Application.Mapper;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Products;
@@ -36,6 +37,7 @@ builder.Services.AddHttpClient();
 // Add services to the container.\
 
 builder.Services.AddTransient<IProductsService, ProductsService>();
+builder.Services.AddTransient<IHttpContextService, HttpContextService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
 builder.Services.AddTransient<ICartsService, CartsService>();

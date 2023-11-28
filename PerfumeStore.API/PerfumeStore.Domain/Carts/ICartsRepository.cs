@@ -13,5 +13,7 @@ namespace PerfumeStore.Domain.Carts
         public Task DeleteCartLineAsync(CartLine cartLine);
 
         public Task ClearCartAsync(ICollection<CartLine> cartLines);
+
+        public Task<Cart> GetByUserIdAsync(string userEmail);
     }
 }

@@ -12,6 +12,6 @@ namespace PerfumeStore.Domain.Abstractions
     {
         public static readonly Error None = new(string.Empty);
 
-       /* public static implicit operator Result<Error>(Error error) => Result<Error>.Failure(error);*/
+        public static implicit operator Result<Error>(Error error) => Result<Error>.Failure(error);
     }
 }

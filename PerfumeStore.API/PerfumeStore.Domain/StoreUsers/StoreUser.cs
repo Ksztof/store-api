@@ -7,6 +7,6 @@ namespace PerfumeStore.Domain.StoreUsers
     {
 
         public bool IsDeleteRequested { get; set; }
-        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+        public Cart? Cart { get; set; }
     }
 }
