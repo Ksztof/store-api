@@ -13,7 +13,7 @@ namespace PerfumeStore.Domain.Results
     {
         public static Error MissingEntity(TId entityId)
         {
-            return new($"{typeof(T).Name}.MissingEntity", $"Entity with ID: {entityId} is missing");
+            return new Error($"{typeof(T).Name}.MissingEntity", $"Entity with ID: {entityId} is missing");
         }
 
         public static Error MissingEntities()

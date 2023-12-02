@@ -7,11 +7,11 @@ namespace PerfumeStore.Application.Products
 {
     public interface IProductsService
     {
-        public Task<Result<ProductResponse>> CreateProductAsync(CreateProductForm createProductForm);
-        public Task<Result<Product>> DeleteProductAsync(int productId);
-        public Task<Result<ProductResponse>> GetProductByIdAsync(int productId);
+        public Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductForm createProductForm);
+        public Task<EntityResult<Product>> DeleteProductAsync(int productId);
+        public Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId);
         public Task<IEnumerable<ProductResponse>> GetAllProductsAsync();
-        public Task<Result<ProductResponse>> UpdateProductAsync(UpdateProductForm updateForm, int productId);
+        public Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductForm updateForm, int productId);
 
     }
 }

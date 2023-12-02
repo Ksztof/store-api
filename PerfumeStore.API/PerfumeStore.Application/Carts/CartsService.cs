@@ -40,13 +40,16 @@ namespace PerfumeStore.Application.Carts
             _userManager = userManager;
         }
 
-        public async Task<Result<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApplication request)
+        public async Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApplication request)
         {
-            int? GuestCartId = _cookiesService.GetCartId();
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
-            if (GuestCartId == null && isUserAuthenticated == false)
+            int? GuestCartId = _cookiesService.GetCartId();
+            
+            if (GuestCartId == null && isUserAuthenticated == false) 
             {
-                return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntity(222222222));
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<CartResponse>.Failure(error);
             }
 
             int[] newProductsIds = request.Products.Select(product => product.ProductId).ToArray();
@@ -58,7 +61,7 @@ namespace PerfumeStore.Application.Carts
             if (newProductsIds.Count() != dbProductsIds.Count())
             {
                 var missingIds = newProductsIds.Except(dbProductsIds).ToArray();
-                return Result<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
             AddProductsToCartDtoDomain addProductsToCartDtoDomain = _mapper.Map<AddProductsToCartDtoDomain>(request);
@@ -84,7 +87,7 @@ namespace PerfumeStore.Application.Carts
 
                 CartResponse userCartResponse = MapCartResponse(userCart);
 
-                return Result<CartResponse>.Success(userCartResponse);
+                return EntityResult<CartResponse>.Success(userCartResponse);
             }
 
             Cart? cart;
@@ -93,7 +96,7 @@ namespace PerfumeStore.Application.Carts
                 cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
                 if (cart is null)
                 {
-                    return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
                 cart.AddProducts(newProductsIds);
@@ -111,16 +114,19 @@ namespace PerfumeStore.Application.Carts
 
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return Result<CartResponse>.Success(cartResponse);
+            return EntityResult<CartResponse>.Success(cartResponse);
         }
 
-        public async Task<Result<CartResponse>> DeleteCartLineFromCartAsync(int productId)
+        public async Task<EntityResult<CartResponse>> DeleteCartLineFromCartAsync(int productId)
         {
-            int? GuestCartId = _cookiesService.GetCartId();
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            int? GuestCartId = _cookiesService.GetCartId();
+
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productId));
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<CartResponse>.Failure(error);
             }
 
             if (isUserAuthenticated)
@@ -130,13 +136,13 @@ namespace PerfumeStore.Application.Carts
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    return Result<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
                 }
 
                 CartLine? userCartLine = userCart?.CartLines?.FirstOrDefault(cl => cl.ProductId == productId);
                 if (userCartLine == null)
                 {
-                    return Result<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId)); 
+                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId)); 
                 }
 
                 userCart?.DeleteCartLineFromCart(productId);
@@ -145,19 +151,19 @@ namespace PerfumeStore.Application.Carts
 
                 CartResponse userCartResponse = MapCartResponse(userCart);
 
-                return Result<CartResponse>.Success(userCartResponse);
+                return EntityResult<CartResponse>.Success(userCartResponse);
             }
 
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
             }
 
             CartLine? cartLine = cart.CartLines.FirstOrDefault(x => x.ProductId == productId);
             if (cartLine == null)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));//TODO: should return cartline Id not Cart because this cart exist 
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));//TODO: should return cartline Id not Cart because this cart exist 
             }
 
             await _cartsRepository.DeleteCartLineAsync(cartLine);
@@ -165,40 +171,43 @@ namespace PerfumeStore.Application.Carts
             cart = await _cartsRepository.UpdateAsync(cart);
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return Result<CartResponse>.Success(cartResponse);
+            return EntityResult<CartResponse>.Success(cartResponse);
         }
 
-        public async Task<Result<CartResponse>> GetCartResponseByIdAsync(int cartId)
+        public async Task<EntityResult<CartResponse>> GetCartResponseByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
             }
 
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return Result<CartResponse>.Success(cartResponse);
+            return EntityResult<CartResponse>.Success(cartResponse);
         }
 
-        public async Task<Result<Cart>> GetCartByIdAsync(int cartId)
+        public async Task<EntityResult<Cart>> GetCartByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
-                return Result<Cart>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
+                return EntityResult<Cart>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
             }
 
-            return Result<Cart>.Success(cart);
+            return EntityResult<Cart>.Success(cart);
         }
 
-        public async Task<Result<CartResponse>> ModifyProductAsync(ModifyProductDtoApplication productModification)
+        public async Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApplication productModification)
         {
-            int? GuestCartId = _cookiesService.GetCartId();
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            int? GuestCartId = _cookiesService.GetCartId();
+
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<CartResponse>.Failure(error);
             }
 
             ModifyProductDtoDomain modifiedProductForDomain = _mapper.Map<ModifyProductDtoDomain>(productModification);
@@ -210,7 +219,7 @@ namespace PerfumeStore.Application.Carts
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
                 }
 
                 userCart.ModifyProduct(modifiedProductForDomain);
@@ -219,13 +228,13 @@ namespace PerfumeStore.Application.Carts
 
                 CartResponse userCartResponse = MapCartResponse(userCart);
 
-                return Result<CartResponse>.Success(userCartResponse);
+                return EntityResult<CartResponse>.Success(userCartResponse);
             }
 
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
             }
 
             cart.ModifyProduct(modifiedProductForDomain);
@@ -234,16 +243,19 @@ namespace PerfumeStore.Application.Carts
 
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return Result<CartResponse>.Success(cartResponse);
+            return EntityResult<CartResponse>.Success(cartResponse);
         }
 
-        public async Task<Result<AboutCartRes>> CheckCartAsync()
+        public async Task<EntityResult<AboutCartRes>> CheckCartAsync()
         {
-            int? GuestCartId = _cookiesService.GetCartId();
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            int? GuestCartId = _cookiesService.GetCartId();
+
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                return Result<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<AboutCartRes>.Failure(error);
             }
 
             if (isUserAuthenticated)
@@ -253,32 +265,35 @@ namespace PerfumeStore.Application.Carts
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    return Result<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
                 AboutCartRes aboutUserCartResposne = userCart.CheckCart();
 
-                return Result<AboutCartRes>.Success(aboutUserCartResposne);
+                return EntityResult<AboutCartRes>.Success(aboutUserCartResposne);
             }
 
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
-                return Result<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
             }
 
             AboutCartRes aboutCartResposne = cart.CheckCart();
 
-            return Result<AboutCartRes>.Success(aboutCartResposne);
+            return EntityResult<AboutCartRes>.Success(aboutCartResposne);
         }
 
-        public async Task<Result<CartResponse>> ClearCartAsync()
+        public async Task<EntityResult<CartResponse>> ClearCartAsync()
         {
-            int? GuestCartId = _cookiesService.GetCartId();
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            int? GuestCartId = _cookiesService.GetCartId();
+
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<CartResponse>.Failure(error);
             }
 
             if (isUserAuthenticated)
@@ -288,7 +303,7 @@ namespace PerfumeStore.Application.Carts
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
                 ICollection<CartLine> userCartLines = userCart.CartLines;
@@ -300,7 +315,7 @@ namespace PerfumeStore.Application.Carts
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
-                return Result<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
             }
 
             ICollection<CartLine> cartLines = cart.CartLines;
@@ -308,7 +323,7 @@ namespace PerfumeStore.Application.Carts
             cart.ClearCart();
             CartResponse cartResponse = MapCartResponse(cart);
 
-            return Result<CartResponse>.Success(cartResponse);
+            return EntityResult<CartResponse>.Success(cartResponse);
         }
 
         private static CartResponse MapCartResponse(Cart cart)
