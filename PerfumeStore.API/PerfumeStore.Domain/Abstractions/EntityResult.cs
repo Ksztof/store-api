@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Domain.Abstractions
 {
-    public class Result<TEntity>
+    public class EntityResult<TEntity>
     {
         public bool IsSuccess { get; }
         public bool IsFailure => !IsSuccess;
         public Error Error { get; }
         public TEntity? Entity { get; }
 
-        private Result(bool isSuccess, Error error, TEntity? entity = default)
+        public EntityResult(bool isSuccess, Error error, TEntity? entity = default)
         {
             if (isSuccess && error != Error.None ||
                 !isSuccess && error == Error.None)
@@ -27,13 +27,8 @@ namespace PerfumeStore.Domain.Abstractions
             Entity = entity;
         }
 
-        public static implicit operator Result<TEntity>(Error error)
-        {
-            return new Result<TEntity>(false, error);
-        }
-
-        public static Result<TEntity> Success() => new(true, Error.None);
-        public static Result<TEntity> Success(TEntity entity) => new(true, Error.None, entity);
-        public static Result<TEntity> Failure(Error error) => new(false, error, default);
+        public static EntityResult<TEntity> Success() => new(true, Error.None);
+        public static EntityResult<TEntity> Success(TEntity entity) => new(true, Error.None, entity);
+        public static EntityResult<TEntity> Failure(Error error) => new(false, error, default);
     }
 }
