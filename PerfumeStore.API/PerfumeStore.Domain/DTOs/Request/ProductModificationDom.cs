@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Domain.DTOs.Request
 {
-    public class ModifyProductDtoDomain
+    public class ProductModificationDom
     {
-        public ProductModificationDomain Product { get; set; }
+        public int ProductId { get; set; }
+        public decimal Quantity { get; set; }
     }
 }

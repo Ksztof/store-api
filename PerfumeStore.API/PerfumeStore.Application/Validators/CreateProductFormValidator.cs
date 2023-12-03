@@ -3,7 +3,7 @@ using PerfumeStore.Domain.Core.DTO;
 
 namespace PerfumeStore.Application.Validators
 {
-    public class CreateProductFormValidator : AbstractValidator<CreateProductForm>
+    public class CreateProductFormValidator : AbstractValidator<CreateProductDtoDom>
     {
         public CreateProductFormValidator()
         {

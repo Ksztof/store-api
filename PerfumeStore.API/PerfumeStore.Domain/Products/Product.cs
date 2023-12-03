@@ -14,13 +14,13 @@ namespace PerfumeStore.Domain.Products
 
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
         public ICollection<CartLine> CartLines { get; set; } = new List<CartLine>();
         public ICollection<ProductProductCategory> ProductProductCategories { get; set; } = new List<ProductProductCategory>();
 
-        public void CreateProduct(CreateProductForm createProductForm, ICollection<ProductCategory> productCategories)
+        public void CreateProduct(CreateProductDtoDom createProductForm, ICollection<ProductCategory> productCategories)
         {
             Name = createProductForm.ProductName;
             Price = createProductForm.ProductPrice;
@@ -34,17 +34,17 @@ namespace PerfumeStore.Domain.Products
             DateAdded = DateTime.Now;
         }
 
-        public void UpdateProduct(UpdateProductForm updateForm, ICollection<ProductCategory> productCategories)
+        public void UpdateProduct(UpdateProductDtoDom updateProductForm, ICollection<ProductCategory> productCategories)
         {
-            Name = updateForm.ProductName;
-            Price = updateForm.ProductPrice;
-            Description = updateForm.ProductDescription;
+            Name = updateProductForm.ProductName; //:TODO check if name has been changed if not, leave old value
+            Price = updateProductForm.ProductPrice;
+            Description = updateProductForm.ProductDescription;
             ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
             {
                 Product = this,
                 ProductCategory = pc
             }).ToList();
-            Manufacturer = updateForm.ProductManufacturer;
+            Manufacturer = updateProductForm.ProductManufacturer;
             DateAdded = DateTime.Now;
         }
     }

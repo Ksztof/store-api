@@ -5,7 +5,6 @@ namespace PerfumeStore.Domain.StoreUsers
 {
     public class StoreUser : IdentityUser
     {
-
         public bool IsDeleteRequested { get; set; }
         public Cart? Cart { get; set; }
     }

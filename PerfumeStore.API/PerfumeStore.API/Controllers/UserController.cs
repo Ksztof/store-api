@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
+using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Users;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -11,47 +16,54 @@ namespace PerfumeStore.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
+        public async Task<IActionResult> Login([FromBody] AuthenticateUserDtoApi userAuthRequest)
         {
-            AuthResponseDto authResponse = await _userService.Login(userForAuthentication);
-            if (authResponse.ErrorMessage != null)
+            AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
+
+            AuthenticationResult response = await _userService.Login(authenticateUserDto);
+            if (response.IsFailure)
             {
-                return Unauthorized(authResponse.ErrorMessage);
+                return Unauthorized(response.Error);
             }
 
-            return Ok(authResponse);
+            return Ok(response.Token);
         }
 
-        [HttpPost("Registration")]
-        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDtoApi userRegRequest)
         {
-            if (userForRegistration == null || !ModelState.IsValid)
+            if (userRegRequest == null || !ModelState.IsValid)
                 return BadRequest();
 
-            RegistrationResponseDto registResponse = await _userService.RegisterUser(userForRegistration);
 
-            if (registResponse.Message != null)
-            {
-                return Conflict(registResponse.Message);
-            }
+            StoreUser StoreUser = _mapper.Map<StoreUser>(userRegRequest);
 
-            if (registResponse.IsSuccessfulRegistration != true)
+            RegisterUserDtoApp registerUserDtoApp = new RegisterUserDtoApp
             {
-                return BadRequest(registResponse.Errors);
+                StoreUser = StoreUser,
+                Password = userRegRequest.Password
+            };
+
+            RegistrationResponseDto registResponse = await _userService.RegisterUser(registerUserDtoApp);
+
+            if (registResponse.i)
+            {
+
             }
 
             return StatusCode(201);
         }
 
-        [HttpGet("ConfirmEmail")] //KM to nazewnictwo jest średnie, lepiej zostaw samo "confirm". Nikt nie musi wiedzieć, że potwierdzneie odbywa się przez email
-                                  //KM równie dobrze kiedyś na wejściu możesz przekazać metodę potwierdzenia email/sms/telefon
+        [HttpGet("Confirm")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))

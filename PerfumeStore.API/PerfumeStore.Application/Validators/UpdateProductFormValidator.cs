@@ -3,7 +3,7 @@ using PerfumeStore.Domain.Core.DTO;
 
 namespace PerfumeStore.Application.Validators
 {
-    public class UpdateProductFormValidator : AbstractValidator<UpdateProductForm>
+    public class UpdateProductFormValidator : AbstractValidator<UpdateProductDtoDom>
     {
         public UpdateProductFormValidator()
         {

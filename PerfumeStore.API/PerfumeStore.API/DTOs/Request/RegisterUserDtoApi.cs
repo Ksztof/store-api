@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeStore.Application.DTOs.Request
+namespace PerfumeStore.API.DTOs.Request
 {
-    public class UserForRegistrationDto
+    public class RegisterUserDtoApi
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

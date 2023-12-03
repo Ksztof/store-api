@@ -9,11 +9,23 @@ namespace PerfumeStore.API.Mapper
     {
         public MappingProfileApi()
         {
-            CreateMap<AddProductsToCartRequest, AddProductsToCartDtoApplication>();
-            CreateMap<ProductInCartRequest, ProductInCartApplication>();
+            CreateMap<AddProductsToCartDtoApi, AddProductsToCartDtoApp>();
+            CreateMap<ProductInCartApi, ProductInCartApp>();
 
-            CreateMap<ModifyProductRequest, ModifyProductDtoApplication>();
-            CreateMap<ProductModificationRequest, ProductModificationApplication>();
+            CreateMap<ModifyProductDtoApi, ModifyProductDtoApp>();
+            CreateMap<ProductModificationApi, ProductModificationApp>();
+
+            CreateMap<AuthenticateUserDtoApi, AuthenticateUserDtoApp>();
+
+            CreateMap<RegisterUserDtoApi, RegisterUserDtoApp>();
+
+            CreateMap<CreateProductDtoApi, CreateProductDtoApp>();
+
+            CreateMap<UpdateProductDtoApi, UpdateProductDtoApp>();
+
+            CreateMap<RegisterUserDtoApi, StoreUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
         }
+    }
     }
 }

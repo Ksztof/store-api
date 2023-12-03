@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.API.DTOs.Request
 {
-    public class ModifyProductRequest
+    public class ModifyProductDtoApi
     {
-        public ProductModificationRequest Product { get; set; }
+        public ProductModificationApi Product { get; set; }
     }
 }
