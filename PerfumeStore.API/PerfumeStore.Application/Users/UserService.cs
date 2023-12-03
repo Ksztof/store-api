@@ -86,26 +86,39 @@ namespace PerfumeStore.Application.Users
             return AuthenticationResult.Success(tokenResponse);
         }
 
-        public async Task<RegistrationResponseDto> RegisterUser(RegisterUserDtoApp userForRegistration)
+        public async Task<AuthenticationResult> RegisterUser(RegisterUserDtoApp userForRegistration)
         {
-            var userExists = await _userManager.FindByEmailAsync(userForRegistration.StoreUser.Email);
+            StoreUser storeUser = userForRegistration.StoreUser;
+
+            var userExists = await _userManager.FindByEmailAsync(storeUser.Email);
+
             if (userExists != null)
             {
-                return new RegistrationResponseDto { Message = "Email is already taken." };
+                return AuthenticationErrors.EmailAlreadyTaken;
             }
             
-            var result = await _userManager.CreateAsync(userForRegistration.StoreUser, userForRegistration.Password);
+            var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description);
-                return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
-            }
+                IEnumerable<string> errors = result.Errors.Select(e => e.Description);
 
+                return AuthenticationErrors.IdentityErrors(errors);
+            }
+            
             int? cartId = _guestSessionService.GetCartId();
-            if (cartId is not null)
+            if (cartId != null)
             {
-                var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
-                user.Carts.Add(cart);
+
+
+                //MOVE TO CART SERVICE LOGIC FOR ASASSIGNGING USER TO CART
+                EntityResult<Cart> cart = await _cartsService.GetCartByIdAsync(cartId.Value);//Is it ok to get cart in user service?
+                if (cart.Entity == null)
+                {
+                    var error = EntityErrors<Cart, int>.MissingEntity(cartId.Value);
+                    return AuthenticationResult.Failure(error);
+                }
+
+                cart.Entity.AssignUserToCart(storeUser.Id);
             }
 
             string visitorRole = Roles.Visitor;
@@ -116,11 +129,11 @@ namespace PerfumeStore.Application.Users
                 await _roleManager.CreateAsync(new IdentityRole(visitorRole));
 
             if (await _roleManager.RoleExistsAsync(visitorRole))
-                await _userManager.AddToRoleAsync(user, visitorRole);
+                await _userManager.AddToRoleAsync(storeUser, visitorRole);
 
-            await _emailService.SendActivationLink(user);
+            await _emailService.SendActivationLink(storeUser);
 
-            return new RegistrationResponseDto { IsSuccessfulRegistration = true };
+            return AuthenticationResult.Success();
         }
 
         public async Task<bool> ConfirmEmail(string userId, string emailToken)

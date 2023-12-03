@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Domain.Abstractions;
+﻿using Microsoft.AspNetCore.Identity;
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Interfaces;
 using System;
@@ -23,5 +24,9 @@ namespace PerfumeStore.Domain.Errors
         public static readonly Error EmailNotConfirmed = new("Authentication.EmailNotConfirmed", "Account is not activated, please check your email and activate your account with activation link");
 
         public static readonly Error UnableToGetToken = new("Authentication.UnableToGetToken", "There were issues during token generation.");
+
+        public static readonly Error EmailAlreadyTaken = new("Authentication.EmailAlreadyTaken", "Email is already in use.");
+
+        public static Error IdentityErrors(IEnumerable<string> errors) => new("Authentication.IdentityError", $"{errors}");
     }
 }
