@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.Domain.Core.DTO
 {
-    public class UpdateProductForm
+    public class UpdateProductDtoDom
     {
         public string? ProductName { get; set; }
         public decimal ProductPrice { get; set; }

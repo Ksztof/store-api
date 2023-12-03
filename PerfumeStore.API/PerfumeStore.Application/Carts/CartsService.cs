@@ -12,9 +12,9 @@ using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
+using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.Results;
 using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Carts
@@ -29,7 +29,14 @@ namespace PerfumeStore.Application.Carts
         private readonly IHttpContextService _httpContextService;
         private readonly UserManager<StoreUser> _userManager;
 
-        public CartsService(ICartsRepository cartsRepository, IProductsRepository productsRepository, ICookiesService guestSessionService, IMapper mapper, IHttpContextAccessor httpContextAccessor, IHttpContextService httpContextService, UserManager<StoreUser> userManager)
+        public CartsService(
+            ICartsRepository cartsRepository,
+            IProductsRepository productsRepository,
+            ICookiesService guestSessionService,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor,
+            IHttpContextService httpContextService,
+            UserManager<StoreUser> userManager)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
@@ -40,7 +47,7 @@ namespace PerfumeStore.Application.Carts
             _userManager = userManager;
         }
 
-        public async Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApplication request)
+        public async Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApp request)
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
@@ -64,7 +71,7 @@ namespace PerfumeStore.Application.Carts
                 return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingIds));
             }
 
-            AddProductsToCartDtoDomain addProductsToCartDtoDomain = _mapper.Map<AddProductsToCartDtoDomain>(request);
+            AddProductsToCartDtoDom addProductsToCartDtoDomain = _mapper.Map<AddProductsToCartDtoDom>(request);
 
             if (isUserAuthenticated)
             {
@@ -198,7 +205,7 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<Cart>.Success(cart);
         }
 
-        public async Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApplication productModification)
+        public async Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApp productModification)
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
@@ -210,7 +217,7 @@ namespace PerfumeStore.Application.Carts
                 return EntityResult<CartResponse>.Failure(error);
             }
 
-            ModifyProductDtoDomain modifiedProductForDomain = _mapper.Map<ModifyProductDtoDomain>(productModification);
+            ModifyProductDtoDom modifiedProductForDomain = _mapper.Map<ModifyProductDtoDom>(productModification);
 
             if (isUserAuthenticated)
             {
@@ -324,6 +331,21 @@ namespace PerfumeStore.Application.Carts
             CartResponse cartResponse = MapCartResponse(cart);
 
             return EntityResult<CartResponse>.Success(cartResponse);
+        }
+
+        public async Task<EntityResult<CartResponse>> AssignCartToUserAsync(string userId, int cartId)
+        {
+            Cart? userCart = await _cartsRepository.GetByIdAsync(cartId);
+            if (userCart == null) 
+            {
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
+            }
+
+            userCart.AssignUserToCart(userId);
+
+            await _cartsRepository.UpdateAsync(userCart); //TODO: check update operation on repo
+
+            return EntityResult<CartResponse>.Success();
         }
 
         private static CartResponse MapCartResponse(Cart cart)

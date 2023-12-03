@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeStore.Application.DTOs.Request
+namespace PerfumeStore.API.DTOs.Request
 {
-    public class UserForAuthenticationDto
+    public class AuthenticateUserDtoApi
     {
         [Required(ErrorMessage = "Email is required.")]
         public string Email { get; set; }

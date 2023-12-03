@@ -12,6 +12,7 @@ using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.EnumsEtc;
+using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
 using System.Data;
@@ -48,74 +49,76 @@ namespace PerfumeStore.Application.Users
             _cartsService = cartsService;
         }
 
-        public async Task<Result<StoreUser>> Login(UserForAuthenticationDto userForAuthentication)
+        public async Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication)
         {
             StoreUser user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
+            if (user == null)
             {
-                AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Invalid Authentication" }; //KM wpisałbym bardziej opisową wiadomość w stylu "User not found or password is incorrect"
-                return failedResponse;
+                return AuthenticationErrors.UserDoesntExist;
+            }
+
+            if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
+            {
+                return AuthenticationErrors.InvalidCredentials;
             }
 
             if (!user.EmailConfirmed)
             {
-                return new AuthResponseDto { ErrorMessage = "Please activate your account" };
+                return AuthenticationErrors.EmailNotConfirmed;
             }
 
             var tokenResponse = await _tokenService.GetToken(user);
-
             if (tokenResponse == string.Empty)
             {
-                AuthResponseDto failedResponse = new AuthResponseDto { ErrorMessage = "Error obtaining token" };
-                return failedResponse;
+                return AuthenticationErrors.UnableToGetToken;
             }
 
             int? cartId = _guestSessionService.GetCartId();
             if (cartId is not null)
             {
-                Result<Cart>? cart = await _cartsService.GetCartByIdAsync(cartId.Value);
-                if (cart == null)
+                EntityResult<CartResponse> result = await _cartsService.AssignCartToUserAsync(user.Id, cartId.Value);
+                if (result.IsFailure)
                 {
-
+                    return AuthenticationResult.Failure(result.Error);
                 }
-                user.Carts.Add(cart.Entity); //KM Użytkownik może mieć wiele koszyków?
-                var updateUser = await _userManager.UpdateAsync(user);
-                if (!updateUser.Succeeded)
-                    throw new UserModificationEx("UpdateAsync", user.Id);
             }
 
-            AuthResponseDto authResponse = new AuthResponseDto
-            {
-                IsAuthSuccessful = true,
-                Token = tokenResponse
-            };
-
-            return authResponse;
+            return AuthenticationResult.Success(tokenResponse);
         }
 
-        public async Task<RegistrationResponseDto> RegisterUser(UserForRegistrationDto userForRegistration)
+        public async Task<AuthenticationResult> RegisterUser(RegisterUserDtoApp userForRegistration)
         {
-            var userExists = await _userManager.FindByEmailAsync(userForRegistration.Email);
+            StoreUser storeUser = userForRegistration.StoreUser;
+
+            var userExists = await _userManager.FindByEmailAsync(storeUser.Email);
+
             if (userExists != null)
             {
-                return new RegistrationResponseDto { Message = "Email is already taken." };
+                return AuthenticationErrors.EmailAlreadyTaken;
             }
-
-            var user = _mapper.Map<StoreUser>(userForRegistration); //KM nie wiem czy mappera nie lepiej używać na poziomie kontrolera
-                                                                    //wtedy mógłbyś przekazywać bezpośrednio do serwisu RegisterUser(StoreUser user), według mnie to lepsze podejście
-                                                                    // dzięki temu twój serwis aplikacyjny serwisy i domena są całkowicie odseparowane od API
-            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+            
+            var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
             if (!result.Succeeded)
             {
-                var errors = result.Errors.Select(e => e.Description);
-                return new RegistrationResponseDto { Errors = errors, IsSuccessfulRegistration = false };
-            }
+                IEnumerable<string> errors = result.Errors.Select(e => e.Description);
 
+                return AuthenticationErrors.IdentityErrors(errors);
+            }
+            
             int? cartId = _guestSessionService.GetCartId();
-            if (cartId is not null)
+            if (cartId != null)
             {
-                var cart = await _cartsService.GetCartByIdAsync(cartId.Value);
-                user.Carts.Add(cart);
+
+
+                //MOVE TO CART SERVICE LOGIC FOR ASASSIGNGING USER TO CART
+                EntityResult<Cart> cart = await _cartsService.GetCartByIdAsync(cartId.Value);//Is it ok to get cart in user service?
+                if (cart.Entity == null)
+                {
+                    var error = EntityErrors<Cart, int>.MissingEntity(cartId.Value);
+                    return AuthenticationResult.Failure(error);
+                }
+
+                cart.Entity.AssignUserToCart(storeUser.Id);
             }
 
             string visitorRole = Roles.Visitor;
@@ -126,11 +129,11 @@ namespace PerfumeStore.Application.Users
                 await _roleManager.CreateAsync(new IdentityRole(visitorRole));
 
             if (await _roleManager.RoleExistsAsync(visitorRole))
-                await _userManager.AddToRoleAsync(user, visitorRole);
+                await _userManager.AddToRoleAsync(storeUser, visitorRole);
 
-            await _emailService.SendActivationLink(user);
+            await _emailService.SendActivationLink(storeUser);
 
-            return new RegistrationResponseDto { IsSuccessfulRegistration = true };
+            return AuthenticationResult.Success();
         }
 
         public async Task<bool> ConfirmEmail(string userId, string emailToken)
@@ -178,38 +181,6 @@ namespace PerfumeStore.Application.Users
                 throw new UserModificationEx("DeleteAsync", user.Id);
 
             return true;
-        }
-
-        private SigningCredentials GetSigningCredentials() //KM nieużywane
-        {
-            var key = Encoding.UTF8.GetBytes(_jwtSettings["securityKey"]);
-            var secret = new SymmetricSecurityKey(key);
-
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
-        }
-
-        private List<Claim> GetClaims(StoreUser user) //KM nieużywane
-        {
-            var claims = new List<Claim>
-            {
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-            //new Claim(ClaimTypes.Name, user.Email)
-            };
-
-            return claims;
-        }
-
-        //KM nieużywane
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
-        {
-            var tokenOptions = new JwtSecurityToken(
-              issuer: _jwtSettings["validIssuer"],
-              audience: _jwtSettings["validAudience"],
-              claims: claims,
-              expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings["expiryInMinutes"])),
-              signingCredentials: signingCredentials);
-
-            return tokenOptions;
         }
     }
 }

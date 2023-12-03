@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Domain.DTOs.Request
 {
-    public class AddProductsToCartDtoDomain
+    public class AddProductsToCartDtoDom
     {
-        public ProductInCartDomain[] Products { get; set; }
+        public ProductInCartDom[] Products { get; set; }
     }
 }

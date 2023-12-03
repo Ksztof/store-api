@@ -1,6 +1,12 @@
-﻿namespace PerfumeStore.Domain.Core.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PerfumeStore.Application.DTOs.Request
 {
-    public class CreateProductForm
+    public class CreateProductDtoApp
     {
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }

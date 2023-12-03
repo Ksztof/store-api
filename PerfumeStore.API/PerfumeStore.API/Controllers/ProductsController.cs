@@ -1,11 +1,16 @@
+using AutoMapper;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.API.DTOs.Request;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.EnumsEtc;
+using PerfumeStore.Domain.Products;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -14,17 +19,21 @@ namespace PerfumeStore.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductsService _productService;
+        private readonly IMapper _mapper;
 
-        public ProductsController(IProductsService productService)
+        public ProductsController(IProductsService productService, IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [Authorize(Roles.Administrator)]
-        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductForm createProductForm)
+        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductDtoApi createProductForm)
         {
-            Result<ProductResponse> result = await _productService.CreateProductAsync(createProductForm);
+            CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm); 
+
+            EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -35,7 +44,7 @@ namespace PerfumeStore.API.Controllers
         [Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProductAsync(int productId)
         {
-            var result = await _productService.DeleteProductAsync(productId);
+            EntityResult<Product> result = await _productService.DeleteProductAsync(productId);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -45,11 +54,9 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetProductByIdAsync(int productId)
         {
-            Result<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
+            EntityResult<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
             if (result.IsFailure)
-            {
                 return NotFound(result.Error);
-            }
 
             return Ok(result.Entity);
         }
@@ -65,15 +72,15 @@ namespace PerfumeStore.API.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{productId}")]
+        [HttpPut("Update")]
         [Authorize(Roles.Administrator)]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductForm updateform, int productId)
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductDtoApi updateProductForm)
         {
-            Result<ProductResponse> result = await _productService.UpdateProductAsync(updateform, productId);
+            UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);
+
+            EntityResult<ProductResponse> result = await _productService.UpdateProductAsync(updateProductDtoApp);
             if (result.IsFailure)
-            {
                 return NotFound(result.Error);
-            }
 
             return Ok(result.Entity);
         }

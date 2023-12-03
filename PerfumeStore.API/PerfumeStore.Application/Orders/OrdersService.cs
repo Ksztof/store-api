@@ -2,9 +2,11 @@
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.Results;
 
@@ -15,17 +17,52 @@ namespace PerfumeStore.Application.Orders
         public readonly IOrdersRepository _ordersRepository;
         private readonly ICookiesService _cookiesService;
         private readonly ICartsRepository _cartsRepository;
+        private readonly IHttpContextService _httpContextService;
 
-        public OrdersService(IOrdersRepository ordersRepository, ICookiesService cookiesService, ICartsRepository cartsRepository)
+        public OrdersService(
+            IOrdersRepository ordersRepository,
+            ICookiesService cookiesService,
+            ICartsRepository cartsRepository,
+            IHttpContextService httpContextService)
         {
             _ordersRepository = ordersRepository;
             _cookiesService = cookiesService;
             _cartsRepository = cartsRepository;
+            _httpContextService = httpContextService;
         }
 
         public async Task<EntityResult<OrderResponse>> CreateOrderAsync()
         {
+            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
+
+            if (GuestCartId == null && isUserAuthenticated == false)
+            {
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<OrderResponse>.Failure(error);
+            }
+
+            if (isUserAuthenticated)
+            {
+                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                if (userCart == null)
+                {
+                    var error = EntityErrors<Cart, int>.MissingEntity(userId);
+
+                    return EntityResult<OrderResponse>.Failure(error);
+                }
+
+                Order userOrder = new Order();
+                userOrder.CreateOrder(userCart.Id);
+                userOrder = await _ordersRepository.CreateOrderAsync(userOrder);
+                AboutCartRes userCartContent = userCart.CheckCart();
+                OrderResponse userOrderResponse = MapAboutCartToOrderRes(userOrder, userCartContent);
+
+                return EntityResult<OrderResponse>.Success(userOrderResponse);
+            }
+
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
             if (cart == null)
             {
@@ -37,8 +74,8 @@ namespace PerfumeStore.Application.Orders
             Order order = new Order();
             order.CreateOrder(cart.Id);
             order = await _ordersRepository.CreateOrderAsync(order);
-            AboutCartRes checkCart = cart.CheckCart();
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, checkCart);
+            AboutCartRes cartContent = cart.CheckCart();
+            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent);
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }
@@ -53,8 +90,8 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            AboutCartRes aboutCart = order.Cart.CheckCart();
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, aboutCart);
+            AboutCartRes cartContent = order.Cart.CheckCart();
+            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent);
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }

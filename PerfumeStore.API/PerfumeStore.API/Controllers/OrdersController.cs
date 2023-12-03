@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Orders;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -18,23 +19,32 @@ namespace PerfumeStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SubmitOrder()
         {
-            OrderResponse order = await _orderService.CreateOrderAsync();
+            EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync();
 
-            return CreatedAtAction("GetOrderById", new { orderId = order.Id }, order);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return CreatedAtAction("GetOrderById", new { orderId = result.Entity.Id }, result.Entity);
         }
 
         [HttpGet("{orderId}", Name = "GetOrderById")]
         public async Task<IActionResult> GetOrderByIdAsync(int orderId)
         {
-            OrderResponse order = await _orderService.GetByIdAsync(orderId);
+            EntityResult<OrderResponse> result = await _orderService.GetByIdAsync(orderId);
 
-            return Ok(order);
+            if(result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Entity);
         }
 
         [HttpDelete("{orderId}")]
         public async Task<IActionResult> DeleteOrderAsync(int orderId)
         {
-            await _orderService.DeleteOrderAsync(orderId);
+            EntityResult<OrderResponse> result = await _orderService.DeleteOrderAsync(orderId);
+            
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return NoContent();
         }
@@ -42,7 +52,10 @@ namespace PerfumeStore.API.Controllers
         [HttpPut("{orderId}/cancel")]
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
-            await _orderService.MarkOrderAsDeletedAsync(orderId);
+            EntityResult<OrderResponse> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
+            
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return NoContent();
         }

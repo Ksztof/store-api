@@ -1,3 +1,4 @@
+using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
@@ -27,7 +28,7 @@ namespace PerfumeStore.Domain.Carts
             CartLines.AddRange(newCartLines);
         }
 
-        public void UpdateProductsQuantity(AddProductsToCartDtoDomain productsWithQuantities)
+        public void UpdateProductsQuantity(AddProductsToCartDtoDom productsWithQuantities)
         {
             foreach (var productWithQuantity in productsWithQuantities.Products)
             {
@@ -43,7 +44,7 @@ namespace PerfumeStore.Domain.Carts
             bool deleteSuccess = CartLines.Remove(cartLine);
         }
 
-        public void ModifyProduct(ModifyProductDtoDomain productModification)
+        public void ModifyProduct(ModifyProductDtoDom productModification)
         {
             CartLine? cartLine = CartLines.FirstOrDefault(cl => cl.ProductId == productModification.Product.ProductId);
 
@@ -67,6 +68,11 @@ namespace PerfumeStore.Domain.Carts
             };
 
             return aboutCart;
+        }
+
+        public void AssignUserToCart(string userId)
+        {
+            StoreUserId = userId;
         }
 
         private IEnumerable<CheckCartDto> GetInformationAboutProducts()

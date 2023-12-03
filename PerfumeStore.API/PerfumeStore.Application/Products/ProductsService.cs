@@ -1,11 +1,13 @@
+using AutoMapper;
 using Castle.Core.Internal;
 using PerfumeStore.Application.CustomExceptions;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.Results;
 using PerfumeStore.Domain.Tokens;
 
 namespace PerfumeStore.Application.Products
@@ -15,15 +17,21 @@ namespace PerfumeStore.Application.Products
         private readonly IProductsRepository _productsRepository;
         private readonly IProductCategoriesRepository _productCategoriesRepository;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public ProductsService(IProductsRepository productsRepository, IProductCategoriesRepository productCategoriesRepository, ITokenService tokenService)
+        public ProductsService(
+            IProductsRepository productsRepository,
+            IProductCategoriesRepository productCategoriesRepository,
+            ITokenService tokenService,
+            IMapper mapper)
         {
             _productsRepository = productsRepository;
             _productCategoriesRepository = productCategoriesRepository;
             _tokenService = tokenService;
+            _mapper = mapper;
         }
 
-        public async Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductForm createProductForm)
+        public async Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductDtoApp createProductForm)
         {
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
 
@@ -37,8 +45,10 @@ namespace PerfumeStore.Application.Products
                 return EntityResult<ProductResponse>.Failure(error);
             }
 
+            CreateProductDtoDom createProductDtoDom = _mapper.Map<CreateProductDtoDom>(createProductForm);
+
             Product product = new Product();
-            product.CreateProduct(createProductForm, productCategories);
+            product.CreateProduct(createProductDtoDom, productCategories);
             product = await _productsRepository.CreateAsync(product);
             ProductResponse productResponse = MapProductResponse(product);
 
@@ -83,12 +93,12 @@ namespace PerfumeStore.Application.Products
             return productsResponse;
         }
 
-        public async Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductForm updateForm, int productId)
+        public async Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductDtoApp updateForm)
         {
-            Product? product = await _productsRepository.GetByIdAsync(productId);
+            Product? product = await _productsRepository.GetByIdAsync(updateForm.productId);
             if (product is null)
             {
-                var error = EntityErrors<Product, int>.MissingEntity(productId);
+                var error = EntityErrors<Product, int>.MissingEntity(updateForm.productId);
 
                 return EntityResult<ProductResponse>.Failure(error);
             }
@@ -104,7 +114,9 @@ namespace PerfumeStore.Application.Products
                 return EntityResult<ProductResponse>.Failure(error);
             }
 
-            product.UpdateProduct(updateForm, newProductCategories);
+            UpdateProductDtoDom updateProductDtoDom = _mapper.Map<UpdateProductDtoDom>(updateForm);
+
+            product.UpdateProduct(updateProductDtoDom, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
             ProductResponse productResponse = MapProductResponse(product);
 

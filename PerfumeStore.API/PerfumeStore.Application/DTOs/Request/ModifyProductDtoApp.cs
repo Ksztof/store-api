@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Application.DTOs.Request
 {
-    public class ProductInCartApplication
+    public class ModifyProductDtoApp
     {
-        public int ProductId { get; set; }
-        public decimal Quantity { get; set; }
+        public ProductModificationApp Product { get; set; }
     }
 }
