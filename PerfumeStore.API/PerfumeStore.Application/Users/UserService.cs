@@ -29,24 +29,24 @@ namespace PerfumeStore.Application.Users
         private readonly IConfigurationSection _jwtSettings; //KM skorzystaj z Options Pattern np. JwtSettings klasa, którą uzupełnisz w program.cs z konfiguracji
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICookiesService _guestSessionService;
+        private readonly IGuestSessionService _guestSessionService;
         private readonly ICartsService _cartsService;
+        private readonly IPermissionService _permissionService;
 
-        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, ICookiesService guestSessionService, ICartsService cartsService)
+        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IGuestSessionService guestSessionService, ICartsService cartsService, IPermissionService permissionService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
             _emailService = emailService;
-            _roleManager = roleManager;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
             _guestSessionService = guestSessionService;
             _cartsService = cartsService;
+            _permissionService = permissionService;
         }
 
         public async Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication)
@@ -109,27 +109,15 @@ namespace PerfumeStore.Application.Users
             if (cartId != null)
             {
 
+                EntityResult<CartResponse> assignResult = await _cartsService.AssignCartToUserAsync(storeUser.Id, cartId.Value);
 
-                //MOVE TO CART SERVICE LOGIC FOR ASASSIGNGING USER TO CART
-                EntityResult<Cart> cart = await _cartsService.GetCartByIdAsync(cartId.Value);//Is it ok to get cart in user service?
-                if (cart.Entity == null)
+                if (assignResult.IsFailure) 
                 {
-                    var error = EntityErrors<Cart, int>.MissingEntity(cartId.Value);
-                    return AuthenticationResult.Failure(error);
+                    return AuthenticationResult.Failure(assignResult.Error);
                 }
-
-                cart.Entity.AssignUserToCart(storeUser.Id);
             }
 
-            string visitorRole = Roles.Visitor;
-
-            //KM Uważam, że powinieneś mieć klasę PermissionService, która będzie Ci zarządzać uprawnieniami.
-            // Mógłbyś mieć wtedy metodę PermissionService.AssignRole(Roles.Visitor), która by Ci obsłużyła kod poniżej
-            if (!await _roleManager.RoleExistsAsync(visitorRole))
-                await _roleManager.CreateAsync(new IdentityRole(visitorRole));
-
-            if (await _roleManager.RoleExistsAsync(visitorRole))
-                await _userManager.AddToRoleAsync(storeUser, visitorRole);
+            _permissionService.AssignRoleAsync(storeUser);
 
             await _emailService.SendActivationLink(storeUser);
 

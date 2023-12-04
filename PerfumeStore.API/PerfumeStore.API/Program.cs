@@ -33,7 +33,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 
-
 // Add services to the container.\
 
 builder.Services.AddTransient<IProductsService, ProductsService>();
@@ -43,7 +42,7 @@ builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRep
 builder.Services.AddTransient<ICartsService, CartsService>();
 builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
-builder.Services.AddTransient<ICookiesService, CookiesService>();
+builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<QuantityValidator>();
 builder.Services.AddTransient<EntityIntIdValidator>();
@@ -55,6 +54,7 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IPermissionService, PermissionService>();
 builder.Services.AddAutoMapper(typeof(MappingProfileApplication), typeof(MappingProfileApi));
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
@@ -63,6 +63,7 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

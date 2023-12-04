@@ -7,7 +7,7 @@ namespace PerfumeStore.Application.Users
     public interface IUserService
     {
         public Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication);
-        public Task<RegistrationResponseDto> RegisterUser(RegisterUserDtoApp userForRegistration);
+        public Task<AuthenticationResult> RegisterUser(RegisterUserDtoApp userForRegistration);
         public Task<bool> ConfirmEmail(string userId, string encodedEmailToken);
         public Task<bool> RequestDeletion();
         public Task<bool> SubmitDeletion(string id);

@@ -15,13 +15,13 @@ namespace PerfumeStore.Application.Orders
     public class OrdersService : IOrdersService
     {
         public readonly IOrdersRepository _ordersRepository;
-        private readonly ICookiesService _cookiesService;
+        private readonly IGuestSessionService _cookiesService;
         private readonly ICartsRepository _cartsRepository;
         private readonly IHttpContextService _httpContextService;
 
         public OrdersService(
             IOrdersRepository ordersRepository,
-            ICookiesService cookiesService,
+            IGuestSessionService cookiesService,
             ICartsRepository cartsRepository,
             IHttpContextService httpContextService)
         {

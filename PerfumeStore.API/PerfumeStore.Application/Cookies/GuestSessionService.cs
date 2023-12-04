@@ -2,11 +2,11 @@
 
 namespace PerfumeStore.Application.Cookies
 {
-    public class CookiesService : ICookiesService
+    public class GuestSessionService : IGuestSessionService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CookiesService(IHttpContextAccessor httpContextAccessor)
+        public GuestSessionService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

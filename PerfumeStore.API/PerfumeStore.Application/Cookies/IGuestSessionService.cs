@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.Application.Cookies
 {
-    public interface ICookiesService
+    public interface IGuestSessionService
     {
         public void SendCartIdToGuest(int cartId);
 
