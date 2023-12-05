@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using PerfumeStore.Application.Cookies;
-using PerfumeStore.Application.CustomExceptions;
+﻿using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Domain.Abstractions;
@@ -8,7 +6,6 @@ using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.Results;
 
 namespace PerfumeStore.Application.Orders
 {

@@ -26,7 +26,6 @@ using PerfumeStore.Infrastructure;
 using PerfumeStore.Infrastructure.Emails;
 using PerfumeStore.Infrastructure.Repositories;
 using PerfumeStore.Infrastructure.Tokens;
-using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +72,7 @@ builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-var assembly =  typeof(ShopDbContext).Assembly.GetName().Name;
+var assembly = typeof(ShopDbContext).Assembly.GetName().Name;
 
 
 builder.Services.AddDbContext<ShopDbContext>(options =>

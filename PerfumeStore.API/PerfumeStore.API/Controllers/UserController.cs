@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Users;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.StoreUsers;
@@ -29,13 +27,13 @@ namespace PerfumeStore.API.Controllers
         {
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
 
-            AuthenticationResult response = await _userService.Login(authenticateUserDto);
-            if (response.IsFailure)
+            AuthenticationResult result = await _userService.Login(authenticateUserDto);
+            if (result.IsFailure)
             {
-                return Unauthorized(response.Error);
+                return Unauthorized(result.Error);
             }
 
-            return Ok(response.Token);
+            return Ok(result.Token);
         }
 
         [HttpPost("Register")]
@@ -43,7 +41,6 @@ namespace PerfumeStore.API.Controllers
         {
             if (userRegRequest == null || !ModelState.IsValid)
                 return BadRequest();
-
 
             StoreUser StoreUser = _mapper.Map<StoreUser>(userRegRequest);
 
@@ -53,12 +50,10 @@ namespace PerfumeStore.API.Controllers
                 Password = userRegRequest.Password
             };
 
-            RegistrationResponseDto registResponse = await _userService.RegisterUser(registerUserDtoApp);
+            AuthenticationResult result = await _userService.RegisterUser(registerUserDtoApp);
 
-            if (registResponse.i)
-            {
-
-            }
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return StatusCode(201);
         }
@@ -67,13 +62,11 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
-                return BadRequest("Validation token and user id are required");
+                return BadRequest("Wrong token.");
 
             bool result = await _userService.ConfirmEmail(userId, token);
             if (!result)
-            {
-                return BadRequest();
-            }
+                return BadRequest("Can't confirm email");
 
             return Ok();
         }
@@ -82,9 +75,9 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("RequestDeletion")]
         public async Task<IActionResult> RequestDeletion()
         {
-            bool requested = await _userService.RequestDeletion();
-            if (!requested)
-                return BadRequest("Can't request deletion");
+            AuthenticationResult result = await _userService.RequestDeletion();
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return Ok();
         }
@@ -93,9 +86,9 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("SubmitDeletion/{id}")]
         public async Task<IActionResult> SubmitDeletion(string id)
         {
-            bool deleted = await _userService.SubmitDeletion(id);
-            if (!deleted)
-                return BadRequest("Can't delete account");
+            AuthenticationResult result = await _userService.SubmitDeletion(id);
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return NoContent();
         }

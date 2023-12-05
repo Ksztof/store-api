@@ -1,6 +1,4 @@
-﻿using PerfumeStore.API.DTOs.Request;
-
-namespace PerfumeStore.API.DTOs.Request
+﻿namespace PerfumeStore.API.DTOs.Request
 {
     public class AddProductsToCartDtoApi
     {

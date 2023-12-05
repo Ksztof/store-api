@@ -1,6 +1,4 @@
 using AutoMapper;
-using Castle.Core.Internal;
-using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
@@ -69,7 +67,7 @@ namespace PerfumeStore.Application.Products
 
             return EntityResult<Product>.Success();
         }
-        
+
         public async Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
