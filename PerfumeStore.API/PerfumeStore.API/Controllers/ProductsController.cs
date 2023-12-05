@@ -1,14 +1,11 @@
 using AutoMapper;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Products;
 
@@ -31,7 +28,7 @@ namespace PerfumeStore.API.Controllers
         [Authorize(Roles.Administrator)]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductDtoApi createProductForm)
         {
-            CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm); 
+            CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
 
             EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
             if (result.IsFailure)

@@ -27,5 +27,5 @@ namespace PerfumeStore.API.Mapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
         }
     }
-    }
+}
 }

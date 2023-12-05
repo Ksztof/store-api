@@ -1,5 +1,4 @@
 ﻿using PerfumeStore.Domain.StoreUsers;
-using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Application.DTOs.Request
 {

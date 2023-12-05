@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PerfumeStore.Application.DTOs.Request
+﻿namespace PerfumeStore.Application.DTOs.Request
 {
     public class AuthenticateUserDtoApp
     {

@@ -1,9 +1,7 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Cookies;
-using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
@@ -13,7 +11,6 @@ using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
 using PerfumeStore.Domain.Errors;
-using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.StoreUsers;
 
@@ -51,8 +48,8 @@ namespace PerfumeStore.Application.Carts
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
-            
-            if (GuestCartId == null && isUserAuthenticated == false) 
+
+            if (GuestCartId == null && isUserAuthenticated == false)
             {
                 Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
 
@@ -149,7 +146,7 @@ namespace PerfumeStore.Application.Carts
                 CartLine? userCartLine = userCart?.CartLines?.FirstOrDefault(cl => cl.ProductId == productId);
                 if (userCartLine == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId)); 
+                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
                 }
 
                 userCart?.DeleteCartLineFromCart(productId);
@@ -336,7 +333,7 @@ namespace PerfumeStore.Application.Carts
         public async Task<EntityResult<CartResponse>> AssignCartToUserAsync(string userId, int cartId)
         {
             Cart? userCart = await _cartsRepository.GetByIdAsync(cartId);
-            if (userCart == null) 
+            if (userCart == null)
             {
                 return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
             }

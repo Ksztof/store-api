@@ -32,7 +32,7 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<OrderResponse> result = await _orderService.GetByIdAsync(orderId);
 
-            if(result.IsFailure)
+            if (result.IsFailure)
                 return BadRequest(result.Error);
 
             return Ok(result.Entity);
@@ -42,7 +42,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> DeleteOrderAsync(int orderId)
         {
             EntityResult<OrderResponse> result = await _orderService.DeleteOrderAsync(orderId);
-            
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -53,7 +53,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
         {
             EntityResult<OrderResponse> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
-            
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 

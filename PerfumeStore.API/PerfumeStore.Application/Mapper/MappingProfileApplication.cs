@@ -2,7 +2,6 @@
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
-using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Mapper
 {

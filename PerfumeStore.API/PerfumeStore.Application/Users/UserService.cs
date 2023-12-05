@@ -2,23 +2,17 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
-using PerfumeStore.Application.CustomExceptions;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
 using System.Data;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace PerfumeStore.Application.Users
 {
@@ -96,7 +90,7 @@ namespace PerfumeStore.Application.Users
             {
                 return AuthenticationErrors.EmailAlreadyTaken;
             }
-            
+
             var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
             if (!result.Succeeded)
             {
@@ -104,14 +98,14 @@ namespace PerfumeStore.Application.Users
 
                 return AuthenticationErrors.IdentityErrors(errors);
             }
-            
+
             int? cartId = _guestSessionService.GetCartId();
             if (cartId != null)
             {
 
                 EntityResult<CartResponse> assignResult = await _cartsService.AssignCartToUserAsync(storeUser.Id, cartId.Value);
 
-                if (assignResult.IsFailure) 
+                if (assignResult.IsFailure)
                 {
                     return AuthenticationResult.Failure(assignResult.Error);
                 }
@@ -127,48 +121,51 @@ namespace PerfumeStore.Application.Users
         public async Task<bool> ConfirmEmail(string userId, string emailToken)
         {
             await _emailService.ConfirmEmail(userId, emailToken);
-            return true; //TODO: Add error handling etc
+
+            return true;
         }
 
-        public async Task<bool> RequestDeletion()
+        public async Task<AuthenticationResult> RequestDeletion()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userId))
-            {
-                throw new MissingClaimInTokenEx(ClaimTypes.NameIdentifier);
-            }
+                return AuthenticationErrors.MissingUserIdClaim;
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                throw new RequestForUserEx($"User with Id: {userId} - not found.");
+                return AuthenticationErrors.UserDoesntExist;
 
             user.IsDeleteRequested = true;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
-                throw new UserModificationEx("UpdateAsync", user.Id);
+            {
+                IEnumerable<string> errors = updateResult.Errors.Select(e => e.Description);
 
-            return true;
+                return AuthenticationErrors.IdentityErrors(errors);
+            }
+
+            return AuthenticationResult.Success();
         }
 
-        public async Task<bool> SubmitDeletion(string Id)
+        public async Task<AuthenticationResult> SubmitDeletion(string Id)
         {
             StoreUser user = await _userManager.FindByIdAsync(Id);
             if (user is null)
-            {
-                throw new RequestForUserEx("Can't find user");
-            }
+                return AuthenticationErrors.UserDoesntExist;
 
             if (user.IsDeleteRequested is not true)
+                return AuthenticationErrors.NotRequestedForAccountDeletion;
+
+            var deleteResult = await _userManager.DeleteAsync(user);
+            if (!deleteResult.Succeeded)
             {
-                throw new InvalidOperationException("You can't delete active user");
+                IEnumerable<string> errors = deleteResult.Errors.Select(e => e.Description);
+
+                return AuthenticationErrors.IdentityErrors(errors);
             }
 
-            var deleteResul = await _userManager.DeleteAsync(user);
-            if (!deleteResul.Succeeded)
-                throw new UserModificationEx("DeleteAsync", user.Id);
-
-            return true;
+            return AuthenticationResult.Success();
         }
     }
 }
