@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeStore.Application.Core;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,15 +13,15 @@ namespace PerfumeStore.Infrastructure.Tokens
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _configuration; //KM Zdecydowanie powinieneś tu mieć jakąś klasę żeby bezpośrednio nie czytać z konfiguracji
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IOptions<JwtOptions> _jwtOptions;
         private readonly UserManager<StoreUser> _userManager;
 
-        public TokenService(IConfiguration configuration, RoleManager<IdentityRole> roleManager, UserManager<StoreUser> userManager)
+        public TokenService(
+            UserManager<StoreUser> userManager,
+            IOptions<JwtOptions> jwtOptions)
         {
-            _configuration = configuration;
-            _roleManager = roleManager;
             _userManager = userManager;
+            _jwtOptions = jwtOptions;
         }
 
         public async Task<string> GetToken(StoreUser user)
@@ -43,14 +45,14 @@ namespace PerfumeStore.Infrastructure.Tokens
 
         private string GenerateToken(IEnumerable<Claim> claims)
         {
-            string securityKeyString = _configuration["JWTSettings:securityKey"];
+            string securityKeyString = _jwtOptions.Value.SecurityKey;
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _configuration["JWTSettings:validIssuer"],
-                Audience = _configuration["JWTSettings:validAudience"],
-                Expires = DateTime.UtcNow.AddHours(3), //KM Ważność tokena powinna być konfigurowalna i być częścią settingów
+                Issuer = _jwtOptions.Value.ValidIssuer,
+                Audience = _jwtOptions.Value.ValidAudience,
+                Expires = DateTime.UtcNow.AddHours(3),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };
