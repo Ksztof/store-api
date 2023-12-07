@@ -1,7 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
@@ -19,8 +20,6 @@ namespace PerfumeStore.Application.Users
     public class UserService : IUserService
     {
         private readonly UserManager<StoreUser> _userManager;
-        private readonly IConfiguration _configuration;
-        private readonly IConfigurationSection _jwtSettings; //KM skorzystaj z Options Pattern np. JwtSettings klasa, którą uzupełnisz w program.cs z konfiguracji
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
@@ -29,12 +28,18 @@ namespace PerfumeStore.Application.Users
         private readonly ICartsService _cartsService;
         private readonly IPermissionService _permissionService;
 
-        public UserService(IMapper mapper, UserManager<StoreUser> userManager, IConfiguration configuration, IEmailService emailService, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IGuestSessionService guestSessionService, ICartsService cartsService, IPermissionService permissionService)
+        public UserService(
+            IMapper mapper, 
+            UserManager<StoreUser> userManager,
+            IEmailService emailService, 
+            ITokenService tokenService,
+            IHttpContextAccessor httpContextAccessor,
+            IGuestSessionService guestSessionService, 
+            ICartsService cartsService, 
+            IPermissionService permissionService)
         {
             _mapper = mapper;
             _userManager = userManager;
-            _configuration = configuration;
-            _jwtSettings = _configuration.GetSection("JwtSettings");
             _emailService = emailService;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
