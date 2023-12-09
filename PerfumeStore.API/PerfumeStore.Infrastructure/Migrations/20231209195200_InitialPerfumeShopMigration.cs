@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace PerfumeStore.Infrastructure.Migrations
 {
-    public partial class initialMigration : Migration
+    public partial class InitialPerfumeShopMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -69,7 +70,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Manufacturer = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -190,14 +191,14 @@ namespace PerfumeStore.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    StoreUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Carts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Carts_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Carts_AspNetUsers_StoreUserId",
+                        column: x => x.StoreUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -315,9 +316,11 @@ namespace PerfumeStore.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Carts_UserId",
+                name: "IX_Carts_StoreUserId",
                 table: "Carts",
-                column: "UserId");
+                column: "StoreUserId",
+                unique: true,
+                filter: "[StoreUserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CartsLine_CartId",

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.Carts;
@@ -6,6 +7,7 @@ using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.Products;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -59,11 +61,17 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CheckCartAsync()
         {
-            EntityResult<AboutCartRes> products = await _cartsService.CheckCartAsync();
+            EntityResult<AboutCartRes> result = await _cartsService.CheckCartAsync();
+            if (result.IsSuccess && result.Entity == null)
+            {
+                return Ok();
 
-            return Ok(products);
+            }
+
+            return Ok(result.Entity);
         }
 
         [HttpDelete]

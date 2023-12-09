@@ -189,12 +189,14 @@ namespace PerfumeStore.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("StoreUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("StoreUserId")
+                        .IsUnique()
+                        .HasFilter("[StoreUserId] IS NOT NULL");
 
                     b.ToTable("Carts");
                 });
@@ -275,7 +277,6 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Manufacturer")
@@ -419,7 +420,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .HasForeignKey("CartId");
 
                     b.HasOne("PerfumeStore.Domain.Products.Product", "Product")
-                        .WithMany("CartLines")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -429,11 +430,11 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             modelBuilder.Entity("PerfumeStore.Domain.Carts.Cart", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId");
+                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", "StoreUser")
+                        .WithOne("Cart")
+                        .HasForeignKey("PerfumeStore.Domain.Carts.Cart", "StoreUserId");
 
-                    b.Navigation("User");
+                    b.Navigation("StoreUser");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.Orders.Order", b =>
@@ -480,14 +481,12 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             modelBuilder.Entity("PerfumeStore.Domain.Products.Product", b =>
                 {
-                    b.Navigation("CartLines");
-
                     b.Navigation("ProductProductCategories");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.StoreUsers.StoreUser", b =>
                 {
-                    b.Navigation("Carts");
+                    b.Navigation("Cart");
                 });
 #pragma warning restore 612, 618
         }

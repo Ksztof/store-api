@@ -25,7 +25,7 @@ namespace PerfumeStore.Application.HttpContext
 
         public string GetUserNameIdentifierClaim()
         {
-            string? userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value;
 
             return userId;
         }

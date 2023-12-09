@@ -25,7 +25,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles.Administrator)]
+        //[Authorize(Roles.Administrator)]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductDtoApi createProductForm)
         {
             CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
@@ -38,7 +38,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpDelete("{productId}")]
-        [Authorize(Roles.Administrator)]
+        //[Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProductAsync(int productId)
         {
             EntityResult<Product> result = await _productService.DeleteProductAsync(productId);
@@ -70,7 +70,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPut("Update")]
-        [Authorize(Roles.Administrator)]
+        //[Authorize(Roles.Administrator)]
         public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductDtoApi updateProductForm)
         {
             UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);

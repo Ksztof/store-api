@@ -71,7 +71,7 @@ namespace PerfumeStore.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("RequestDeletion")]
         public async Task<IActionResult> RequestDeletion()
         {
@@ -79,7 +79,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok();
+            return Ok("Requested for account deletion");
         }
 
         [Authorize]//TODO: Authorize("Admin")

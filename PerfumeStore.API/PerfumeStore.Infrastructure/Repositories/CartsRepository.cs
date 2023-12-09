@@ -24,7 +24,7 @@ namespace PerfumeStore.Infrastructure.Repositories
 
         public async Task<Cart> UpdateAsync(Cart item)
         {
-            EntityEntry<Cart?> cartEntry = _shopDbContext.Carts.Update(item);
+            EntityEntry<Cart> cartEntry = _shopDbContext.Carts.Update(item);
             await _shopDbContext.SaveChangesAsync();
 
             return cartEntry.Entity;
@@ -54,8 +54,22 @@ namespace PerfumeStore.Infrastructure.Repositories
 
         public async Task<Cart> GetByUserIdAsync(string userId)
         {
-            Cart cart = await _shopDbContext.Carts
+            Cart? cart = await _shopDbContext.Carts
+                .AsSingleQuery()
+                .Include(cl => cl.CartLines)
+                .ThenInclude(p => p.Product)
                 .SingleOrDefaultAsync(x => x.StoreUserId == userId);
+
+            return cart;
+        }
+
+        public async Task<Cart> GetByUserEmailAsync(string email)
+        {
+            Cart? cart = await _shopDbContext.Carts
+                .AsSingleQuery()
+                .Include(cl => cl.CartLines)
+                .ThenInclude(p => p.Product)
+                .SingleOrDefaultAsync(x => x.StoreUser.Email == email);
 
             return cart;
         }

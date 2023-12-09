@@ -72,12 +72,12 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
                 if (userCart == null)
                 {
-                    userCart = new Cart { StoreUserId = userId };
+                    userCart = new Cart { StoreUserId = userEmail };
                     userCart.AddProducts(newProductsIds);
                     userCart.UpdateProductsQuantity(addProductsToCartDtoDomain);
                     userCart = await _cartsRepository.CreateAsync(userCart);
@@ -135,9 +135,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
@@ -218,9 +218,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
@@ -264,12 +264,12 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
                 if (userCart == null)
                 {
-                    return EntityResult<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<AboutCartRes>.Success();
                 }
 
                 AboutCartRes aboutUserCartResposne = userCart.CheckCart();
@@ -302,9 +302,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
@@ -314,6 +314,8 @@ namespace PerfumeStore.Application.Carts
                 userCart.ClearCart();
                 await _cartsRepository.UpdateAsync(userCart);
                 CartResponse userCartResponse = MapCartResponse(userCart);//TODO: _cartsRepository.ClearCartAsync(cartLines); or just update cart with cleard CartLines
+
+                return EntityResult<CartResponse>.Success(userCartResponse);
             }
 
             Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
