@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Mapper;
@@ -62,7 +63,7 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
-
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -123,7 +124,7 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   .AddDefaultTokenProviders();
 
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
-var jwtSettings = builder.Configuration.GetSection("JWTSettings");
+var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
 
 builder.Services.AddAuthentication(options =>
   {
@@ -139,10 +140,10 @@ builder.Services.AddAuthentication(options =>
       {
           ValidateIssuer = true,
           ValidateAudience = true,
-          ValidAudience = jwtSettings["validAudience"],
-          ValidIssuer = jwtSettings["validIssuer"],
+          ValidAudience = jwtOptions.ValidAudience,
+          ValidIssuer = jwtOptions.ValidIssuer,
           ClockSkew = TimeSpan.Zero,
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
       };
   });
 
