@@ -42,7 +42,8 @@ namespace PerfumeStore.Application.Orders
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
+
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {

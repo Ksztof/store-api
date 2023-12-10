@@ -10,11 +10,8 @@ namespace PerfumeStore.Domain.Carts
 
         public Task<Cart?> GetByIdAsync(int cartId);
 
-        public Task DeleteCartLineAsync(CartLine cartLine);
-
-        public Task ClearCartAsync(ICollection<CartLine> cartLines);
-
         public Task<Cart> GetByUserIdAsync(string userEmail);
+
         public Task<Cart> GetByUserEmailAsync(string email);
     }
 }

@@ -24,7 +24,7 @@ namespace PerfumeStore.Application.Carts
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpContextService _httpContextService;
-        private readonly UserManager<StoreUser> _userManager;
+        private readonly ICartLinesRepository _cartLinesRepository;
 
         public CartsService(
             ICartsRepository cartsRepository,
@@ -33,7 +33,7 @@ namespace PerfumeStore.Application.Carts
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
             IHttpContextService httpContextService,
-            UserManager<StoreUser> userManager)
+            ICartLinesRepository cartLinesRepository)
         {
             _cartsRepository = cartsRepository;
             _productsRepository = productsRepository;
@@ -41,7 +41,7 @@ namespace PerfumeStore.Application.Carts
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _httpContextService = httpContextService;
-            _userManager = userManager;
+            _cartLinesRepository = cartLinesRepository;
         }
 
         public async Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApp request)
@@ -72,12 +72,12 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
 
-                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    userCart = new Cart { StoreUserId = userEmail };
+                    userCart = new Cart { StoreUserId = userId };
                     userCart.AddProducts(newProductsIds);
                     userCart.UpdateProductsQuantity(addProductsToCartDtoDomain);
                     userCart = await _cartsRepository.CreateAsync(userCart);
@@ -135,9 +135,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
 
-                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
@@ -151,7 +151,9 @@ namespace PerfumeStore.Application.Carts
 
                 userCart?.DeleteCartLineFromCart(productId);
 
-                await _cartsRepository.UpdateAsync(userCart);//TODO: Check if need to use delete CartLine separately from DB
+                await _cartLinesRepository.DeleteCartLineAsync(userCartLine);
+
+                await _cartsRepository.UpdateAsync(userCart);
 
                 CartResponse userCartResponse = MapCartResponse(userCart);
 
@@ -170,8 +172,9 @@ namespace PerfumeStore.Application.Carts
                 return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));//TODO: should return cartline Id not Cart because this cart exist 
             }
 
-            await _cartsRepository.DeleteCartLineAsync(cartLine);
             cart.DeleteCartLineFromCart(productId);
+            await _cartLinesRepository.DeleteCartLineAsync(cartLine);
+
             cart = await _cartsRepository.UpdateAsync(cart);
             CartResponse cartResponse = MapCartResponse(cart);
 
@@ -218,9 +221,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
 
-                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
@@ -264,10 +267,10 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
 
-                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
-                if (userCart == null)
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
+                if (userCart == null || userCart.CartLines == null || !userCart.CartLines.Any())
                 {
                     return EntityResult<AboutCartRes>.Success();
                 }
@@ -302,9 +305,9 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userEmail = _httpContextService.GetUserNameIdentifierClaim();
+                string userId = _httpContextService.GetUserId();
 
-                Cart? userCart = await _cartsRepository.GetByUserEmailAsync(userEmail);
+                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
                     return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
@@ -325,7 +328,7 @@ namespace PerfumeStore.Application.Carts
             }
 
             ICollection<CartLine> cartLines = cart.CartLines;
-            await _cartsRepository.ClearCartAsync(cartLines);
+            await _cartLinesRepository.ClearCartAsync(cartLines);
             cart.ClearCart();
             CartResponse cartResponse = MapCartResponse(cart);
 
