@@ -40,18 +40,6 @@ namespace PerfumeStore.Infrastructure.Repositories
             return cart;
         }
 
-        public async Task DeleteCartLineAsync(CartLine cartLine)
-        {
-            _shopDbContext.CartsLine.Remove(cartLine);
-            await _shopDbContext.SaveChangesAsync();
-        }
-
-        public async Task ClearCartAsync(ICollection<CartLine> cartLines)
-        {
-            _shopDbContext.CartsLine.RemoveRange(cartLines);
-            await _shopDbContext.SaveChangesAsync();
-        }
-
         public async Task<Cart> GetByUserIdAsync(string userId)
         {
             Cart? cart = await _shopDbContext.Carts

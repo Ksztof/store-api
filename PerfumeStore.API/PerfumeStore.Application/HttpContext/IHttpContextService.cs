@@ -3,6 +3,6 @@
     public interface IHttpContextService
     {
         public bool IsUserAuthenticated();
-        public string GetUserNameIdentifierClaim();
+        public string GetUserId();
     }
 }

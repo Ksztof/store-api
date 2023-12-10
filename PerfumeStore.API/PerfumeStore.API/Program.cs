@@ -17,6 +17,7 @@ using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Application.Users;
 using PerfumeStore.Application.Validators;
+using PerfumeStore.Domain.CarLines;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.ProductCategories;
@@ -55,6 +56,7 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IPermissionService, PermissionService>();
+builder.Services.AddTransient<ICartLinesRepository, CartLinesRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfileApplication), typeof(MappingProfileApi));
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<IUrlHelper>(x =>
