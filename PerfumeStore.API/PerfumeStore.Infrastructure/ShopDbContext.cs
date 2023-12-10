@@ -37,7 +37,7 @@ namespace PerfumeStore.Infrastructure
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Cart)
-                .WithMany(c => c.Orders)
+                .WithMany()
                 .HasForeignKey(o => o.CartId);
 
             modelBuilder.Entity<ProductProductCategory>()

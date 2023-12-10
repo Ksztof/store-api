@@ -22,7 +22,6 @@ namespace PerfumeStore.Application.Carts
         private readonly IProductsRepository _productsRepository;
         private readonly IGuestSessionService _cookiesService;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpContextService _httpContextService;
         private readonly ICartLinesRepository _cartLinesRepository;
 
@@ -31,7 +30,6 @@ namespace PerfumeStore.Application.Carts
             IProductsRepository productsRepository,
             IGuestSessionService guestSessionService,
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor,
             IHttpContextService httpContextService,
             ICartLinesRepository cartLinesRepository)
         {
@@ -39,7 +37,6 @@ namespace PerfumeStore.Application.Carts
             _productsRepository = productsRepository;
             _cookiesService = guestSessionService;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
             _httpContextService = httpContextService;
             _cartLinesRepository = cartLinesRepository;
         }

@@ -12,7 +12,6 @@ namespace PerfumeStore.Domain.Carts
     {
         [Key]
         public int Id { get; set; }
-        public ICollection<Order>? Orders { get; set; }
         public List<CartLine>? CartLines { get; set; } = new List<CartLine>();
         public string? StoreUserId { get; set; }
         public StoreUser? StoreUser { get; set; }

@@ -25,5 +25,10 @@ namespace PerfumeStore.Domain.Errors
             var ids = string.Join(", ", entityIds);
             return new Error($"{typeof(T).Name}.MissingEntities", $"Entities with IDs: {ids} are missing");
         }
+
+        public static Error EntityDoesntBelongToYou(TId entityId)
+        {
+            return new Error($"{typeof(T).Name}.EntityDoesntBelongToYou", $"Entity with ID: {entityId} does not belong to user trying to modify it");
+        }
     }
 }
