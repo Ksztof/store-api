@@ -111,6 +111,16 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId)
         {
+            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            int? GuestCartId = _cookiesService.GetCartId();
+
+            if (GuestCartId == null && isUserAuthenticated == false)
+            {
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<OrderResponse>.Failure(error);
+            }
+
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
@@ -119,11 +129,31 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            order.MarkAsDeleted();
+            if (isUserAuthenticated)
+            {
+                string userId = _httpContextService.GetUserId();
+                if (order.Cart.StoreUser.Id == userId)
+                {
+                    order.MarkAsDeleted();
 
-            await _ordersRepository.UpdateAsync(order);
+                    await _ordersRepository.UpdateAsync(order);
 
-            return EntityResult<OrderResponse>.Success();
+                    return EntityResult<OrderResponse>.Success();
+                }
+            }
+
+            if (order.Cart.Id == GuestCartId)
+            {
+                order.MarkAsDeleted();
+
+                await _ordersRepository.UpdateAsync(order);
+
+                return EntityResult<OrderResponse>.Success();
+            }
+
+            var cancelationOrderError = EntityErrors<Order, int>.EntityDoesntBelongToYou(orderId);
+
+            return EntityResult<OrderResponse>.Failure(cancelationOrderError);
         }
 
         private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart)
