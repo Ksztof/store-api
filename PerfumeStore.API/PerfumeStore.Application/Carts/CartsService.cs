@@ -328,15 +328,39 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> AssignCartToUserAsync(string userId, int cartId)
         {
-            Cart? userCart = await _cartsRepository.GetByIdAsync(cartId);
-            if (userCart == null)
+            Cart? guestCart = await _cartsRepository.GetByIdAsync(cartId);
+            if (guestCart == null)
             {
                 return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
             }
 
-            userCart.AssignUserToCart(userId);
+            Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
 
-            await _cartsRepository.UpdateAsync(userCart); //TODO: check update operation on repo
+            if (userCart == null)
+            {
+                guestCart.AssignUserToCart(userId);
+
+                await _cartsRepository.UpdateAsync(guestCart); //TODO: check update operation on repo
+
+                return EntityResult<CartResponse>.Success();
+            }
+
+            int[] newProductsIds = guestCart.CartLines.Select(cl => cl.ProductId).ToArray();
+
+            AddProductsToCartDtoDom productsQuantity = new AddProductsToCartDtoDom
+            {
+                Products = guestCart.CartLines.Select(cl => new ProductInCartDom
+                {
+                    ProductId = cl.ProductId,
+                    Quantity = cl.Quantity,
+                }).ToArray()
+            };
+
+            userCart.AddProducts(newProductsIds);
+
+            userCart.UpdateProductsQuantity(productsQuantity);
+
+            await _cartsRepository.UpdateAsync(userCart);
 
             return EntityResult<CartResponse>.Success();
         }
