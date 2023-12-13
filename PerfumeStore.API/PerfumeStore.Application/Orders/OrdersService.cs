@@ -1,11 +1,15 @@
-﻿using PerfumeStore.Application.Cookies;
+﻿using AutoMapper;
+using PerfumeStore.Application.Cookies;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.DTOs.Request;
 using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ShippingDetails;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -15,20 +19,23 @@ namespace PerfumeStore.Application.Orders
         private readonly IGuestSessionService _cookiesService;
         private readonly ICartsRepository _cartsRepository;
         private readonly IHttpContextService _httpContextService;
+        private readonly IMapper _mapper;
 
         public OrdersService(
             IOrdersRepository ordersRepository,
             IGuestSessionService cookiesService,
             ICartsRepository cartsRepository,
-            IHttpContextService httpContextService)
+            IHttpContextService httpContextService,
+            IMapper mapper)
         {
             _ordersRepository = ordersRepository;
             _cookiesService = cookiesService;
             _cartsRepository = cartsRepository;
             _httpContextService = httpContextService;
+            _mapper = mapper;
         }
 
-        public async Task<EntityResult<OrderResponse>> CreateOrderAsync()
+        public async Task<EntityResult<OrderResponse>> CreateOrderAsync(CreateOrderDtoApp createOrderDtoApp)
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
@@ -39,6 +46,13 @@ namespace PerfumeStore.Application.Orders
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
+
+            ShippingDet shippingDetail = new ShippingDet();
+
+            CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
+            shippingDetail.CreateShippingDetail(createOrderDtoDom);
+
+            Order order = new Order();
 
             if (isUserAuthenticated)
             {
@@ -52,11 +66,12 @@ namespace PerfumeStore.Application.Orders
                     return EntityResult<OrderResponse>.Failure(error);
                 }
 
-                Order userOrder = new Order();
-                userOrder.CreateOrder(userCart.Id);
-                userOrder = await _ordersRepository.CreateOrderAsync(userOrder);
+
+                order.CreateOrder(userCart.Id, shippingDetail);
+
+                order = await _ordersRepository.CreateOrderAsync(order);
                 AboutCartRes userCartContent = userCart.CheckCart();
-                OrderResponse userOrderResponse = MapAboutCartToOrderRes(userOrder, userCartContent);
+                OrderResponse userOrderResponse = MapAboutCartToOrderRes(order, userCartContent);
 
                 return EntityResult<OrderResponse>.Success(userOrderResponse);
             }
@@ -69,8 +84,7 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            Order order = new Order();
-            order.CreateOrder(cart.Id);
+            order.CreateOrder(cart.Id, shippingDetail);
             order = await _ordersRepository.CreateOrderAsync(order);
             AboutCartRes cartContent = cart.CheckCart();
             OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent);

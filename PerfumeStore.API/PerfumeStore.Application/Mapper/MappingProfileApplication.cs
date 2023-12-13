@@ -18,6 +18,8 @@ namespace PerfumeStore.Application.Mapper
             CreateMap<CreateProductDtoApp, CreateProductDtoDom>();
 
             CreateMap<UpdateProductDtoApp, UpdateProductDtoDom>();
+
+            CreateMap<CreateOrderDtoApp, CreateOrderDtoDom>();
         }
     }
 }

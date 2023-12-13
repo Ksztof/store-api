@@ -27,9 +27,9 @@ namespace PerfumeStore.API.Controllers
         [HttpPost("products")]
         public async Task<IActionResult> AddProductToCartAsync([FromBody] AddProductsToCartDtoApi request)
         {
-            AddProductsToCartDtoApp modifyProductDto = _mapper.Map<AddProductsToCartDtoApp>(request);
+            AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
-            EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(modifyProductDto);
+            EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
             if (result.IsFailure)
             {
                 return BadRequest(result.Error);

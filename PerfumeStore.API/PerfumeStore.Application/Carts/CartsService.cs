@@ -345,7 +345,7 @@ namespace PerfumeStore.Application.Carts
                 return EntityResult<CartResponse>.Success();
             }
 
-            int[] newProductsIds = guestCart.CartLines.Select(cl => cl.ProductId).ToArray();
+            int[] newProductsIds = guestCart.CartLines.Select(cl => cl.ProductId).ToArray();//TODO: to function
 
             AddProductsToCartDtoDom productsQuantity = new AddProductsToCartDtoDom
             {

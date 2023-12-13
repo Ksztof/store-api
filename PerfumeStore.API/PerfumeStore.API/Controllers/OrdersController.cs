@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.API.DTOs.Request;
+using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Domain.Abstractions;
@@ -10,16 +13,20 @@ namespace PerfumeStore.API.Controllers
     public class OrdersController : ControllerBase
     {
         public readonly IOrdersService _orderService;
+        private readonly IMapper _mapper;
 
-        public OrdersController(IOrdersService orderService)
+        public OrdersController(IOrdersService orderService, IMapper mapper)
         {
             _orderService = orderService;
+            _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubmitOrder()
+        public async Task<IActionResult> SubmitOrder([FromBody] CrateOrderDtoApi createOrderRequest)
         {
-            EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync();
+            CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);         
+
+            EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
 
             if (result.IsFailure)
                 return BadRequest(result.Error);

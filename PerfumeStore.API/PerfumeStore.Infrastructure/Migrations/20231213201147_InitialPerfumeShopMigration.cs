@@ -80,6 +80,26 @@ namespace PerfumeStore.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShippingDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StreetNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HomeNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShippingDetails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -263,7 +283,8 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CartId = table.Column<int>(type: "int", nullable: false)
+                    CartId = table.Column<int>(type: "int", nullable: false),
+                    ShippingDetailId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -272,6 +293,12 @@ namespace PerfumeStore.Infrastructure.Migrations
                         name: "FK_Orders_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_ShippingDetails_ShippingDetailId",
+                        column: x => x.ShippingDetailId,
+                        principalTable: "ShippingDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -338,6 +365,12 @@ namespace PerfumeStore.Infrastructure.Migrations
                 column: "CartId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_ShippingDetailId",
+                table: "Orders",
+                column: "ShippingDetailId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProductProductCategories_ProductCategoryId",
                 table: "ProductProductCategories",
                 column: "ProductCategoryId");
@@ -379,6 +412,9 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "ShippingDetails");
 
             migrationBuilder.DropTable(
                 name: "ProductCategories");
