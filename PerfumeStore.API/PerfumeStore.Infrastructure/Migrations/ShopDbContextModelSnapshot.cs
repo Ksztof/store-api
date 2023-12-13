@@ -215,12 +215,18 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("ShippingDetailId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
+                    b.HasIndex("ShippingDetailId")
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -292,6 +298,51 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.ShippingDetails.ShippingDet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HomeNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingDetails");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.StoreUsers.StoreUser", b =>
@@ -440,12 +491,20 @@ namespace PerfumeStore.Infrastructure.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Orders.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.Carts.Cart", "Cart")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PerfumeStore.Domain.ShippingDetails.ShippingDet", "ShippingDetail")
+                        .WithOne("Order")
+                        .HasForeignKey("PerfumeStore.Domain.Orders.Order", "ShippingDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Cart");
+
+                    b.Navigation("ShippingDetail");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.ProductProductCategories.ProductProductCategory", b =>
@@ -470,8 +529,6 @@ namespace PerfumeStore.Infrastructure.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Carts.Cart", b =>
                 {
                     b.Navigation("CartLines");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.ProductCategories.ProductCategory", b =>
@@ -482,6 +539,12 @@ namespace PerfumeStore.Infrastructure.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Products.Product", b =>
                 {
                     b.Navigation("ProductProductCategories");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.ShippingDetails.ShippingDet", b =>
+                {
+                    b.Navigation("Order")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.StoreUsers.StoreUser", b =>
