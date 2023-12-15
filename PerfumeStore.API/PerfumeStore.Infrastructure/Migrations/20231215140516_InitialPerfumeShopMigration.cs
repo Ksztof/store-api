@@ -283,12 +283,18 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    StoreUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CartId = table.Column<int>(type: "int", nullable: false),
                     ShippingDetailId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_StoreUserId",
+                        column: x => x.StoreUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Orders_Carts_CartId",
                         column: x => x.CartId,
@@ -369,6 +375,11 @@ namespace PerfumeStore.Infrastructure.Migrations
                 table: "Orders",
                 column: "ShippingDetailId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_StoreUserId",
+                table: "Orders",
+                column: "StoreUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductProductCategories_ProductCategoryId",

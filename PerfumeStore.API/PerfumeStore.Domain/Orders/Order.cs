@@ -2,6 +2,7 @@
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Interfaces;
 using PerfumeStore.Domain.ShippingDetails;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Domain.Orders
 {
@@ -10,10 +11,21 @@ namespace PerfumeStore.Domain.Orders
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatusE Status { get; set; }
+        public string? StoreUserId { get; set; }
+        public StoreUser? StoreUser { get; set; }
         public int CartId { get; set; }
         public Cart Cart { get; set; }
         public int ShippingDetailId { get; set; }
         public ShippingDet ShippingDetail { get; set; }
+
+        public void CreateOrder(int cartId, string userId, ShippingDet shippingDetails)
+        {
+            OrderDate = DateTime.Now;
+            Status = OrderStatusE.New;
+            StoreUserId = userId;
+            CartId = cartId;
+            ShippingDetail = shippingDetails;
+        }
 
         public void CreateOrder(int cartId, ShippingDet shippingDetails)
         {

@@ -51,6 +51,7 @@ namespace PerfumeStore.Application.Orders
 
             CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
             shippingDetail.CreateShippingDetail(createOrderDtoDom);
+            ShippingDetilResponse shippingDetailsRes = _mapper.Map<ShippingDetilResponse>(shippingDetail);
 
             Order order = new Order();
 
@@ -67,11 +68,14 @@ namespace PerfumeStore.Application.Orders
                 }
 
 
-                order.CreateOrder(userCart.Id, shippingDetail);
+                order.CreateOrder(userCart.Id, userId, shippingDetail);
 
                 order = await _ordersRepository.CreateOrderAsync(order);
                 AboutCartRes userCartContent = userCart.CheckCart();
-                OrderResponse userOrderResponse = MapAboutCartToOrderRes(order, userCartContent);
+                OrderResponse userOrderResponse = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
+
+                userCart.StoreUserId = null;
+                await _cartsRepository.UpdateAsync(userCart);
 
                 return EntityResult<OrderResponse>.Success(userOrderResponse);
             }
@@ -87,7 +91,7 @@ namespace PerfumeStore.Application.Orders
             order.CreateOrder(cart.Id, shippingDetail);
             order = await _ordersRepository.CreateOrderAsync(order);
             AboutCartRes cartContent = cart.CheckCart();
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent);
+            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }
@@ -103,7 +107,8 @@ namespace PerfumeStore.Application.Orders
             }
 
             AboutCartRes cartContent = order.Cart.CheckCart();
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent);
+            ShippingDetilResponse shippingDetailsRes = _mapper.Map<ShippingDetilResponse>(order.ShippingDetail);
+            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }
@@ -170,13 +175,37 @@ namespace PerfumeStore.Application.Orders
             return EntityResult<OrderResponse>.Failure(cancelationOrderError);
         }
 
-        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart)
+        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        {
+            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+
+            /*if (GuestCartId == null && isUserAuthenticated == false)
+            {
+                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<OrderResponse>.Failure(error);
+            }*/
+
+
+            string userId = _httpContextService.GetUserId();
+
+            IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(userId);
+            return userOrders; //ThrowJsonException_SerializerCycleDetected
+
+            /*foreach (Order order in userOrders)
+            {
+
+            }*/
+        }
+
+        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart, ShippingDetilResponse shippingDetailsRes)
         {
             return new OrderResponse
             {
                 Id = order.Id,
                 AboutProductsInCart = checkCart.AboutProductsInCart,
                 TotalCartValue = checkCart.TotalCartValue,
+                ShippingDetil = shippingDetailsRes,
             };
         }
     }

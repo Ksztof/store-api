@@ -43,6 +43,11 @@ namespace PerfumeStore.Infrastructure
                 .WithMany()
                 .HasForeignKey(o => o.CartId);
 
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.StoreUser)
+                .WithMany()
+                .HasForeignKey(o => o.StoreUserId);
+
             modelBuilder.Entity<ProductProductCategory>()
                  .HasKey(pc => new { pc.Id });
 

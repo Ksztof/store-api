@@ -12,7 +12,12 @@ namespace PerfumeStore.Domain.Errors
 
         public static Error MissingEntityByUserId(string userId)
         {
-            return new Error($"{typeof(T).Name}.MissingEntityByUserId", $"For user with Id = {userId} there is no cart");
+            return new Error($"{typeof(T).Name}.MissingEntityByUserId", $"For user with Id = {userId} the entity is missing");
+        }
+        
+        public static Error MissingEntityForGuestId(int cartId)
+        {
+            return new Error($"{typeof(T).Name}.MissingEntityForGuestId", $"For guest of cartId = {cartId} the entity is missing");
         }
 
         public static Error MissingEntity(string userId)
