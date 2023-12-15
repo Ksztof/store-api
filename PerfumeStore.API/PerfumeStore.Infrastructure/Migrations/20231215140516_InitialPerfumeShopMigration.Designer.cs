@@ -12,7 +12,7 @@ using PerfumeStore.Infrastructure;
 namespace PerfumeStore.Infrastructure.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20231213201147_InitialPerfumeShopMigration")]
+    [Migration("20231215140516_InitialPerfumeShopMigration")]
     partial class InitialPerfumeShopMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -223,12 +223,17 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("StoreUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
 
                     b.HasIndex("ShippingDetailId")
                         .IsUnique();
+
+                    b.HasIndex("StoreUserId");
 
                     b.ToTable("Orders");
                 });
@@ -504,9 +509,15 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", "StoreUser")
+                        .WithMany()
+                        .HasForeignKey("StoreUserId");
+
                     b.Navigation("Cart");
 
                     b.Navigation("ShippingDetail");
+
+                    b.Navigation("StoreUser");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.ProductProductCategories.ProductProductCategory", b =>

@@ -1,6 +1,8 @@
 ﻿using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ShippingDetails;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -13,5 +15,7 @@ namespace PerfumeStore.Application.Orders
         public Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId);
 
         public Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId);
+
+        public Task<IEnumerable<Order>> GetOrdersAsync();
     }
 }

@@ -5,6 +5,7 @@ using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Orders;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -65,6 +66,16 @@ namespace PerfumeStore.API.Controllers
                 return BadRequest(result.Error);
 
             return NoContent();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOrdersAsync()
+        {
+            IEnumerable<Order> result = await _orderService.GetOrdersAsync();
+
+           
+
+            return Ok(result);
         }
     }
 }

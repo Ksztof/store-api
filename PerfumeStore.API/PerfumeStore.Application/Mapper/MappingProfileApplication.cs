@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using PerfumeStore.Application.DTOs.Request;
+using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
+using PerfumeStore.Domain.ShippingDetails;
 
 namespace PerfumeStore.Application.Mapper
 {
@@ -20,6 +22,8 @@ namespace PerfumeStore.Application.Mapper
             CreateMap<UpdateProductDtoApp, UpdateProductDtoDom>();
 
             CreateMap<CreateOrderDtoApp, CreateOrderDtoDom>();
+
+            CreateMap<ShippingDet, ShippingDetilResponse>();
         }
     }
 }
