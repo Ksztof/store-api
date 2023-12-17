@@ -77,7 +77,7 @@ namespace PerfumeStore.Infrastructure.Repositories
                 .Include(o => o.Cart).ThenInclude(c => c.CartLines).ThenInclude(cl => cl.Product)
                 .Include(o => o.ShippingDetail)
                 .Where(o => o.StoreUserId == userId).ToListAsync();
-
+                
             return orders;
         }
 

@@ -7,6 +7,7 @@ using PerfumeStore.Domain.DTOs.Request;
 using PerfumeStore.Domain.ShippingDetails;
 using System.IO;
 
+
 namespace PerfumeStore.Application.Mapper
 {
     public class MappingProfileApplication : Profile
@@ -26,7 +27,7 @@ namespace PerfumeStore.Application.Mapper
             CreateMap<CreateOrderDtoApp, CreateOrderDtoDom>();
 
             CreateMap<ShippingDet, ShippingDetilResponse>();
-
+            
             CreateMap<CartLine, CartLineResponse>()
                 .ForMember(dest => dest.productId, opt => opt.MapFrom(src => src.Product.Id))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
@@ -43,6 +44,7 @@ namespace PerfumeStore.Application.Mapper
                 .ForMember(dest => dest.PostCode, opt => opt.MapFrom(src => src.PostCode))
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber));
+
         }
     }
 }
