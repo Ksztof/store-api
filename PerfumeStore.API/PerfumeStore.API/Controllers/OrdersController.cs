@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
@@ -69,9 +70,10 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetOrdersAsync()
         {
-            IEnumerable<Order> result = await _orderService.GetOrdersAsync();
+            IEnumerable<OrdersResDto> result = await _orderService.GetOrdersAsync();
 
            
 

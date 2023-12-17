@@ -61,7 +61,6 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> CheckCartAsync()
         {
             EntityResult<AboutCartRes> result = await _cartsService.CheckCartAsync();

@@ -12,7 +12,7 @@ using PerfumeStore.Infrastructure;
 namespace PerfumeStore.Infrastructure.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20231215140516_InitialPerfumeShopMigration")]
+    [Migration("20231217132838_InitialPerfumeShopMigration")]
     partial class InitialPerfumeShopMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -190,6 +190,9 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CartStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("StoreUserId")
                         .HasColumnType("nvarchar(450)");

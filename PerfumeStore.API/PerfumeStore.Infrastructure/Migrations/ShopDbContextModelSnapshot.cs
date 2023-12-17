@@ -189,6 +189,9 @@ namespace PerfumeStore.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CartStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("StoreUserId")
                         .HasColumnType("nvarchar(450)");
 
