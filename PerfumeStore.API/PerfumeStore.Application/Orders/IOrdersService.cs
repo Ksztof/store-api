@@ -16,6 +16,6 @@ namespace PerfumeStore.Application.Orders
 
         public Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId);
 
-        public Task<IEnumerable<OrdersResDto>> GetOrdersAsync();
+        public Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync();
     }
 }

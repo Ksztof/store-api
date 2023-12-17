@@ -73,11 +73,14 @@ namespace PerfumeStore.API.Controllers
         [Authorize]
         public async Task<IActionResult> GetOrdersAsync()
         {
-            IEnumerable<OrdersResDto> result = await _orderService.GetOrdersAsync();
+            EntityResult<IEnumerable<OrdersResDto>> result = await _orderService.GetOrdersAsync();
 
-           
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
 
-            return Ok(result);
+            return Ok(result.Entity);
         }
     }
 }

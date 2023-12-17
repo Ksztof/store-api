@@ -11,6 +11,7 @@ using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.ShippingDetails;
+using System.Collections.Generic;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -184,10 +185,8 @@ namespace PerfumeStore.Application.Orders
             return EntityResult<OrderResponse>.Failure(cancelationOrderError);
         }
 
-        public async Task<IEnumerable<OrdersResDto>> GetOrdersAsync()
+        public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
-
             string userId = _httpContextService.GetUserId();
 
             IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(userId);
@@ -199,7 +198,7 @@ namespace PerfumeStore.Application.Orders
                 ShippingInfo = _mapper.Map<ShippingInfo>(o.ShippingDetail)
             });
 
-            return userOrdersRes; 
+            return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes); 
         }
 
         private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart, ShippingDetilResponse shippingDetailsRes)
