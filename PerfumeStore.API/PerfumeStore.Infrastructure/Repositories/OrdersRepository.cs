@@ -74,9 +74,10 @@ namespace PerfumeStore.Infrastructure.Repositories
         public async Task<IEnumerable<Order>> GetByUserIdAsync(string userId)
         {
             IEnumerable<Order> orders = await _shopDbContext.Orders
-                .Include(x => x.ShippingDetail)
-                .Where(x => x.StoreUserId == userId).ToListAsync();
-
+                .Include(o => o.Cart).ThenInclude(c => c.CartLines).ThenInclude(cl => cl.Product)
+                .Include(o => o.ShippingDetail)
+                .Where(o => o.StoreUserId == userId).ToListAsync();
+                
             return orders;
         }
 

@@ -81,6 +81,8 @@ namespace PerfumeStore.Application.Users
                 }
             }
 
+            _guestSessionService.SetCartIdCookieAsExpired();
+
             return AuthenticationResult.Success(tokenResponse);
         }
 

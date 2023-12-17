@@ -7,9 +7,11 @@ using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Core.DTO;
 using PerfumeStore.Domain.DTOs.Request;
+using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.ShippingDetails;
+using System.Collections.Generic;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -20,19 +22,22 @@ namespace PerfumeStore.Application.Orders
         private readonly ICartsRepository _cartsRepository;
         private readonly IHttpContextService _httpContextService;
         private readonly IMapper _mapper;
+        private readonly IGuestSessionService _guestSessionService;
 
         public OrdersService(
             IOrdersRepository ordersRepository,
             IGuestSessionService cookiesService,
             ICartsRepository cartsRepository,
             IHttpContextService httpContextService,
-            IMapper mapper)
+            IMapper mapper,
+            IGuestSessionService guestSessionService)
         {
             _ordersRepository = ordersRepository;
             _cookiesService = cookiesService;
             _cartsRepository = cartsRepository;
             _httpContextService = httpContextService;
             _mapper = mapper;
+            _guestSessionService = guestSessionService;
         }
 
         public async Task<EntityResult<OrderResponse>> CreateOrderAsync(CreateOrderDtoApp createOrderDtoApp)
@@ -67,7 +72,6 @@ namespace PerfumeStore.Application.Orders
                     return EntityResult<OrderResponse>.Failure(error);
                 }
 
-
                 order.CreateOrder(userCart.Id, userId, shippingDetail);
 
                 order = await _ordersRepository.CreateOrderAsync(order);
@@ -75,6 +79,7 @@ namespace PerfumeStore.Application.Orders
                 OrderResponse userOrderResponse = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
 
                 userCart.StoreUserId = null;
+                userCart.CartStatus = CartStatus.Archive;
                 await _cartsRepository.UpdateAsync(userCart);
 
                 return EntityResult<OrderResponse>.Success(userOrderResponse);
@@ -92,6 +97,10 @@ namespace PerfumeStore.Application.Orders
             order = await _ordersRepository.CreateOrderAsync(order);
             AboutCartRes cartContent = cart.CheckCart();
             OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
+            cart.CartStatus = CartStatus.Archive;
+            await _cartsRepository.UpdateAsync(cart);
+
+            _guestSessionService.SetCartIdCookieAsExpired();
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }
@@ -175,27 +184,20 @@ namespace PerfumeStore.Application.Orders
             return EntityResult<OrderResponse>.Failure(cancelationOrderError);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
-
-            /*if (GuestCartId == null && isUserAuthenticated == false)
-            {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
-
-                return EntityResult<OrderResponse>.Failure(error);
-            }*/
-
-
             string userId = _httpContextService.GetUserId();
 
             IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(userId);
-            return userOrders; //ThrowJsonException_SerializerCycleDetected
 
-            /*foreach (Order order in userOrders)
+            IEnumerable<OrdersResDto> userOrdersRes = userOrders.Select(o => new OrdersResDto
             {
+                Status = o.Status.ToString(),
+                CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(o.Cart.CartLines),
+                ShippingInfo = _mapper.Map<ShippingInfo>(o.ShippingDetail)
+            });
 
-            }*/
+            return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes); 
         }
 
         private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart, ShippingDetilResponse shippingDetailsRes)

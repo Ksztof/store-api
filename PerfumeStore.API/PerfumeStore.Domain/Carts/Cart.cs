@@ -15,6 +15,12 @@ namespace PerfumeStore.Domain.Carts
         public List<CartLine>? CartLines { get; set; } = new List<CartLine>();
         public string? StoreUserId { get; set; }
         public StoreUser? StoreUser { get; set; }
+        public CartStatus CartStatus { get; set; }
+
+        public Cart() 
+        {
+            CartStatus = CartStatus.Active;
+        }   
 
         public void AddProducts(int[] productsIdsRequest)
         {

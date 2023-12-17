@@ -365,19 +365,12 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<CartResponse>.Success();
         }
 
-        private static CartResponse MapCartResponse(Cart cart)
+        private CartResponse MapCartResponse(Cart cart)
         {
             return new CartResponse
             {
                 Id = cart.Id,
-                CartLineResponse = cart.CartLines.Select(x => new CartLineResponse
-                {
-                    productId = x.ProductId,
-                    ProductName = x.Product.Name,
-                    Quantity = x.Quantity,
-                    UnitPrice = x.Product.Price,
-                    TotalPrice = x.Quantity * x.Product.Price,
-                })
+                CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(cart.CartLines),
             };
         }
     }
