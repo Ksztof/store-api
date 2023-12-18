@@ -32,13 +32,13 @@ namespace PerfumeStore.Application.Users
         private readonly IPermissionService _permissionService;
 
         public UserService(
-            IMapper mapper, 
+            IMapper mapper,
             UserManager<StoreUser> userManager,
-            IEmailService emailService, 
+            IEmailService emailService,
             ITokenService tokenService,
             IHttpContextAccessor httpContextAccessor,
-            IGuestSessionService guestSessionService, 
-            ICartsService cartsService, 
+            IGuestSessionService guestSessionService,
+            ICartsService cartsService,
             IPermissionService permissionService)
         {
             _mapper = mapper;
@@ -173,7 +173,7 @@ namespace PerfumeStore.Application.Users
             return new UserDetailsForActivationLinkDto
             {
                 UserId = user.Id,
-                UserEmail = user.Email, 
+                UserEmail = user.Email,
                 UserName = user.UserName,
             };
         }
@@ -218,10 +218,6 @@ namespace PerfumeStore.Application.Users
             }
 
             return AuthenticationResult.Success();
-        }
-
-        public async String GetUserInfo()
-        {
 
         }
     }
