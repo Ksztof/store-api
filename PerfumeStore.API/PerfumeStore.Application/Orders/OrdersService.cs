@@ -102,7 +102,6 @@ namespace PerfumeStore.Application.Orders
             order = await _ordersRepository.CreateOrderAsync(order);
             AboutCartRes cartContent = cart.CheckCart();
             OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
-
             cart.CartStatus = CartStatus.Archive;
             await _cartsRepository.UpdateAsync(cart);
 
