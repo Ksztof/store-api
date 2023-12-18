@@ -105,6 +105,9 @@ namespace PerfumeStore.Application.Orders
             cart.CartStatus = CartStatus.Archive;
             await _cartsRepository.UpdateAsync(cart);
 
+            await _emailService.SendOrderSummary(orderResponse);
+
+
             _guestSessionService.SetCartIdCookieAsExpired();
 
             return EntityResult<OrderResponse>.Success(orderResponse);

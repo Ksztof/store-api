@@ -87,6 +87,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StreetNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HomeNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -211,7 +212,8 @@ namespace PerfumeStore.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StoreUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    StoreUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CartStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
