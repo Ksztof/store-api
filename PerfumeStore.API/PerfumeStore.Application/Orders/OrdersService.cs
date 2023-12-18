@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
 using PerfumeStore.Application.DTOs.Request;
