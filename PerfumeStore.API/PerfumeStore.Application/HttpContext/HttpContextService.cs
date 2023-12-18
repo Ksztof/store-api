@@ -29,5 +29,12 @@ namespace PerfumeStore.Application.HttpContext
 
             return userId;
         }
+
+        public string GetActualProtocol()
+        {
+            string? protocol = _httpContextAccessor?.HttpContext?.Request.Scheme;
+
+            return protocol;
+        }
     }
 }

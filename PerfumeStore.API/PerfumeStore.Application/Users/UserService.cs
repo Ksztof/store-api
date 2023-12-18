@@ -1,10 +1,13 @@
 using AutoMapper;
+using EllipticCurve.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
+using PerfumeStore.Application.DTOs;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.Abstractions;
@@ -13,6 +16,7 @@ using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
 using System.Data;
 using System.Security.Claims;
+using System.Text;
 
 namespace PerfumeStore.Application.Users
 {
@@ -119,18 +123,60 @@ namespace PerfumeStore.Application.Users
 
             _permissionService.AssignRoleAsync(storeUser);
 
-            await _emailService.SendActivationLink(storeUser);
+            UserDetailsForActivationLinkDto userDetails = CreateUserDetailsForActivationLink(storeUser);
+
+            string encodedToken = await GenerateEncodedEmailConfirmationTokenAsync(storeUser);
+
+            await _emailService.SendActivationLink(userDetails, encodedToken);
 
             return AuthenticationResult.Success();
         }
 
-        public async Task<bool> ConfirmEmail(string userId, string emailToken)
+        public async Task<string> GenerateEncodedEmailConfirmationTokenAsync(StoreUser user)
         {
-            await _emailService.ConfirmEmail(userId, emailToken);
+            string? token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string? encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            return true;
+            return encodedToken;
         }
 
+        public async Task<AuthenticationResult> ConfirmEmail(string userId, string emailToken)
+        {
+            string decodedToken = _emailService.DecodeBaseUrlToken(emailToken);
+
+            AuthenticationResult findUser = await FindByIdAsync(userId);
+            StoreUser storeUser = findUser.StoreUser;
+
+            var result = await _userManager.ConfirmEmailAsync(storeUser, decodedToken);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<string> errors = result.Errors.Select(x => x.Description);
+
+                return AuthenticationErrors.CantConfirmEmail(errors);
+            }
+
+            return AuthenticationResult.Success();
+        }
+
+        public async Task<AuthenticationResult> FindByIdAsync(string userId)
+        {
+            StoreUser user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                AuthenticationErrors.CantFindUserById(userId);
+
+            return AuthenticationResult.Success(user);
+        }
+
+        public UserDetailsForActivationLinkDto CreateUserDetailsForActivationLink(StoreUser user)
+        {
+            return new UserDetailsForActivationLinkDto
+            {
+                UserId = user.Id,
+                UserEmail = user.Email, 
+                UserName = user.UserName,
+            };
+        }
         public async Task<AuthenticationResult> RequestDeletion()
         {
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
@@ -172,6 +218,11 @@ namespace PerfumeStore.Application.Users
             }
 
             return AuthenticationResult.Success();
+        }
+
+        public async String GetUserInfo()
+        {
+
         }
     }
 }

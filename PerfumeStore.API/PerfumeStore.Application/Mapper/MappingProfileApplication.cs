@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.CarLines;
@@ -26,8 +26,8 @@ namespace PerfumeStore.Application.Mapper
 
             CreateMap<CreateOrderDtoApp, CreateOrderDtoDom>();
 
-            CreateMap<ShippingDet, ShippingDetilResponse>();
-            
+            CreateMap<ShippingDet, ShippingDetailResponse>();
+
             CreateMap<CartLine, CartLineResponse>()
                 .ForMember(dest => dest.productId, opt => opt.MapFrom(src => src.Product.Id))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
@@ -38,6 +38,7 @@ namespace PerfumeStore.Application.Mapper
             CreateMap<ShippingDet, ShippingInfo>()
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
                 .ForMember(dest => dest.StreetNumber, opt => opt.MapFrom(src => src.StreetNumber))
                 .ForMember(dest => dest.HomeNumber, opt => opt.MapFrom(src => src.HomeNumber))
