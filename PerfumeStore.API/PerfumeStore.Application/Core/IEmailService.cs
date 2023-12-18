@@ -1,10 +1,13 @@
-﻿using PerfumeStore.Domain.StoreUsers;
+﻿using PerfumeStore.Application.DTOs;
+using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Core
 {
     public interface IEmailService
     {
-        public Task SendActivationLink(StoreUser user);
-        public Task ConfirmEmail(string userId, string encodedEmailToken); //TODO: exceptions are stupid
+        public Task SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken);
+        public string DecodeBaseUrlToken(string encodedEmailToken);
+        public Task SendOrderSummary(OrderResponse orderResponse);
     }
 }

@@ -18,6 +18,7 @@ namespace PerfumeStore.Domain.ShippingDetails
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email { get; set; }
         public string Street { get; set; }
         public string StreetNumber { get; set; }
         public string HomeNumber { get; set; }
@@ -30,6 +31,7 @@ namespace PerfumeStore.Domain.ShippingDetails
         {
             FirstName = createOrderDtoDom.FirstName;
             LastName = createOrderDtoDom.LastName;
+            Email = createOrderDtoDom.Email;
             Street = createOrderDtoDom.Street;
             StreetNumber = createOrderDtoDom.StreetNumber;
             HomeNumber = createOrderDtoDom.HomeNumber;

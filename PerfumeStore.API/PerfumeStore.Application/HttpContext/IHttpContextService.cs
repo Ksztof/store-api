@@ -4,5 +4,6 @@
     {
         public bool IsUserAuthenticated();
         public string GetUserId();
+        public string GetActualProtocol();
     }
 }

@@ -7,6 +7,6 @@ namespace PerfumeStore.Application.DTOs.Response
         public int Id { get; set; }
         public decimal TotalCartValue { get; set; }
         public IEnumerable<CheckCartDto> AboutProductsInCart { get; set; }
-        public ShippingDetilResponse ShippingDetil { get; set; }
+        public ShippingDetailResponse ShippingDetil { get; set; }
     }
 }

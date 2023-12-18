@@ -64,9 +64,10 @@ namespace PerfumeStore.API.Controllers
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
                 return BadRequest("Wrong token.");
 
-            bool result = await _userService.ConfirmEmail(userId, token);
-            if (!result)
-                return BadRequest("Can't confirm email");
+            AuthenticationResult result = await _userService.ConfirmEmail(userId, token);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return Ok();
         }

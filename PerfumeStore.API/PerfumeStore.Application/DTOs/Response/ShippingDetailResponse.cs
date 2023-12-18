@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Application.DTOs.Response
 {
-    public class ShippingDetilResponse
+    public class ShippingDetailResponse
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Email { get; set; }
         public string Street { get; set; }
         public string StreetNumber { get; set; }
         public string HomeNumber { get; set; }
