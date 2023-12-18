@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Domain.CarLines;
