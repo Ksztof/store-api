@@ -25,6 +25,14 @@ namespace PerfumeStore.Infrastructure.Repositories
         public async Task DeleteOrderAsync(Order order)
         {
             EntityEntry<Order> deleteOrder = _shopDbContext.Orders.Remove(order);
+
+            await _shopDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteOrdersAsync(IEnumerable<Order> orders)
+        {
+            _shopDbContext.Orders.RemoveRange(orders);
+
             await _shopDbContext.SaveChangesAsync();
         }
 

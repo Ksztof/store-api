@@ -4,6 +4,8 @@ namespace PerfumeStore.Application.Users
 {
     public interface IPermissionService
     {
-        public void AssignRoleAsync(StoreUser storeUser);
+        public void AssignVisitorRoleAsync(StoreUser storeUser);
+        public void AssignAdminRoleAsync(StoreUser storeUser);
+
     }
 }

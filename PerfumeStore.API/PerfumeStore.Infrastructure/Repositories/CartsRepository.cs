@@ -61,5 +61,12 @@ namespace PerfumeStore.Infrastructure.Repositories
 
             return cart;
         }
+
+        public async Task DeleteAsync(Cart cart)
+        {
+            var result = _shopDbContext.Carts.Remove(cart);
+
+            await _shopDbContext.SaveChangesAsync();
+        }
     }
 }
