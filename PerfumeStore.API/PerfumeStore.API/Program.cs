@@ -65,6 +65,8 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
+builder.Services.AddTransient<DataSeeder>(); 
+
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -149,10 +151,26 @@ builder.Services.AddAuthentication(options =>
       };
   });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Administrator", policy =>
+        policy.RequireRole("Administrator"));
+
+    options.AddPolicy("Visitor", policy =>
+        policy.RequireRole("Visitor"));
+
+});
+
+
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await dataSeeder.SeedDataAsync(); 
+}
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {
     ShopDbContext shopDbContext = scope.ServiceProvider.GetRequiredService<ShopDbContext>();

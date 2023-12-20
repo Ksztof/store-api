@@ -25,7 +25,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles.Administrator)]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductDtoApi createProductForm)
         {
             CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);

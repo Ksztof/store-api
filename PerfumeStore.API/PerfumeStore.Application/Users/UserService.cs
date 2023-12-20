@@ -29,7 +29,6 @@ namespace PerfumeStore.Application.Users
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpContextService _httpContextService; 
         private readonly IGuestSessionService _guestSessionService;
         private readonly ICartsService _cartsService;
@@ -42,7 +41,6 @@ namespace PerfumeStore.Application.Users
             UserManager<StoreUser> userManager,
             IEmailService emailService,
             ITokenService tokenService,
-            IHttpContextAccessor httpContextAccessor,
             IHttpContextService httpContextService,
             IGuestSessionService guestSessionService,
             ICartsService cartsService,
@@ -54,7 +52,6 @@ namespace PerfumeStore.Application.Users
             _userManager = userManager;
             _emailService = emailService;
             _tokenService = tokenService;
-            _httpContextAccessor = httpContextAccessor;
             _guestSessionService = guestSessionService;
             _cartsService = cartsService;
             _permissionService = permissionService;
@@ -133,7 +130,7 @@ namespace PerfumeStore.Application.Users
                 }
             }
 
-            _permissionService.AssignRoleAsync(storeUser);
+            _permissionService.AssignVisitorRoleAsync(storeUser);
 
             UserDetailsForActivationLinkDto userDetails = CreateUserDetailsForActivationLink(storeUser);
 
