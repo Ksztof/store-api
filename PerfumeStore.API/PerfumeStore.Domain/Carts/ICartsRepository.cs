@@ -13,5 +13,7 @@ namespace PerfumeStore.Domain.Carts
         public Task<Cart> GetByUserIdAsync(string userEmail);
 
         public Task<Cart> GetByUserEmailAsync(string email);
+        public Task DeleteAsync(Cart cart);
+
     }
 }

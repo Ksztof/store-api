@@ -10,8 +10,11 @@ using PerfumeStore.Application.Core;
 using PerfumeStore.Application.DTOs;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.HttpContext;
 using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Carts;
 using PerfumeStore.Domain.Errors;
+using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Domain.Tokens;
 using System.Data;
@@ -27,9 +30,12 @@ namespace PerfumeStore.Application.Users
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextService _httpContextService; 
         private readonly IGuestSessionService _guestSessionService;
         private readonly ICartsService _cartsService;
         private readonly IPermissionService _permissionService;
+        private readonly ICartsRepository _cartsRepository;
+        private readonly IOrdersRepository _ordersRepository;
 
         public UserService(
             IMapper mapper,
@@ -37,9 +43,12 @@ namespace PerfumeStore.Application.Users
             IEmailService emailService,
             ITokenService tokenService,
             IHttpContextAccessor httpContextAccessor,
+            IHttpContextService httpContextService,
             IGuestSessionService guestSessionService,
             ICartsService cartsService,
-            IPermissionService permissionService)
+            IPermissionService permissionService,
+            ICartsRepository cartsRepository,
+            IOrdersRepository ordersRepository)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -49,6 +58,9 @@ namespace PerfumeStore.Application.Users
             _guestSessionService = guestSessionService;
             _cartsService = cartsService;
             _permissionService = permissionService;
+            _httpContextService = httpContextService;
+            _cartsRepository = cartsRepository;
+            _ordersRepository = ordersRepository;
         }
 
         public async Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication)
@@ -179,9 +191,11 @@ namespace PerfumeStore.Application.Users
         }
         public async Task<AuthenticationResult> RequestDeletion()
         {
-            var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+            var userId = _httpContextService.GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return AuthenticationErrors.MissingUserIdClaim;
+
+            //TODO: check if already delete
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -202,9 +216,16 @@ namespace PerfumeStore.Application.Users
 
         public async Task<AuthenticationResult> SubmitDeletion(string Id)
         {
-            StoreUser user = await _userManager.FindByIdAsync(Id);
+            StoreUser user = await _userManager.FindByIdAsync(Id); 
+
             if (user is null)
                 return AuthenticationErrors.UserDoesntExist;
+
+            Cart? cart = await _cartsRepository.GetByUserIdAsync(Id);
+            IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
+
+            await _cartsRepository.DeleteAsync(cart);
+            await _ordersRepository.DeleteOrdersAsync(orders);
 
             if (user.IsDeleteRequested is not true)
                 return AuthenticationErrors.NotRequestedForAccountDeletion;

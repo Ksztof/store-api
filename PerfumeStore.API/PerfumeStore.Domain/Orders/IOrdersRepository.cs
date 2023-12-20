@@ -10,6 +10,9 @@ namespace PerfumeStore.Domain.Orders
 
         public Task DeleteOrderAsync(Order order);
 
+        public Task DeleteOrdersAsync(IEnumerable<Order> orders);
+
+
         public Task UpdateAsync(Order order);
 
         public Task<ShippingDet> GetShippingDetailsByUserIdAsync(string userId);
