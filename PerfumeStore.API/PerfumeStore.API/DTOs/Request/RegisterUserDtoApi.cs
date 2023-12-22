@@ -4,8 +4,8 @@ namespace PerfumeStore.API.DTOs.Request
 {
     public class RegisterUserDtoApi
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Login { get; set; }
+
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress]
         public string Email { get; set; }

@@ -67,8 +67,10 @@ namespace PerfumeStore.API.Controllers
             if (result.IsSuccess && result.Entity == null)
             {
                 return Ok("Cart is empty");
-
             }
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
 
             return Ok(result.Entity);
         }

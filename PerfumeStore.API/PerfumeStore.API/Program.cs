@@ -83,10 +83,6 @@ var assembly = typeof(ShopDbContext).Assembly.GetName().Name;
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
 
-builder.Services.AddDbContext<ShopDbContext>(options =>
-  options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
-
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });

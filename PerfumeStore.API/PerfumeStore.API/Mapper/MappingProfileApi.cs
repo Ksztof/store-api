@@ -24,7 +24,7 @@ namespace PerfumeStore.API.Mapper
             CreateMap<UpdateProductDtoApi, UpdateProductDtoApp>();
 
             CreateMap<RegisterUserDtoApi, StoreUser>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Login));
 
             CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
         }

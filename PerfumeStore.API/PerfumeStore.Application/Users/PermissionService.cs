@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.StoreUsers;
 
@@ -15,7 +15,7 @@ namespace PerfumeStore.Application.Users
             _userManager = userManager;
         }
 
-        public async void AssignVisitorRoleAsync(StoreUser storeUser)
+        public async Task AssignVisitorRoleAsync(StoreUser storeUser)
         {
             string visitorRole = Roles.Visitor;
 
@@ -26,7 +26,7 @@ namespace PerfumeStore.Application.Users
                 await _userManager.AddToRoleAsync(storeUser, visitorRole);
         }
 
-        public async void AssignAdminRoleAsync(StoreUser storeUser)
+        public async Task AssignAdminRoleAsync(StoreUser storeUser)
         {
             string adminRole = Roles.Administrator;
 
