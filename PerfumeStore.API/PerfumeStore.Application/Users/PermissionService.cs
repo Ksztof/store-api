@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Domain.EnumsEtc;
 using PerfumeStore.Domain.StoreUsers;
 
