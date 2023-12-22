@@ -25,11 +25,12 @@ namespace PerfumeStore.Infrastructure
 
         public async Task SeedDataAsync()
         {
-            if (!_userManager.Users.Any())
+            StoreUser? admin = await _userManager.FindByEmailAsync("kontoktoregoniktniema@gmail.com");
+            if (admin == null)
             {
                 StoreUser adminUser = new StoreUser
                 {
-                    UserName = "kontoktoregoniktniema@gmail.com",
+                    UserName = "Admin",
                     Email = "kontoktoregoniktniema@gmail.com",
                     EmailConfirmed = true,
                 };
@@ -38,7 +39,7 @@ namespace PerfumeStore.Infrastructure
 
                 var result = await _userManager.CreateAsync(adminUser, adminPswd);
 
-                _permissionService.AssignAdminRoleAsync(adminUser);
+                await _permissionService.AssignAdminRoleAsync(adminUser);
             }
         }
     }

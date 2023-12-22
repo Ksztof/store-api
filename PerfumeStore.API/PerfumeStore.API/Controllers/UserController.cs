@@ -53,7 +53,7 @@ namespace PerfumeStore.API.Controllers
             AuthenticationResult result = await _userService.RegisterUser(registerUserDtoApp);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return BadRequest(result.Error.description);
 
             return StatusCode(201);
         }

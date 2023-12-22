@@ -20,6 +20,7 @@ using PerfumeStore.Domain.Tokens;
 using System.Data;
 using System.Security.Claims;
 using System.Text;
+using String = System.String;
 
 namespace PerfumeStore.Application.Users
 {
@@ -114,8 +115,9 @@ namespace PerfumeStore.Application.Users
             if (!result.Succeeded)
             {
                 IEnumerable<string> errors = result.Errors.Select(e => e.Description);
+                string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errors);
+                return AuthenticationErrors.IdentityErrors(errorMessage);
             }
 
             int? cartId = _guestSessionService.GetCartId();
@@ -130,7 +132,7 @@ namespace PerfumeStore.Application.Users
                 }
             }
 
-            _permissionService.AssignVisitorRoleAsync(storeUser);
+            await _permissionService.AssignVisitorRoleAsync(storeUser);
 
             UserDetailsForActivationLinkDto userDetails = CreateUserDetailsForActivationLink(storeUser);
 
@@ -204,8 +206,9 @@ namespace PerfumeStore.Application.Users
             if (!updateResult.Succeeded)
             {
                 IEnumerable<string> errors = updateResult.Errors.Select(e => e.Description);
+                string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errors);
+                return AuthenticationErrors.IdentityErrors(errorMessage);
             }
 
             return AuthenticationResult.Success();
@@ -219,10 +222,12 @@ namespace PerfumeStore.Application.Users
                 return AuthenticationErrors.UserDoesntExist;
 
             Cart? cart = await _cartsRepository.GetByUserIdAsync(Id);
-            IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
+            if (cart != null)
+                await _cartsRepository.DeleteAsync(cart);
 
-            await _cartsRepository.DeleteAsync(cart);
-            await _ordersRepository.DeleteOrdersAsync(orders);
+            IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
+            if(orders.Any())
+                await _ordersRepository.DeleteOrdersAsync(orders);
 
             if (user.IsDeleteRequested is not true)
                 return AuthenticationErrors.NotRequestedForAccountDeletion;
@@ -231,8 +236,9 @@ namespace PerfumeStore.Application.Users
             if (!deleteResult.Succeeded)
             {
                 IEnumerable<string> errors = deleteResult.Errors.Select(e => e.Description);
+                string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errors);
+                return AuthenticationErrors.IdentityErrors(errorMessage);
             }
 
             return AuthenticationResult.Success();

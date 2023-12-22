@@ -26,6 +26,6 @@ namespace PerfumeStore.Domain.Errors
         public static readonly Error NotRequestedForAccountDeletion = new("Authentication.NotRequestedForAccountDeletion", "the user has not requested to delete the account");
         public static Error CantFindUserById(string userId) => new("Authentication.CantFindUserById", $"the user with Id: {userId} cannot be found");
         public static Error CantConfirmEmail(IEnumerable<string> errors) => new("Authentication.CantConfirmEmail", $"Email confirmation failed with following identity errors: {errors}");
-        public static Error IdentityErrors(IEnumerable<string> errors) => new("Authentication.IdentityError", $"{errors}");
+        public static Error IdentityErrors(string errors) => new("Authentication.IdentityError", $"{errors}");
     }
 }
