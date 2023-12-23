@@ -25,7 +25,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost("products")]
-        public async Task<IActionResult> AddProductToCartAsync([FromBody] AddProductsToCartDtoApi request)
+        public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
         {
             AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
@@ -35,21 +35,21 @@ namespace PerfumeStore.API.Controllers
                 return BadRequest(result.Error);
             }
 
-            return CreatedAtAction("GetCartById", new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
 
-        [HttpPut("products/{productId}")]
-        public async Task<IActionResult> DeleteProductLineFromCartAsync(int productId)
+        [HttpDelete("products/{productId}")]
+        public async Task<IActionResult> DeleteProductFromCart(int productId)
         {
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok(result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
 
-        [HttpPut("products")]
-        public async Task<IActionResult> ModifyProductAsync([FromBody] ModifyProductDtoApi modifiedProduct)
+        [HttpPatch("products")]
+        public async Task<IActionResult> ModifyProduct([FromBody] ModifyProductDtoApi modifiedProduct)
         {
             ModifyProductDtoApp modifyProductDto = _mapper.Map<ModifyProductDtoApp>(modifiedProduct);
 
@@ -57,11 +57,11 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok(result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
 
         [HttpGet]
-        public async Task<IActionResult> CheckCartAsync()
+        public async Task<IActionResult> CheckCart()
         {
             EntityResult<AboutCartRes> result = await _cartsService.CheckCartAsync();
             if (result.IsSuccess && result.Entity == null)
@@ -76,17 +76,17 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> ClearCartAsync()
+        public async Task<IActionResult> ClearCart()
         {
             EntityResult<CartResponse> result = await _cartsService.ClearCartAsync();
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok(result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
 
-        [HttpGet("{cartId}", Name = "GetCartById")]
-        public async Task<IActionResult> GetCartByIdAsync(int cartId)
+        [HttpGet("{cartId}")]
+        public async Task<IActionResult> GetCartById(int cartId)
         {
             EntityResult<CartResponse> result = await _cartsService.GetCartResponseByIdAsync(cartId);
             if (result.IsFailure)
