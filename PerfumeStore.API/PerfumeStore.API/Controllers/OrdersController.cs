@@ -33,11 +33,11 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction("GetOrderById", new { orderId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity.Id }, result.Entity);
         }
 
-        [HttpGet("{orderId}", Name = "GetOrderById")]
-        public async Task<IActionResult> GetOrderByIdAsync(int orderId)
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(int orderId)
         {
             EntityResult<OrderResponse> result = await _orderService.GetByIdAsync(orderId);
 
@@ -48,7 +48,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpDelete("{orderId}")]
-        public async Task<IActionResult> DeleteOrderAsync(int orderId)
+        public async Task<IActionResult> DeleteOrder(int orderId)
         {
             EntityResult<OrderResponse> result = await _orderService.DeleteOrderAsync(orderId);
 
@@ -58,8 +58,8 @@ namespace PerfumeStore.API.Controllers
             return NoContent();
         }
 
-        [HttpPut("{orderId}/cancel")]
-        public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
+        [HttpPatch("{orderId}/mark-as-deleted")]
+        public async Task<IActionResult> MarkOrderAsDeleted(int orderId)
         {
             EntityResult<OrderResponse> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
 
@@ -70,8 +70,8 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetOrdersAsync()
+        //[Authorize]
+        public async Task<IActionResult> GetOrders()
         {
             EntityResult<IEnumerable<OrdersResDto>> result = await _orderService.GetOrdersAsync();
 

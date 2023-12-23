@@ -22,7 +22,7 @@ namespace PerfumeStore.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthenticateUserDtoApi userAuthRequest)
         {
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
@@ -36,7 +36,7 @@ namespace PerfumeStore.API.Controllers
             return Ok(result.Token);
         }
 
-        [HttpPost("Register")]
+        [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDtoApi userRegRequest)
         {
             if (userRegRequest == null || !ModelState.IsValid)
@@ -58,7 +58,7 @@ namespace PerfumeStore.API.Controllers
             return StatusCode(201);
         }
 
-        [HttpGet("Confirm")]
+        [HttpGet("confirm")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
@@ -73,7 +73,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         //[Authorize]
-        [HttpGet("RequestDeletion")]
+        [HttpPatch("request-deletion")]
         public async Task<IActionResult> RequestDeletion()
         {
             AuthenticationResult result = await _userService.RequestDeletion();
@@ -84,7 +84,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [Authorize]//TODO: Authorize("Admin")
-        [HttpGet("SubmitDeletion/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> SubmitDeletion(string id)
         {
             AuthenticationResult result = await _userService.SubmitDeletion(id);

@@ -26,7 +26,7 @@ namespace PerfumeStore.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = Roles.Administrator)]
-        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductDtoApi createProductForm)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductDtoApi createProductForm)
         {
             CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
 
@@ -34,12 +34,12 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok(result.Entity);
+            return CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
         }
 
         [HttpDelete("{productId}")]
         //[Authorize(Roles.Administrator)]
-        public async Task<IActionResult> DeleteProductAsync(int productId)
+        public async Task<IActionResult> DeleteProduct(int productId)
         {
             EntityResult<Product> result = await _productService.DeleteProductAsync(productId);
             if (result.IsFailure)
@@ -49,7 +49,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet("{productId}")]
-        public async Task<IActionResult> GetProductByIdAsync(int productId)
+        public async Task<IActionResult> GetProductById(int productId)
         {
             EntityResult<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
             if (result.IsFailure)
@@ -60,7 +60,7 @@ namespace PerfumeStore.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllProductsAsync()
+        public async Task<IActionResult> GetAllProducts()
         {
             IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
             if (!result.Any())
@@ -69,9 +69,9 @@ namespace PerfumeStore.API.Controllers
             return Ok(result);
         }
 
-        [HttpPut("Update")]
+        [HttpPut]
         //[Authorize(Roles.Administrator)]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductDtoApi updateProductForm)
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductDtoApi updateProductForm)
         {
             UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);
 
@@ -79,7 +79,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return NotFound(result.Error);
 
-            return Ok(result.Entity);
+            return CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
         }
     }
 }
