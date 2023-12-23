@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Users;
 using PerfumeStore.Domain.StoreUsers;
 using System;

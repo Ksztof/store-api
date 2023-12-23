@@ -6,6 +6,5 @@ namespace PerfumeStore.Application.Users
     {
         public Task AssignVisitorRoleAsync(StoreUser storeUser);
         public Task AssignAdminRoleAsync(StoreUser storeUser);
-
     }
 }
