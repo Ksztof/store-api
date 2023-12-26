@@ -43,7 +43,14 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
             if (result.IsFailure)
-                return BadRequest(result.Error);
+            {
+                var resultErr = new ObjectResult(result.Error)
+                {
+                    StatusCode = StatusCodes.Status403Forbidden
+                };
+
+                return resultErr;
+            }
 
             return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
