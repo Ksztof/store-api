@@ -20,6 +20,7 @@ namespace PerfumeStore.Application.Cookies
 
             string stringCartId = _httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"];
             bool parseSuccess = int.TryParse(stringCartId, out int cartId);
+
             if (!parseSuccess)
             {
                 throw new FormatException($"GuestSessionId is present but there were problems with parsing. Value: {stringCartId}");

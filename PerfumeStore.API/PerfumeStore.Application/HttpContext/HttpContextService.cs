@@ -15,6 +15,7 @@ namespace PerfumeStore.Application.HttpContext
         public bool IsUserAuthenticated()
         {
             bool? userIsAuthenticated = _httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated;
+
             if (userIsAuthenticated == null)
             {
                 return false;

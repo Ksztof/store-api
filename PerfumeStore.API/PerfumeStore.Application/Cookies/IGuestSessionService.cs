@@ -5,6 +5,7 @@
         public void SendCartIdToGuest(int cartId);
 
         public int? GetCartId();
+
         public void SetCartIdCookieAsExpired();
     }
 }

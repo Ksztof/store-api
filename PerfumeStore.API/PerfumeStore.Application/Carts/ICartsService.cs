@@ -9,7 +9,9 @@ namespace PerfumeStore.Application.Carts
     public interface ICartsService
     {
         public Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApp request);
+
         public Task<EntityResult<CartResponse>> GetCartResponseByIdAsync(int cartId);
+
         public Task<EntityResult<Cart>> GetCartByIdAsync(int cartId);
 
         public Task<EntityResult<CartResponse>> DeleteCartLineFromCartAsync(int productId);

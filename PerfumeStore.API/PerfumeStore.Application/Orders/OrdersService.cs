@@ -25,6 +25,7 @@ namespace PerfumeStore.Application.Orders
         private readonly IMapper _mapper;
         private readonly IGuestSessionService _guestSessionService;
         private readonly IEmailService _emailService;
+
         public OrdersService(
             IOrdersRepository ordersRepository,
             IGuestSessionService cookiesService,
@@ -56,7 +57,6 @@ namespace PerfumeStore.Application.Orders
             }
 
             ShippingDet shippingDetail = new ShippingDet();
-
             CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
             shippingDetail.CreateShippingDetail(createOrderDtoDom);
             ShippingDetailResponse shippingDetailsRes = _mapper.Map<ShippingDetailResponse>(shippingDetail);
@@ -76,46 +76,49 @@ namespace PerfumeStore.Application.Orders
                 }
 
                 order.CreateOrder(userCart.Id, userId, shippingDetail);
-
                 order = await _ordersRepository.CreateOrderAsync(order);
-                AboutCartRes userCartContent = userCart.CheckCart();
-                OrderResponse userOrderResponse = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
 
                 userCart.StoreUserId = null;
                 userCart.CartStatus = CartStatus.Archive;
                 await _cartsRepository.UpdateAsync(userCart);
 
-                await _emailService.SendOrderSummary(userOrderResponse);
+                AboutCartRes userCartContent = userCart.CheckCart();
+                OrderResponse userOrderContent = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
 
-                return EntityResult<OrderResponse>.Success(userOrderResponse);
+                await _emailService.SendOrderSummary(userOrderContent);
+
+                return EntityResult<OrderResponse>.Success(userOrderContent);
             }
 
-            Cart? cart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
-            if (cart == null)
+            Cart? guestCart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
+
+            if (guestCart == null)
             {
                 var error = EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            order.CreateOrder(cart.Id, shippingDetail);
+            order.CreateOrder(guestCart.Id, shippingDetail);
             order = await _ordersRepository.CreateOrderAsync(order);
-            AboutCartRes cartContent = cart.CheckCart();
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
-            cart.CartStatus = CartStatus.Archive;
-            await _cartsRepository.UpdateAsync(cart);
 
-            await _emailService.SendOrderSummary(orderResponse);
+            guestCart.CartStatus = CartStatus.Archive;
+            await _cartsRepository.UpdateAsync(guestCart);
 
+            AboutCartRes guestCartContent = guestCart.CheckCart();
+            OrderResponse guestOrderContents = MapAboutCartToOrderRes(order, guestCartContent, shippingDetailsRes);
+
+            await _emailService.SendOrderSummary(guestOrderContents);
 
             _guestSessionService.SetCartIdCookieAsExpired();
 
-            return EntityResult<OrderResponse>.Success(orderResponse);
+            return EntityResult<OrderResponse>.Success(guestOrderContents);
         }
 
         public async Task<EntityResult<OrderResponse>> GetByIdAsync(int orderId)
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
+
             if (order == null)
             {
                 var error = EntityErrors<Order, int>.MissingEntity(orderId);
@@ -124,8 +127,8 @@ namespace PerfumeStore.Application.Orders
             }
 
             AboutCartRes cartContent = order.Cart.CheckCart();
-            ShippingDetailResponse shippingDetailsRes = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetailsRes);
+            ShippingDetailResponse shippingDetails = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
+            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetails);
 
             return EntityResult<OrderResponse>.Success(orderResponse);
         }
@@ -133,6 +136,7 @@ namespace PerfumeStore.Application.Orders
         public async Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId)
         {
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
+
             if (order == null)
             {
                 var error = EntityErrors<Order, int>.MissingEntity(orderId);
@@ -158,6 +162,7 @@ namespace PerfumeStore.Application.Orders
             }
 
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
+
             if (order == null)
             {
                 var error = EntityErrors<Order, int>.MissingEntity(orderId);
@@ -187,9 +192,9 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Success();
             }
 
-            var cancelationOrderError = EntityErrors<Order, int>.EntityDoesntBelongToYou(orderId);
+            var missingOrderOwnerError = EntityErrors<Order, int>.EntityDoesntBelongToYou(orderId);
 
-            return EntityResult<OrderResponse>.Failure(cancelationOrderError);
+            return EntityResult<OrderResponse>.Failure(missingOrderOwnerError);
         }
 
         public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
@@ -197,15 +202,19 @@ namespace PerfumeStore.Application.Orders
             string userId = _httpContextService.GetUserId();
 
             IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(userId);
+            IEnumerable<OrdersResDto> userOrdersRes = GetOrdersDetails(userOrders);
 
-            IEnumerable<OrdersResDto> userOrdersRes = userOrders.Select(o => new OrdersResDto
+            return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes);
+        }
+
+        private IEnumerable<OrdersResDto> GetOrdersDetails(IEnumerable<Order> userOrders)
+        {
+            return userOrders.Select(o => new OrdersResDto
             {
                 Status = o.Status.ToString(),
                 CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(o.Cart.CartLines),
                 ShippingInfo = _mapper.Map<ShippingInfo>(o.ShippingDetail)
             });
-
-            return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes); 
         }
 
         private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart, ShippingDetailResponse shippingDetailsRes)
