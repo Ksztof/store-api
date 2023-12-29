@@ -76,9 +76,7 @@ namespace PerfumeStore.API.Controllers
             EntityResult<IEnumerable<OrdersResDto>> result = await _orderService.GetOrdersAsync();
 
             if (result.IsFailure)
-            {
                 return BadRequest(result.Error);
-            }
 
             return Ok(result.Entity);
         }

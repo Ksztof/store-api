@@ -28,10 +28,9 @@ namespace PerfumeStore.API.Controllers
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
 
             AuthenticationResult result = await _userService.Login(authenticateUserDto);
+
             if (result.IsFailure)
-            {
                 return Unauthorized(result.Error);
-            }
 
             return Ok(result.Token);
         }
@@ -77,6 +76,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> RequestDeletion()
         {
             AuthenticationResult result = await _userService.RequestDeletion();
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -88,6 +88,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> SubmitDeletion(string id)
         {
             AuthenticationResult result = await _userService.SubmitDeletion(id);
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 

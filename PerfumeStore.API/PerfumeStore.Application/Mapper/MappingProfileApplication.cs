@@ -45,7 +45,6 @@ namespace PerfumeStore.Application.Mapper
                 .ForMember(dest => dest.PostCode, opt => opt.MapFrom(src => src.PostCode))
                 .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.City))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber));
-
         }
     }
 }

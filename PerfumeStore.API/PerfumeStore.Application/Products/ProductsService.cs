@@ -48,14 +48,15 @@ namespace PerfumeStore.Application.Products
             Product product = new Product();
             product.CreateProduct(createProductDtoDom, productCategories);
             product = await _productsRepository.CreateAsync(product);
-            ProductResponse productResponse = MapProductResponse(product);
+            ProductResponse productDetails = MapProductResponse(product);
 
-            return EntityResult<ProductResponse>.Success(productResponse);
+            return EntityResult<ProductResponse>.Success(productDetails);
         }
 
         public async Task<EntityResult<Product>> DeleteProductAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
+
             if (product == null)
             {
                 var error = EntityErrors<Product, int>.MissingEntity(productId);
@@ -71,29 +72,31 @@ namespace PerfumeStore.Application.Products
         public async Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId)
         {
             Product? product = await _productsRepository.GetByIdAsync(productId);
+
             if (product is null)
             {
                 var productError = EntityErrors<Product, int>.MissingEntity(productId);
                 return EntityResult<ProductResponse>.Failure(productError);
             }
 
-            ProductResponse productResponse = MapProductResponse(product);
+            ProductResponse productDetails = MapProductResponse(product);
 
-            return EntityResult<ProductResponse>.Success(productResponse);
+            return EntityResult<ProductResponse>.Success(productDetails);
         }
 
         public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
         {
             IEnumerable<Product> products = await _productsRepository.GetAllAsync();
 
-            IEnumerable<ProductResponse> productsResponse = MapProductsToResponse(products);
+            IEnumerable<ProductResponse> productsDetails = MapProductsToResponse(products);
 
-            return productsResponse;
+            return productsDetails;
         }
 
         public async Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductDtoApp updateForm)
         {
             Product? product = await _productsRepository.GetByIdAsync(updateForm.productId);
+
             if (product is null)
             {
                 var error = EntityErrors<Product, int>.MissingEntity(updateForm.productId);
@@ -102,11 +105,11 @@ namespace PerfumeStore.Application.Products
             }
 
             ICollection<ProductCategory> newProductCategories = await _productCategoriesRepository.GetByIdsAsync(updateForm.ProductCategoriesIds);
+
             if (newProductCategories.Count != updateForm.ProductCategoriesIds.Count)
             {
                 var foundIds = newProductCategories.Select(pc => pc.Id);
                 var notFoundIds = updateForm.ProductCategoriesIds.Except(foundIds);
-
                 var error = EntityErrors<Product, int>.MissingEntities(notFoundIds);
 
                 return EntityResult<ProductResponse>.Failure(error);
@@ -116,6 +119,7 @@ namespace PerfumeStore.Application.Products
 
             product.UpdateProduct(updateProductDtoDom, newProductCategories);
             product = await _productsRepository.UpdateAsync(product);
+
             ProductResponse productResponse = MapProductResponse(product);
 
             return EntityResult<ProductResponse>.Success(productResponse);

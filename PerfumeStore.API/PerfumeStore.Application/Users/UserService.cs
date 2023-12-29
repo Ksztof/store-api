@@ -64,6 +64,7 @@ namespace PerfumeStore.Application.Users
         public async Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication)
         {
             StoreUser user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
+
             if (user == null)
             {
                 return AuthenticationErrors.UserDoesntExist;
@@ -80,15 +81,18 @@ namespace PerfumeStore.Application.Users
             }
 
             var tokenResponse = await _tokenService.GetToken(user);
+
             if (tokenResponse == string.Empty)
             {
                 return AuthenticationErrors.UnableToGetToken;
             }
 
             int? cartId = _guestSessionService.GetCartId();
+
             if (cartId is not null)
             {
                 EntityResult<CartResponse> result = await _cartsService.AssignCartToUserAsync(user.Id, cartId.Value);
+
                 if (result.IsFailure)
                 {
                     return AuthenticationResult.Failure(result.Error);
@@ -112,6 +116,7 @@ namespace PerfumeStore.Application.Users
             }
 
             var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
+
             if (!result.Succeeded)
             {
                 IEnumerable<string> errors = result.Errors.Select(e => e.Description);
@@ -121,6 +126,7 @@ namespace PerfumeStore.Application.Users
             }
 
             int? cartId = _guestSessionService.GetCartId();
+
             if (cartId != null)
             {
 
@@ -173,13 +179,14 @@ namespace PerfumeStore.Application.Users
         public async Task<AuthenticationResult> FindByIdAsync(string userId)
         {
             StoreUser user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
                 AuthenticationErrors.CantFindUserById(userId);
 
             return AuthenticationResult.Success(user);
         }
 
-        public UserDetailsForActivationLinkDto CreateUserDetailsForActivationLink(StoreUser user)
+        private static UserDetailsForActivationLinkDto CreateUserDetailsForActivationLink(StoreUser user)
         {
             return new UserDetailsForActivationLinkDto
             {
@@ -188,21 +195,23 @@ namespace PerfumeStore.Application.Users
                 UserName = user.UserName,
             };
         }
+
         public async Task<AuthenticationResult> RequestDeletion()
         {
             var userId = _httpContextService.GetUserId();
+
             if (string.IsNullOrEmpty(userId))
                 return AuthenticationErrors.MissingUserIdClaim;
 
-            //TODO: check if already delete
-
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
+
+            if (user == null || user.IsDeleteRequested is true)
                 return AuthenticationErrors.UserDoesntExist;
 
             user.IsDeleteRequested = true;
 
             var updateResult = await _userManager.UpdateAsync(user);
+
             if (!updateResult.Succeeded)
             {
                 IEnumerable<string> errors = updateResult.Errors.Select(e => e.Description);
@@ -222,10 +231,12 @@ namespace PerfumeStore.Application.Users
                 return AuthenticationErrors.UserDoesntExist;
 
             Cart? cart = await _cartsRepository.GetByUserIdAsync(Id);
+
             if (cart != null)
                 await _cartsRepository.DeleteAsync(cart);
 
             IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
+
             if(orders.Any())
                 await _ordersRepository.DeleteOrdersAsync(orders);
 
@@ -233,6 +244,7 @@ namespace PerfumeStore.Application.Users
                 return AuthenticationErrors.NotRequestedForAccountDeletion;
 
             var deleteResult = await _userManager.DeleteAsync(user);
+
             if (!deleteResult.Succeeded)
             {
                 IEnumerable<string> errors = deleteResult.Errors.Select(e => e.Description);
@@ -242,7 +254,6 @@ namespace PerfumeStore.Application.Users
             }
 
             return AuthenticationResult.Success();
-
         }
     }
 }

@@ -31,6 +31,7 @@ namespace PerfumeStore.API.Controllers
             CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
 
             EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -42,6 +43,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             EntityResult<Product> result = await _productService.DeleteProductAsync(productId);
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -52,6 +54,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> GetProductById(int productId)
         {
             EntityResult<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
+
             if (result.IsFailure)
                 return NotFound(result.Error);
 
@@ -63,6 +66,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
+
             if (!result.Any())
                 return Ok("The list of products is empty");
 
@@ -76,6 +80,7 @@ namespace PerfumeStore.API.Controllers
             UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);
 
             EntityResult<ProductResponse> result = await _productService.UpdateProductAsync(updateProductDtoApp);
+
             if (result.IsFailure)
                 return NotFound(result.Error);
 
