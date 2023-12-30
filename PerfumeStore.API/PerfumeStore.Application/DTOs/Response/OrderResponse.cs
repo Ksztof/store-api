@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Core.DTO;
+﻿using PerfumeStore.Domain.DTO.Response.Cart;
 
 namespace PerfumeStore.Application.DTOs.Response
 {
@@ -6,7 +6,7 @@ namespace PerfumeStore.Application.DTOs.Response
     {
         public int Id { get; set; }
         public decimal TotalCartValue { get; set; }
-        public IEnumerable<CheckCartDto> AboutProductsInCart { get; set; }
+        public IEnumerable<CheckCartDomRes> AboutProductsInCart { get; set; }
         public ShippingDetailResponse ShippingDetil { get; set; }
     }
 }

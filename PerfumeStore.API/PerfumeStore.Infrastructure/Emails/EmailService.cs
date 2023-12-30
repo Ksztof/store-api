@@ -1,15 +1,10 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using PerfumeStore.Application.Core;
 using PerfumeStore.Application.DTOs;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
-using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.DTO.Response.Cart;
 using System.Text;
 
 namespace PerfumeStore.Infrastructure.Emails
@@ -75,7 +70,7 @@ namespace PerfumeStore.Infrastructure.Emails
                                     </tr>
                                 </thead>
                                 <tbody>";
-            foreach (CheckCartDto product in orderResponse.AboutProductsInCart)
+            foreach (CheckCartDomRes product in orderResponse.AboutProductsInCart)
             {
                 string backgroundColor = rowIndex % 2 == 0 ? "#ffffff" : "#f2f2f2";
                 message += $@"

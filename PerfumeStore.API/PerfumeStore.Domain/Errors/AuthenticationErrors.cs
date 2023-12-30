@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using PerfumeStore.Domain.Abstractions;
+﻿using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Domain.Errors
 {

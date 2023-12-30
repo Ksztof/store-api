@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.StoreUsers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PerfumeStore.Domain.Entities.StoreUsers;
 
 namespace PerfumeStore.Infrastructure
 {
@@ -19,7 +13,7 @@ namespace PerfumeStore.Infrastructure
             UserManager<StoreUser> userManager,
             IPermissionService permissionService)
         {
-            _userManager = userManager; 
+            _userManager = userManager;
             _permissionService = permissionService;
         }
 

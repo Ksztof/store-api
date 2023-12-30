@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain.CarLines;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PerfumeStore.Domain.Entities.CarLines;
+using PerfumeStore.Domain.Repositories;
 
 namespace PerfumeStore.Infrastructure.Repositories
 {

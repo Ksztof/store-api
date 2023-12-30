@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Application.Core;
-using PerfumeStore.Domain.StoreUsers;
-using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

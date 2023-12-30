@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {

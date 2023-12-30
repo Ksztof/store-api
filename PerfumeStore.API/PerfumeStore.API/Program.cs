@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Mapper;
@@ -17,13 +16,8 @@ using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Application.Users;
 using PerfumeStore.Application.Validators;
-using PerfumeStore.Domain.CarLines;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.ProductCategories;
-using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.StoreUsers;
-using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Repositories;
 using PerfumeStore.Infrastructure;
 using PerfumeStore.Infrastructure.Emails;
 using PerfumeStore.Infrastructure.Repositories;
@@ -65,7 +59,7 @@ builder.Services.AddTransient<IUrlHelper>(x =>
     var factory = x.GetRequiredService<IUrlHelperFactory>();
     return factory.GetUrlHelper(actionContext);
 });
-builder.Services.AddTransient<DataSeeder>(); 
+builder.Services.AddTransient<DataSeeder>();
 
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
@@ -163,7 +157,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    await dataSeeder.SeedDataAsync(); 
+    await dataSeeder.SeedDataAsync();
 }
 using (AsyncServiceScope scope = app.Services.CreateAsyncScope())
 {

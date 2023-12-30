@@ -1,9 +1,6 @@
 using AutoMapper;
-using EllipticCurve.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.Core;
@@ -11,14 +8,13 @@ using PerfumeStore.Application.DTOs;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Entities.Orders;
+using PerfumeStore.Domain.Entities.StoreUsers;
 using PerfumeStore.Domain.Errors;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.StoreUsers;
-using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Shared.Abstractions;
 using System.Data;
-using System.Security.Claims;
 using System.Text;
 using String = System.String;
 
@@ -30,7 +26,7 @@ namespace PerfumeStore.Application.Users
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
-        private readonly IHttpContextService _httpContextService; 
+        private readonly IHttpContextService _httpContextService;
         private readonly IGuestSessionService _guestSessionService;
         private readonly ICartsService _cartsService;
         private readonly IPermissionService _permissionService;
@@ -225,7 +221,7 @@ namespace PerfumeStore.Application.Users
 
         public async Task<AuthenticationResult> SubmitDeletion(string Id)
         {
-            StoreUser user = await _userManager.FindByIdAsync(Id); 
+            StoreUser user = await _userManager.FindByIdAsync(Id);
 
             if (user is null)
                 return AuthenticationErrors.UserDoesntExist;
@@ -237,7 +233,7 @@ namespace PerfumeStore.Application.Users
 
             IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
 
-            if(orders.Any())
+            if (orders.Any())
                 await _ordersRepository.DeleteOrdersAsync(orders);
 
             if (user.IsDeleteRequested is not true)

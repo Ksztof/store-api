@@ -1,6 +1,5 @@
 ﻿using PerfumeStore.Application.DTOs;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Core
 {

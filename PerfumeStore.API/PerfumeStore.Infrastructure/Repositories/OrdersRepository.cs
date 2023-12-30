@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.ShippingDetails;
+using PerfumeStore.Domain.Entities.Orders;
+using PerfumeStore.Domain.Repositories;
 
 namespace PerfumeStore.Infrastructure.Repositories
 {
@@ -69,7 +69,7 @@ namespace PerfumeStore.Infrastructure.Repositories
 
             return shippingDetails;
         }
-        
+
         public async Task<IEnumerable<Order>> GetByCartIdAsync(int cartId)
         {
             IEnumerable<Order> orders = await _shopDbContext.Orders
@@ -78,14 +78,14 @@ namespace PerfumeStore.Infrastructure.Repositories
 
             return orders;
         }
-        
+
         public async Task<IEnumerable<Order>> GetByUserIdAsync(string userId)
         {
             IEnumerable<Order> orders = await _shopDbContext.Orders
                 .Include(o => o.Cart).ThenInclude(c => c.CartLines).ThenInclude(cl => cl.Product)
                 .Include(o => o.ShippingDetail)
                 .Where(o => o.StoreUserId == userId).ToListAsync();
-                
+
             return orders;
         }
 

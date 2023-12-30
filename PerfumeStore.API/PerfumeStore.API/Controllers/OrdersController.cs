@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.Orders;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -26,7 +24,7 @@ namespace PerfumeStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SubmitOrder([FromBody] CrateOrderDtoApi createOrderRequest)
         {
-            CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);         
+            CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);
 
             EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
 

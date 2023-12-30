@@ -1,11 +1,11 @@
 using AutoMapper;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.CarLines;
-using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Domain.DTOs.Request;
-using PerfumeStore.Domain.ShippingDetails;
-using System.IO;
+using PerfumeStore.Domain.DTO.models;
+using PerfumeStore.Domain.DTO.Request.Order;
+using PerfumeStore.Domain.DTO.Request.Product;
+using PerfumeStore.Domain.Entities.CarLines;
+using PerfumeStore.Domain.Entities.Orders;
 
 
 namespace PerfumeStore.Application.Mapper

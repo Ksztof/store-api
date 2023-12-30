@@ -1,18 +1,17 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Cookies;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.CarLines;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Domain.DTOs.Request;
+using PerfumeStore.Domain.DTO.models;
+using PerfumeStore.Domain.DTO.Request.Product;
+using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Entities.CarLines;
+using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Errors;
-using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Carts
 {
@@ -245,7 +244,7 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<CartResponse>.Success(guestCartContents);
         }
 
-        public async Task<EntityResult<AboutCartRes>> CheckCartAsync()
+        public async Task<EntityResult<AboutCartDomRes>> CheckCartAsync()
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
@@ -254,7 +253,7 @@ namespace PerfumeStore.Application.Carts
             {
                 Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
 
-                return EntityResult<AboutCartRes>.Failure(error);
+                return EntityResult<AboutCartDomRes>.Failure(error);
             }
 
             if (isUserAuthenticated)
@@ -265,24 +264,24 @@ namespace PerfumeStore.Application.Carts
 
                 if (userCart == null || userCart.CartLines == null || !userCart.CartLines.Any())
                 {
-                    return EntityResult<AboutCartRes>.Success();
+                    return EntityResult<AboutCartDomRes>.Success();
                 }
 
-                AboutCartRes userCartDetails = userCart.CheckCart();
+                AboutCartDomRes userCartDetails = userCart.CheckCart();
 
-                return EntityResult<AboutCartRes>.Success(userCartDetails);
+                return EntityResult<AboutCartDomRes>.Success(userCartDetails);
             }
 
             Cart? guestCart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
 
             if (guestCart == null)
             {
-                return EntityResult<AboutCartRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
             }
 
-            AboutCartRes guestCartDetails = guestCart.CheckCart();
+            AboutCartDomRes guestCartDetails = guestCart.CheckCart();
 
-            return EntityResult<AboutCartRes>.Success(guestCartDetails);
+            return EntityResult<AboutCartDomRes>.Success(guestCartDetails);
         }
 
         public async Task<EntityResult<CartResponse>> ClearCartAsync()

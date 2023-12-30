@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Users
 {

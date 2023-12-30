@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Domain.CarLines;
-using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Repositories;
 
 namespace PerfumeStore.Infrastructure.Repositories
 {

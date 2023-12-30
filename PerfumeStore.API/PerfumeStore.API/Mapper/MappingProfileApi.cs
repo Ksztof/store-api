@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Domain.Entities.StoreUsers;
 
 namespace PerfumeStore.API.Mapper
 {

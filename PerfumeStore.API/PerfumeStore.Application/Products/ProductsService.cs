@@ -1,12 +1,12 @@
 using AutoMapper;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.DTO.Request.Product;
+using PerfumeStore.Domain.Entities.ProductCategories;
+using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Errors;
-using PerfumeStore.Domain.ProductCategories;
-using PerfumeStore.Domain.Products;
-using PerfumeStore.Domain.Tokens;
+using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Products
 {

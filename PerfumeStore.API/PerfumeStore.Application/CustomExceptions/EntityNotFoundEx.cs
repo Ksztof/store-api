@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Interfaces;
+﻿using PerfumeStore.Domain.Repositories.Generics;
 
 namespace PerfumeStore.Application.CustomExceptions
 {

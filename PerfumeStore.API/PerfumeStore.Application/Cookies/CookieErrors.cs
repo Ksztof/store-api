@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Abstractions;
+﻿using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Cookies
 {

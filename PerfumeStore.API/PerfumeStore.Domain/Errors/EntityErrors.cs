@@ -1,5 +1,5 @@
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Interfaces;
+using PerfumeStore.Domain.Repositories.Generics;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Domain.Errors
 {
@@ -19,7 +19,7 @@ namespace PerfumeStore.Domain.Errors
         {
             return new Error($"{typeof(T).Name}.MissingEntityByUserId", $"For user with Id = {userId} the entity is missing");
         }
-        
+
         public static Error MissingEntityForGuestId(int cartId)
         {
             return new Error($"{typeof(T).Name}.MissingEntityForGuestId", $"For guest of cartId = {cartId} the entity is missing");

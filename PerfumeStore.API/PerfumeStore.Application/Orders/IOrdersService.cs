@@ -1,8 +1,6 @@
 ﻿using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.ShippingDetails;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Orders
 {

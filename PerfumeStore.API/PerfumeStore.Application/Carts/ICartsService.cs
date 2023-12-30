@@ -1,8 +1,8 @@
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Core.DTO;
+using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Carts
 {
@@ -18,7 +18,7 @@ namespace PerfumeStore.Application.Carts
 
         public Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApp productModification);
 
-        public Task<EntityResult<AboutCartRes>> CheckCartAsync();
+        public Task<EntityResult<AboutCartDomRes>> CheckCartAsync();
 
         public Task<EntityResult<CartResponse>> ClearCartAsync();
 

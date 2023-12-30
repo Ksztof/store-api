@@ -4,15 +4,13 @@ using PerfumeStore.Application.Core;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
 using PerfumeStore.Application.HttpContext;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Carts;
-using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Domain.DTOs.Request;
-using PerfumeStore.Domain.EnumsEtc;
+using PerfumeStore.Domain.DTO.Request.Order;
+using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Entities.Orders;
 using PerfumeStore.Domain.Errors;
-using PerfumeStore.Domain.Orders;
-using PerfumeStore.Domain.ShippingDetails;
-using System.Collections.Generic;
+using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -82,7 +80,7 @@ namespace PerfumeStore.Application.Orders
                 userCart.CartStatus = CartStatus.Archive;
                 await _cartsRepository.UpdateAsync(userCart);
 
-                AboutCartRes userCartContent = userCart.CheckCart();
+                AboutCartDomRes userCartContent = userCart.CheckCart();
                 OrderResponse userOrderContent = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
 
                 await _emailService.SendOrderSummary(userOrderContent);
@@ -105,7 +103,7 @@ namespace PerfumeStore.Application.Orders
             guestCart.CartStatus = CartStatus.Archive;
             await _cartsRepository.UpdateAsync(guestCart);
 
-            AboutCartRes guestCartContent = guestCart.CheckCart();
+            AboutCartDomRes guestCartContent = guestCart.CheckCart();
             OrderResponse guestOrderContents = MapAboutCartToOrderRes(order, guestCartContent, shippingDetailsRes);
 
             await _emailService.SendOrderSummary(guestOrderContents);
@@ -126,7 +124,7 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            AboutCartRes cartContent = order.Cart.CheckCart();
+            AboutCartDomRes cartContent = order.Cart.CheckCart();
             ShippingDetailResponse shippingDetails = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
             OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetails);
 
@@ -217,7 +215,7 @@ namespace PerfumeStore.Application.Orders
             });
         }
 
-        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartRes checkCart, ShippingDetailResponse shippingDetailsRes)
+        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartDomRes checkCart, ShippingDetailResponse shippingDetailsRes)
         {
             return new OrderResponse
             {

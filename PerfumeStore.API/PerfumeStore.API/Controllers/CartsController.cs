@@ -1,13 +1,11 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.DTOs.Request;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.DTOs.Request;
 using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Core.DTO;
-using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -19,7 +17,7 @@ namespace PerfumeStore.API.Controllers
         private readonly IMapper _mapper;
 
         public CartsController(
-            ICartsService cartsService, 
+            ICartsService cartsService,
             IMapper mapper)
         {
             _cartsService = cartsService;
@@ -73,7 +71,7 @@ namespace PerfumeStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> CheckCart()
         {
-            EntityResult<AboutCartRes> result = await _cartsService.CheckCartAsync();
+            EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
             if (result.IsSuccess && result.Entity == null)
                 return Ok("Cart is empty");

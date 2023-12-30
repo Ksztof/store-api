@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace PerfumeStore.Application.DTOs.Response
+﻿namespace PerfumeStore.Application.DTOs.Response
 {
     public class CartResponse
     {
