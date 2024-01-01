@@ -1,6 +1,6 @@
-﻿using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Domain.Shared.Abstractions;
+﻿using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Application.Shared.DTO.Response;
 
 namespace PerfumeStore.Application.Orders
 {

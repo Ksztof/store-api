@@ -1,13 +1,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.API.DTOs.Request;
-using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.API.Shared.DTO.Request.Product;
+using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Products;
+using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Shared;
-using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {

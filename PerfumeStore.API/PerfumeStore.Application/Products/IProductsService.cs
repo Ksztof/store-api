@@ -1,7 +1,7 @@
-using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Application.DTOs.Response;
+using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.Entities.Products;
-using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Products
 {

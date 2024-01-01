@@ -1,17 +1,18 @@
 using AutoMapper;
-using PerfumeStore.Application.Cookies;
-using PerfumeStore.Application.DTOs.Request;
-using PerfumeStore.Application.DTOs.Response;
-using PerfumeStore.Application.HttpContext;
+using PerfumeStore.Application.Abstractions.Result.Authentication;
+using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Abstractions.Result.Shared;
+using PerfumeStore.Application.Contracts.Guest;
+using PerfumeStore.Application.Contracts.HttpContext;
+using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.models;
 using PerfumeStore.Domain.DTO.Request.Product;
 using PerfumeStore.Domain.DTO.Response.Cart;
 using PerfumeStore.Domain.Entities.CarLines;
 using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Entities.Products;
-using PerfumeStore.Domain.Errors;
 using PerfumeStore.Domain.Repositories;
-using PerfumeStore.Domain.Shared.Abstractions;
 
 namespace PerfumeStore.Application.Carts
 {

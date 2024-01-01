@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.Domain.Entities.Carts
 {
-    public class Cart : IEntity<int> //: interface?
+    public class Cart : IEntity<int>
     {
         [Key]
         public int Id { get; set; }
