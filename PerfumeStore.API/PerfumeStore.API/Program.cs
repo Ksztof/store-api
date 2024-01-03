@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -6,7 +7,9 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PerfumeStore.API.Shared.DTO.Request.Cart;
 using PerfumeStore.API.Shared.Mapper;
+using PerfumeStore.API.Validators.CartController.AddProductsToCartDtoApiValidator;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
@@ -33,6 +36,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 
 // Add services to the container.\
+
+builder.Services.AddTransient<IValidator<AddProductsToCartDtoApi>, AddProductsToCart>();
+
 
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IHttpContextService, HttpContextService>();
