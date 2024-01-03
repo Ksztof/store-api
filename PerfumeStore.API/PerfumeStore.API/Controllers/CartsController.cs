@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
 using PerfumeStore.Application.Abstractions.Result.Entity;
@@ -15,18 +16,22 @@ namespace PerfumeStore.API.Controllers
     {
         private readonly ICartsService _cartsService;
         private readonly IMapper _mapper;
+        private readonly IValidator<AddProductsToCartDtoApi> _validator;
 
         public CartsController(
             ICartsService cartsService,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<AddProductsToCartDtoApi> validator)
         {
             _cartsService = cartsService;
             _mapper = mapper;
+            _validator = validator;
         }
 
         [HttpPost("products")]
         public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
         {
+            var validationResult = _validator.Validate(request);
             AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
