@@ -33,7 +33,7 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
         {
             var validationResult = _validator.Validate(request);
-
+            
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
