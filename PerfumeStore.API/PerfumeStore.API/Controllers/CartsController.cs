@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Carts;
@@ -32,6 +33,10 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
         {
             var validationResult = _validator.Validate(request);
+            
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
             AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
@@ -45,6 +50,9 @@ namespace PerfumeStore.API.Controllers
         [HttpDelete("products/{productId}")]
         public async Task<IActionResult> DeleteProductFromCart(int productId)
         {
+            if (productId <= 0)
+                return BadRequest("Wrong product id");
+
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
 
             if (result.IsFailure)
@@ -63,6 +71,11 @@ namespace PerfumeStore.API.Controllers
         [HttpPatch("products")]
         public async Task<IActionResult> ModifyProduct([FromBody] ModifyProductDtoApi modifiedProduct)
         {
+            var validationResult = _validator.Validate(modifiedProduct);
+
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
+
             ModifyProductDtoApp modifyProductDto = _mapper.Map<ModifyProductDtoApp>(modifiedProduct);
 
             EntityResult<CartResponse> result = await _cartsService.ModifyProductAsync(modifyProductDto);
