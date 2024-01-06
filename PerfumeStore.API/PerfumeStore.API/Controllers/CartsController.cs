@@ -3,11 +3,14 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
+using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Entities.Products;
+using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -17,25 +20,27 @@ namespace PerfumeStore.API.Controllers
     {
         private readonly ICartsService _cartsService;
         private readonly IMapper _mapper;
-        private readonly IValidator<AddProductsToCartDtoApi> _validator;
+        private readonly IValidationService _validationService;
 
         public CartsController(
             ICartsService cartsService,
             IMapper mapper,
-            IValidator<AddProductsToCartDtoApi> validator)
+            IValidationService validationService)
         {
             _cartsService = cartsService;
             _mapper = mapper;
-            _validator = validator;
+            _validationService = validationService;
         }
 
         [HttpPost("products")]
         public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
         {
-            var validationResult = _validator.Validate(request);
+            var validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
+            {
                 return BadRequest(validationResult.Errors);
+            }
 
             AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
@@ -71,10 +76,12 @@ namespace PerfumeStore.API.Controllers
         [HttpPatch("products")]
         public async Task<IActionResult> ModifyProduct([FromBody] ModifyProductDtoApi modifiedProduct)
         {
-            var validationResult = _validator.Validate(modifiedProduct);
+            var validationResult = await _validationService.ValidateAsync(modifiedProduct);
 
             if (!validationResult.IsValid)
+            {
                 return BadRequest(validationResult.Errors);
+            }
 
             ModifyProductDtoApp modifyProductDto = _mapper.Map<ModifyProductDtoApp>(modifiedProduct);
 
@@ -114,6 +121,9 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCartById(int cartId)
         {
+            if (cartId <= 0)
+                return BadRequest("Wrong cart id");
+
             EntityResult<CartResponse> result = await _cartsService.GetCartResponseByIdAsync(cartId);
 
             if (result.IsFailure)

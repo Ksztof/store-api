@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace PerfumeStore.API.Validators.CartController.AddProductsToCartDto
+namespace PerfumeStore.API.Validators.Carts.AddProductsToCartDto
 {
     public sealed class AddProductsToCart : AbstractValidator<AddProductsToCartDtoApi>
     {

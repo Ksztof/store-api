@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
 
-namespace PerfumeStore.API.Validators.CartController.ModifyProductDto
+namespace PerfumeStore.API.Validators.Carts.ModifyProductDto
 {
     public sealed class ModifyProduct : AbstractValidator<ModifyProductDtoApi>
     {

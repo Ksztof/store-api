@@ -7,6 +7,5 @@
         public string ProductDescription { get; set; }
         public ICollection<int> ProductCategoriesIds { get; set; }
         public string? ProductManufacturer { get; set; }
-        public DateTime DateAdded { get; set; }
     }
 }

@@ -16,6 +16,8 @@ namespace PerfumeStore.Domain.Entities.Products
         public string? Description { get; set; }
         public string? Manufacturer { get; set; }
         public DateTime DateAdded { get; set; }
+        public DateTime? DateUpdated { get; set; }
+
         public ICollection<ProductProductCategory> ProductProductCategories { get; set; } = new List<ProductProductCategory>();
 
         public void CreateProduct(CreateProductDtoDom createProductForm, ICollection<ProductCategory> productCategories)
@@ -43,7 +45,7 @@ namespace PerfumeStore.Domain.Entities.Products
                 ProductCategory = pc
             }).ToList();
             Manufacturer = updateProductForm.ProductManufacturer;
-            DateAdded = DateTime.Now;
+            DateUpdated = DateTime.Now;
         }
     }
 }
