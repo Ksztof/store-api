@@ -18,7 +18,7 @@ For API:
 project > domain
 startup > API
 cli: 
-    1. Add-Migration InitialPerfumeShopMigration -context ShopDbContext
+    1. Add-Migration InitialPerfumeShopMigration -Context ShopDbContext -OutputDir "Persistence/Migrations"
     2. Update-Database -context ShopDbContext
 
 INSERTS 

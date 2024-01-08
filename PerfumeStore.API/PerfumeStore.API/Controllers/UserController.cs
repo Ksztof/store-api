@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.StoreUser;
+using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Users;
@@ -15,16 +17,25 @@ namespace PerfumeStore.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IValidationService _validationService;
 
-        public UserController(IUserService userService, IMapper mapper)
+        public UserController(IUserService userService, IMapper mapper, IValidationService validationService)
         {
             _userService = userService;
             _mapper = mapper;
+            _validationService = validationService;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthenticateUserDtoApi userAuthRequest)
         {
+            var validationResult = await _validationService.ValidateAsync(userAuthRequest);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
 
             AuthenticationResult result = await _userService.Login(authenticateUserDto);
@@ -38,8 +49,16 @@ namespace PerfumeStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDtoApi userRegRequest)
         {
-            if (userRegRequest == null || !ModelState.IsValid)
+            var validationResult = await _validationService.ValidateAsync(userRegRequest);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            else if (!ModelState.IsValid)
+            {
                 return BadRequest();
+            }
 
             StoreUser StoreUser = _mapper.Map<StoreUser>(userRegRequest);
 
@@ -57,7 +76,7 @@ namespace PerfumeStore.API.Controllers
             return StatusCode(201);
         }
 
-        [HttpGet("confirm")]
+        [HttpGet("confirm/{userId}/{token}")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
@@ -71,7 +90,6 @@ namespace PerfumeStore.API.Controllers
             return Ok();
         }
 
-        //[Authorize]
         [HttpPatch("request-deletion")]
         public async Task<IActionResult> RequestDeletion()
         {
