@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PerfumeStore.Infrastructure.Migrations
+namespace PerfumeStore.Infrastructure.Persistence.Migrations
 {
     public partial class InitialPerfumeShopMigration : Migration
     {
@@ -71,7 +72,8 @@ namespace PerfumeStore.Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Manufacturer = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateUpdated = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

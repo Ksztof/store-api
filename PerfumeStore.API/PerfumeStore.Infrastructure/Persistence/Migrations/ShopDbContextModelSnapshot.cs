@@ -8,7 +8,7 @@ using PerfumeStore.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace PerfumeStore.Infrastructure.Migrations
+namespace PerfumeStore.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
     partial class ShopDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace PerfumeStore.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.23")
+                .HasAnnotation("ProductVersion", "6.0.25")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -155,7 +155,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.CarLines.CartLine", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.CarLines.CartLine", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -181,7 +181,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.ToTable("CartsLine");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.Carts.Cart", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Carts.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,7 +204,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.Orders.Order", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -239,76 +239,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.ProductCategories.ProductCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductCategories");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.ProductProductCategories.ProductProductCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ProductCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductCategoryId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductProductCategories");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.Products.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Manufacturer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.ShippingDetails.ShippingDet", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.ShippingDet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,7 +288,79 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.ToTable("ShippingDetails");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.StoreUsers.StoreUser", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.ProductCategories.ProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductCategories");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.ProductProductCategories.ProductProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ProductCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductCategoryId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductProductCategories");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Products.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Manufacturer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -436,7 +439,7 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", null)
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,7 +448,7 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", null)
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,7 +463,7 @@ namespace PerfumeStore.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", null)
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,20 +472,20 @@ namespace PerfumeStore.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", null)
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.CarLines.CartLine", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.CarLines.CartLine", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.Carts.Cart", null)
+                    b.HasOne("PerfumeStore.Domain.Entities.Carts.Cart", null)
                         .WithMany("CartLines")
                         .HasForeignKey("CartId");
 
-                    b.HasOne("PerfumeStore.Domain.Products.Product", "Product")
+                    b.HasOne("PerfumeStore.Domain.Entities.Products.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -491,30 +494,30 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.Carts.Cart", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Carts.Cart", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", "StoreUser")
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", "StoreUser")
                         .WithOne("Cart")
-                        .HasForeignKey("PerfumeStore.Domain.Carts.Cart", "StoreUserId");
+                        .HasForeignKey("PerfumeStore.Domain.Entities.Carts.Cart", "StoreUserId");
 
                     b.Navigation("StoreUser");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.Orders.Order", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.Order", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.Carts.Cart", "Cart")
+                    b.HasOne("PerfumeStore.Domain.Entities.Carts.Cart", "Cart")
                         .WithMany()
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PerfumeStore.Domain.ShippingDetails.ShippingDet", "ShippingDetail")
+                    b.HasOne("PerfumeStore.Domain.Entities.Orders.ShippingDet", "ShippingDetail")
                         .WithOne("Order")
-                        .HasForeignKey("PerfumeStore.Domain.Orders.Order", "ShippingDetailId")
+                        .HasForeignKey("PerfumeStore.Domain.Entities.Orders.Order", "ShippingDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PerfumeStore.Domain.StoreUsers.StoreUser", "StoreUser")
+                    b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", "StoreUser")
                         .WithMany()
                         .HasForeignKey("StoreUserId");
 
@@ -525,15 +528,15 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.Navigation("StoreUser");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.ProductProductCategories.ProductProductCategory", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.ProductProductCategories.ProductProductCategory", b =>
                 {
-                    b.HasOne("PerfumeStore.Domain.ProductCategories.ProductCategory", "ProductCategory")
+                    b.HasOne("PerfumeStore.Domain.Entities.ProductCategories.ProductCategory", "ProductCategory")
                         .WithMany("ProductProductCategories")
                         .HasForeignKey("ProductCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PerfumeStore.Domain.Products.Product", "Product")
+                    b.HasOne("PerfumeStore.Domain.Entities.Products.Product", "Product")
                         .WithMany("ProductProductCategories")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -544,28 +547,28 @@ namespace PerfumeStore.Infrastructure.Migrations
                     b.Navigation("ProductCategory");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.Carts.Cart", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Carts.Cart", b =>
                 {
                     b.Navigation("CartLines");
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.ProductCategories.ProductCategory", b =>
-                {
-                    b.Navigation("ProductProductCategories");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.Products.Product", b =>
-                {
-                    b.Navigation("ProductProductCategories");
-                });
-
-            modelBuilder.Entity("PerfumeStore.Domain.ShippingDetails.ShippingDet", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.ShippingDet", b =>
                 {
                     b.Navigation("Order")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PerfumeStore.Domain.StoreUsers.StoreUser", b =>
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.ProductCategories.ProductCategory", b =>
+                {
+                    b.Navigation("ProductProductCategories");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.Products.Product", b =>
+                {
+                    b.Navigation("ProductProductCategories");
+                });
+
+            modelBuilder.Entity("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", b =>
                 {
                     b.Navigation("Cart");
                 });

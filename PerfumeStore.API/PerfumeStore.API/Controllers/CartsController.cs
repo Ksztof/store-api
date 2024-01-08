@@ -132,6 +132,4 @@ namespace PerfumeStore.API.Controllers
             return Ok(result.Entity);
         }
     }
-
-
 }
