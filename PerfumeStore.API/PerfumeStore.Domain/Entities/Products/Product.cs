@@ -36,7 +36,11 @@ namespace PerfumeStore.Domain.Entities.Products
 
         public void UpdateProduct(UpdateProductDtoDom updateProductForm, ICollection<ProductCategory> productCategories)
         {
-            Name = updateProductForm.ProductName; //:TODO check if name has been changed if not, leave old value
+            if (updateProductForm.ProductName != null || !string.IsNullOrEmpty(updateProductForm.ProductName))
+            {
+                Name = updateProductForm.ProductName;
+
+            }
             Price = updateProductForm.ProductPrice;
             Description = updateProductForm.ProductDescription;
             ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
