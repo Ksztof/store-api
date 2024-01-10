@@ -36,19 +36,35 @@ namespace PerfumeStore.Domain.Entities.Products
 
         public void UpdateProduct(UpdateProductDtoDom updateProductForm, ICollection<ProductCategory> productCategories)
         {
-            if (updateProductForm.ProductName != null || !string.IsNullOrEmpty(updateProductForm.ProductName))
+            if (updateProductForm.ProductName != null && !string.IsNullOrEmpty(updateProductForm.ProductName))
             {
                 Name = updateProductForm.ProductName;
-
             }
-            Price = updateProductForm.ProductPrice;
-            Description = updateProductForm.ProductDescription;
-            ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
+
+            if (updateProductForm.ProductPrice != null && updateProductForm.ProductPrice != 0.0M)
             {
-                Product = this,
-                ProductCategory = pc
-            }).ToList();
-            Manufacturer = updateProductForm.ProductManufacturer;
+                Price = updateProductForm.ProductPrice;
+            }
+
+            if (updateProductForm.ProductDescription != null && !string.IsNullOrEmpty(updateProductForm.ProductDescription))
+            {
+                Description = updateProductForm.ProductDescription;
+            }
+
+            if (updateProductForm.ProductManufacturer != null && !string.IsNullOrEmpty(updateProductForm.ProductManufacturer))
+            {
+                Manufacturer = updateProductForm.ProductManufacturer;
+            }
+
+            if (productCategories != null && productCategories.Any())
+            {
+                ProductProductCategories = productCategories.Select(pc => new ProductProductCategory
+                {
+                    Product = this,
+                    ProductCategory = pc
+                }).ToList();
+            }
+
             DateUpdated = DateTime.Now;
         }
     }
