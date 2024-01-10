@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.DTO.Request.Product;
+using PerfumeStore.Domain.DTO.Request.Product;
 using PerfumeStore.Domain.Entities.ProductCategories;
 using PerfumeStore.Domain.Entities.ProductProductCategories;
 using PerfumeStore.Domain.Repositories.Generics;
