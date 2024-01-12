@@ -88,7 +88,7 @@ namespace PerfumeStore.Application.Users
 
             if (cartId is not null)
             {
-                EntityResult<CartResponse> result = await _cartsService.AssignCartToUserAsync(user.Id, cartId.Value);
+                EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, cartId.Value);
 
                 if (result.IsFailure)
                 {
@@ -127,7 +127,7 @@ namespace PerfumeStore.Application.Users
             if (cartId != null)
             {
 
-                EntityResult<CartResponse> assignResult = await _cartsService.AssignCartToUserAsync(storeUser.Id, cartId.Value);
+                EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, cartId.Value);
 
                 if (assignResult.IsFailure)
                 {

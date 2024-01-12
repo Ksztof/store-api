@@ -48,9 +48,19 @@ namespace PerfumeStore.Application.Orders
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
 
+
             if (GuestCartId == null && isUserAuthenticated == false)
             {
                 Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+
+                return EntityResult<OrderResponse>.Failure(error);
+            }
+
+            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(GuestCartId.Value);
+
+            if (guestOrder != null)
+            {
+                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, GuestCartId.Value);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -70,6 +80,15 @@ namespace PerfumeStore.Application.Orders
                 if (userCart == null)
                 {
                     var error = EntityErrors<Cart, int>.MissingEntity(userId);
+
+                    return EntityResult<OrderResponse>.Failure(error);
+                }
+
+                Order? userOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
+
+                if (userOrder != null)
+                {
+                    Error error = EntityErrors<Order, int>.EntityInUse(userOrder.Id, userCart.Id);
 
                     return EntityResult<OrderResponse>.Failure(error);
                 }

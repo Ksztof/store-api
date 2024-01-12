@@ -70,14 +70,14 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
             return shippingDetails;
         }
 
-        public async Task<IEnumerable<Order>> GetByCartIdAsync(int cartId)
+        /*public async Task<IEnumerable<Order>> GetByCartIdAsync(int cartId)
         {
             IEnumerable<Order> orders = await _shopDbContext.Orders
                 .Include(x => x.ShippingDetail)
                 .Where(x => x.CartId == cartId).ToListAsync();
 
             return orders;
-        }
+        }*/
 
         public async Task<IEnumerable<Order>> GetByUserIdAsync(string userId)
         {
@@ -89,11 +89,30 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
             return orders;
         }
 
-
         public async Task UpdateAsync(Order order)
         {
             EntityEntry<Order> orderUpdate = _shopDbContext.Orders.Update(order);
             await _shopDbContext.SaveChangesAsync();
+        }
+
+        public async Task<int?> OrderAlreadyExists(int cartId)
+        {
+            Order? order = await _shopDbContext.Orders.FirstOrDefaultAsync(o => o.CartId == cartId);
+
+            if (order != null)
+                return order.Id;
+
+            return null;
+        }
+
+        public async Task<Order?> GetByCartIdAsync(int cartId)
+        {
+            Order? order = await _shopDbContext.Orders.FirstOrDefaultAsync(o => o.CartId == cartId);
+
+            if (order != null)
+                return order;
+
+            return null;
         }
     }
 }

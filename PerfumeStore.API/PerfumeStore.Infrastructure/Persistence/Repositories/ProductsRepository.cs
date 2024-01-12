@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Repositories;
 

@@ -45,5 +45,10 @@ namespace PerfumeStore.Application.Abstractions.Result.Entity
         {
             return new Error($"{typeof(T).Name}.EntityDoesntBelongToYou", $"Entity with ID: {entityId} does not belong to user trying to modify it");
         }
+
+        public static Error EntityInUse(TId entityId, int cartId)
+        {
+            return new Error($"{typeof(T).Name}.EntityInUse", $"Cart with id: {cartId} has been used in {typeof(T).Name} with id : {entityId}");
+        }
     }
 }
