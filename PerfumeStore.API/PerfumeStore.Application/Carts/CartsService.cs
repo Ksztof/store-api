@@ -186,7 +186,7 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<CartResponse>.Success(cartResponse);
         }
 
-        public async Task<EntityResult<Cart>> GetCartByIdAsync(int cartId)
+        /*public async Task<EntityResult<Cart>> GetCartByIdAsync(int cartId)
         {
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
 
@@ -196,7 +196,7 @@ namespace PerfumeStore.Application.Carts
             }
 
             return EntityResult<Cart>.Success(cart);
-        }
+        }*/
 
         public async Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApp productModification)
         {
@@ -332,7 +332,7 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<CartResponse>.Success(guestCartContents);
         }
 
-        public async Task<EntityResult<CartResponse>> AssignCartToUserAsync(string userId, int cartId)
+        public async Task<EntityResult<CartResponse>> AssignGuestCartToUserAsync(string userId, int cartId)
         {
             Cart? guestCart = await _cartsRepository.GetByIdAsync(cartId);
 

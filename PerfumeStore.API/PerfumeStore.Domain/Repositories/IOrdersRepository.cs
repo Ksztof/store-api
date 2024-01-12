@@ -19,8 +19,13 @@ namespace PerfumeStore.Domain.Repositories
 
         public Task<ShippingDet> GetShippingDetailsByCartIdAsync(int cartId);
 
-        public Task<IEnumerable<Order>> GetByCartIdAsync(int cartId);
+/*        public Task<IEnumerable<Order>> GetByCartIdAsync(int cartId);
+*/
+
+        public Task<Order?> GetByCartIdAsync(int cartId);
 
         public Task<IEnumerable<Order>> GetByUserIdAsync(string userId);
+
+        public Task<int?> OrderAlreadyExists(int cartId);
     }
 }
