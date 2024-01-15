@@ -50,5 +50,10 @@ namespace PerfumeStore.Application.Abstractions.Result.Entity
         {
             return new Error($"{typeof(T).Name}.EntityInUse", $"Cart with id: {cartId} has been used in {typeof(T).Name} with id : {entityId}");
         }
+
+        public static Error ProductAlreadyExists(TId entityId, string productName)
+        {
+            return new Error($"{typeof(T).Name}.ProductAlreadyExists", $"Product with id: {entityId} and name: {productName} already exists.");
+        }
     }
 }

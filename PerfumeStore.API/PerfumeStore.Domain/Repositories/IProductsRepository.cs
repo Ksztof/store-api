@@ -6,5 +6,6 @@ namespace PerfumeStore.Domain.Repositories
     public interface IProductsRepository : IRepository<Product, int>
     {
         public Task<IEnumerable<Product>> GetByIdsAsync(int[] ids);
+        public Task<Product?> GetByName(string productName);
     }
 }
