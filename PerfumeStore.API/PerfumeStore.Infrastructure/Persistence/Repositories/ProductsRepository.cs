@@ -57,6 +57,14 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
             return product;
         }
 
+        public async Task<Product?> GetByName(string productName)
+        {
+            Product? product = await _shopDbContext.Products
+                .FirstOrDefaultAsync(x => x.Name == productName);
+
+            return product;
+        }
+
         public async Task<Product> UpdateAsync(Product item)
         {
             EntityEntry<Product> productEntry = _shopDbContext.Products.Update(item);

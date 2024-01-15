@@ -32,6 +32,15 @@ namespace PerfumeStore.Application.Products
 
         public async Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductDtoApp createProductForm)
         {
+            Product? productExists = await _productsRepository.GetByName(createProductForm.ProductName);
+
+            if (productExists != null)
+            {
+                Error error = EntityErrors<Product, int>.ProductAlreadyExists(productExists.Id, createProductForm.ProductName);
+
+                return EntityResult<ProductResponse>.Failure(error);
+            }
+
             ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
 
             if (productCategories.Count != createProductForm.ProductCategoriesIds.Count)
