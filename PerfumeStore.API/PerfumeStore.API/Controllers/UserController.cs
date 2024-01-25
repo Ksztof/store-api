@@ -43,7 +43,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return Unauthorized(result.Error);
 
-            return Ok(result.Token);
+            return Ok();
         }
 
         [HttpPost]

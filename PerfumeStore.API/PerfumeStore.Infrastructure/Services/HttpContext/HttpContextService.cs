@@ -38,5 +38,12 @@ namespace PerfumeStore.Infrastructure.Services.HttpContext
 
             return protocol;
         }
+
+        public void SendCookieWithToken(string token, CookieOptions cookieOptions)
+        {
+            string cookieName = "AuthToken";
+
+            _httpContextAccessor?.HttpContext?.Response.Cookies.Append(cookieName, token, cookieOptions);
+        }
     }
 }

@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +25,7 @@ using PerfumeStore.Domain.Repositories;
 using PerfumeStore.Infrastructure.Configuration;
 using PerfumeStore.Infrastructure.Persistence;
 using PerfumeStore.Infrastructure.Persistence.Repositories;
+using PerfumeStore.Infrastructure.Services.Cookies;
 using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
@@ -57,6 +58,7 @@ builder.Services.AddTransient<IPermissionService, PermissionService>();
 builder.Services.AddTransient<ICartLinesRepository, CartLinesRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfileApplication), typeof(MappingProfileApi));
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+builder.Services.AddTransient<ICookieService, CookieService>();
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
     var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
@@ -159,9 +161,24 @@ builder.Services.AddAuthorization(options =>
 
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyAllowSpecificOrigins",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000") // Produkcyjny adres frontendu
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials(); // Włącz, jeśli potrzebujesz obsługi uwierzytelniania
+        });
+});
 builder.Services.AddControllers();
 
+
 var app = builder.Build();
+
+
+
 using (var scope = app.Services.CreateScope())
 {
     var dataSeeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
@@ -183,6 +200,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("MyAllowSpecificOrigins");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
