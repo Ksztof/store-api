@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Infrastructure.Services.Cookies;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,16 +16,19 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
     {
         private readonly IOptions<JwtOptions> _jwtOptions;
         private readonly UserManager<StoreUser> _userManager;
+        private readonly ICookieService _cookieService;
 
         public TokenService(
             UserManager<StoreUser> userManager,
-            IOptions<JwtOptions> jwtOptions)
+            IOptions<JwtOptions> jwtOptions,
+            ICookieService coookiesService)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions;
+            _cookieService = coookiesService;
         }
 
-        public async Task<string> GetToken(StoreUser user)
+        public async Task<string> IssueJwtToken(StoreUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
@@ -38,6 +43,8 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             }
 
             string token = GenerateToken(authClaims);
+
+            _cookieService.SetCookieWithToken(token);
 
             return token;
         }

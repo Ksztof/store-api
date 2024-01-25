@@ -22,7 +22,7 @@ namespace PerfumeStore.Application.Carts
         private readonly IProductsRepository _productsRepository;
         private readonly IGuestSessionService _guestSessionService;
         private readonly IMapper _mapper;
-        private readonly IHttpContextService _httpContextService;
+        private readonly IHttpContextService _contextService;
         private readonly ICartLinesRepository _cartLinesRepository;
 
         public CartsService(
@@ -37,13 +37,13 @@ namespace PerfumeStore.Application.Carts
             _productsRepository = productsRepository;
             _guestSessionService = guestSessionService;
             _mapper = mapper;
-            _httpContextService = httpContextService;
+            _contextService = httpContextService;
             _cartLinesRepository = cartLinesRepository;
         }
 
         public async Task<EntityResult<CartResponse>> AddProductsToCartAsync(AddProductsToCartDtoApp request)
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
             int[] newProductsIds = request.Products.Select(product => product.ProductId).ToArray();
@@ -61,7 +61,7 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserId();
+                string userId = _contextService.GetUserId();
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
 
                 if (userCart == null)
@@ -114,7 +114,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> DeleteCartLineFromCartAsync(int productId)
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
             if (GuestCartId == null && isUserAuthenticated == false)
@@ -126,7 +126,7 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserId();
+                string userId = _contextService.GetUserId();
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
 
                 if (userCart == null)
@@ -200,7 +200,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApp productModification)
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
             if (GuestCartId == null && isUserAuthenticated == false)
@@ -214,7 +214,7 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserId();
+                string userId = _contextService.GetUserId();
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
 
                 if (userCart == null)
@@ -247,7 +247,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<AboutCartDomRes>> CheckCartAsync()
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
             if (GuestCartId == null && isUserAuthenticated == false)
@@ -259,7 +259,7 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserId();
+                string userId = _contextService.GetUserId();
 
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
 
@@ -287,7 +287,7 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> ClearCartAsync()
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
             if (GuestCartId == null && isUserAuthenticated == false)
@@ -299,7 +299,7 @@ namespace PerfumeStore.Application.Carts
 
             if (isUserAuthenticated)
             {
-                string userId = _httpContextService.GetUserId();
+                string userId = _contextService.GetUserId();
 
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)

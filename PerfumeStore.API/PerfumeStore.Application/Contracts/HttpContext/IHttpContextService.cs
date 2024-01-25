@@ -1,4 +1,6 @@
-﻿namespace PerfumeStore.Application.Contracts.HttpContext
+﻿using Microsoft.AspNetCore.Http;
+
+namespace PerfumeStore.Application.Contracts.HttpContext
 {
     public interface IHttpContextService
     {
@@ -7,5 +9,7 @@
         public string GetUserId();
 
         public string GetActualProtocol();
+
+        public void SendCookieWithToken(string token, CookieOptions cookieOptions);
     }
 }

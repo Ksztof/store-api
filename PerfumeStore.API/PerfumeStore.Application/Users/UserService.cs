@@ -77,12 +77,12 @@ namespace PerfumeStore.Application.Users
                 return AuthenticationErrors.EmailNotConfirmed;
             }
 
-            var tokenResponse = await _tokenService.GetToken(user);
+            string issueResult = await _tokenService.IssueJwtToken(user);
 
-            if (tokenResponse == string.Empty)
+           /* if (issueResult != true)
             {
-                return AuthenticationErrors.UnableToGetToken;
-            }
+                return AuthenticationErrors.UnableToSetCookieWithJwtToken;
+            }*/
 
             int? cartId = _guestSessionService.GetCartId();
 
@@ -98,7 +98,7 @@ namespace PerfumeStore.Application.Users
 
             _guestSessionService.SetCartIdCookieAsExpired();
 
-            return AuthenticationResult.Success(tokenResponse);
+            return AuthenticationResult.Success();
         }
 
         public async Task<AuthenticationResult> RegisterUser(RegisterUserDtoApp userForRegistration)
