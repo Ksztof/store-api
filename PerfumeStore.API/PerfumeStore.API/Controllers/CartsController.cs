@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
@@ -92,7 +93,7 @@ namespace PerfumeStore.API.Controllers
 
             return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> CheckCart()
         {

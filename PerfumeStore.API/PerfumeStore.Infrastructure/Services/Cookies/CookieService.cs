@@ -18,14 +18,14 @@ namespace PerfumeStore.Infrastructure.Services.Cookies
             _contextService = contextService;
         }
 
-        public void SetCookieWithToken(string  token)
+        public void SetCookieWithToken(string token)
         {
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true, //TODO: for localhost false 
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1),
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddHours(7),
                 
                 
             };

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Shared.Mapper;
@@ -30,6 +32,7 @@ using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -130,26 +133,44 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
 
-builder.Services.AddAuthentication(options =>
-  {
-      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-      options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-  })
-  .AddJwtBearer(options =>
-  {
-      options.SaveToken = true;
-      options.RequireHttpsMetadata = false;
-      options.TokenValidationParameters = new TokenValidationParameters()
-      {
-          ValidateIssuer = true,
-          ValidateAudience = true,
-          ValidAudience = jwtOptions.ValidAudience,
-          ValidIssuer = jwtOptions.ValidIssuer,
-          ClockSkew = TimeSpan.Zero,
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
-      };
-  });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnValidatePrincipal = context => {
+                var jwtTokenHandler = context.HttpContext.RequestServices.GetRequiredService<JwtSecurityTokenHandler>();
+                var jwtOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtOptions>>().Value;
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.ValidAudience,
+                    ValidIssuer = jwtOptions.ValidIssuer,
+                    ClockSkew = TimeSpan.Zero,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
+                };
+
+                try
+                {
+                    var principal = jwtTokenHandler.ValidateToken(context.Request.Cookies["AuthToken"], tokenValidationParameters, out var validatedToken);
+                    context.Principal = principal;
+                    context.ShouldRenew = true;
+                }
+                catch (Exception)
+                {
+                    context.RejectPrincipal();
+                    context.Response.Cookies.Delete("AuthToken");
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
 
 builder.Services.AddAuthorization(options =>
 {
@@ -166,7 +187,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000") // Produkcyjny adres frontendu
+            builder.WithOrigins("https://localhost:3000") // Produkcyjny adres frontendu
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials(); // Włącz, jeśli potrzebujesz obsługi uwierzytelniania

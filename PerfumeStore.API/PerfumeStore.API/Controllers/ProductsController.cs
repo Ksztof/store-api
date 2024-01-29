@@ -79,7 +79,6 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAllProducts()
         {
             IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
