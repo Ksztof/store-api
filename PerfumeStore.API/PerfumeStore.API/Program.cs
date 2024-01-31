@@ -41,8 +41,6 @@ builder.Services.AddHttpClient();
 
 // Add services to the container.\
 
-
-
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IHttpContextService, HttpContextService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
@@ -85,7 +83,6 @@ var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 var assembly = typeof(ShopDbContext).Assembly.GetName().Name;
-
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
