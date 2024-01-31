@@ -133,44 +133,60 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
 var identityServerSettings = builder.Configuration.GetSection("IdentityServerSettings");
 var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Events = new CookieAuthenticationEvents
     {
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Events = new CookieAuthenticationEvents
+        OnValidatePrincipal = context =>
         {
-            OnValidatePrincipal = context => {
-                var jwtTokenHandler = context.HttpContext.RequestServices.GetRequiredService<JwtSecurityTokenHandler>();
-                var jwtOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtOptions>>().Value;
-                var tokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = jwtOptions.ValidAudience,
-                    ValidIssuer = jwtOptions.ValidIssuer,
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
-                };
+            var jwtTokenHandler = context.HttpContext.RequestServices.GetRequiredService<JwtSecurityTokenHandler>();
+            var jwtOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtOptions>>().Value;
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = jwtOptions.ValidAudience,
+                ValidIssuer = jwtOptions.ValidIssuer,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
+                ClockSkew = TimeSpan.FromDays(1)
+            };
 
-                try
+            try
+            {
+                var principal = jwtTokenHandler.ValidateToken(context.Request.Cookies["AuthToken"], tokenValidationParameters, out var validatedToken);
+                if (validatedToken is JwtSecurityToken jwtSecurityToken)
                 {
-                    var principal = jwtTokenHandler.ValidateToken(context.Request.Cookies["AuthToken"], tokenValidationParameters, out var validatedToken);
-                    context.Principal = principal;
-                    context.ShouldRenew = true;
+                    if (jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        context.Principal = principal;
+                        context.ShouldRenew = true;
+                    }
                 }
-                catch (Exception)
-                {
-                    context.RejectPrincipal();
-                    context.Response.Cookies.Delete("AuthToken");
-                }
-
-                return Task.CompletedTask;
             }
-        };
-    });
+            catch (SecurityTokenException)
+            {
+                context.RejectPrincipal();
+                context.Response.Cookies.Delete("AuthToken");
+            }
+            catch (Exception)
+            {
+                context.RejectPrincipal();
+                throw; 
+            }
 
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -184,19 +200,24 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("MyAllowSpecificOrigins",
+    options.AddPolicy(name: "MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("https://localhost:3000") // Produkcyjny adres frontendu
+            builder.WithOrigins("https://localhost:3000", "http://localhost:3000",
+                "https://192.168.136.215:3000") // Produkcyjny adres frontendu
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials(); // Włącz, jeśli potrzebujesz obsługi uwierzytelniania
         });
 });
+
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
 
 
 var app = builder.Build();
+app.UseHttpsRedirection();
 
 
 
@@ -221,9 +242,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("MyAllowSpecificOrigins");
-app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("MyAllowSpecificOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

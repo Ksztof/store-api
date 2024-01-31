@@ -8,6 +8,5 @@
 
         public string ValidAudience { get; init; } = string.Empty;
 
-        public int ExpiryInMinutes { get; init; }
     }
 }
