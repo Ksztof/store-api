@@ -25,8 +25,10 @@ namespace PerfumeStore.Infrastructure.Services.Cookies
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true, //TODO: for localhost false 
+                Secure = true, 
                 Expires = DateTimeOffset.Now.AddDays(1),
+                IsEssential = false,
+                SameSite = SameSiteMode.None,
             };
 
             _contextService.SendCookieWithToken(token, cookieOptions);
