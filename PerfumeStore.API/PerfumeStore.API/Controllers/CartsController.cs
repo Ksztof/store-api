@@ -93,10 +93,12 @@ namespace PerfumeStore.API.Controllers
 
             return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
-        [Authorize]
+
         [HttpGet]
         public async Task<IActionResult> CheckCart()
         {
+
+            var wad = HttpContext.Request.Cookies["AuthToken"];
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
             if (result.IsSuccess && result.Entity == null)

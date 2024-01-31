@@ -20,14 +20,13 @@ namespace PerfumeStore.Infrastructure.Services.Cookies
 
         public void SetCookieWithToken(string token)
         {
+            var time = DateTimeOffset.Now.AddDays(1);
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true, //TODO: for localhost false 
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddHours(7),
-                
-                
+                Expires = DateTimeOffset.Now.AddDays(1),
             };
 
             _contextService.SendCookieWithToken(token, cookieOptions);

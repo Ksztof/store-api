@@ -38,7 +38,17 @@ namespace PerfumeStore.Infrastructure.Services.Guest
 
         public void SetCartIdCookieAsExpired()
         {
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("GuestSessionId", "", new CookieOptions { Expires = DateTimeOffset.UtcNow.AddDays(-1) });
+            if (_httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"] != null)
+            {
+                _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                    "GuestSessionId",
+                    "",
+                    new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow.AddDays(-1)
+                    }
+                );
+            }
         }
     }
 }
