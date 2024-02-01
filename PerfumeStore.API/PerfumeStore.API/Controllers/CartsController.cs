@@ -11,6 +11,7 @@ using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.Response.Cart;
 using PerfumeStore.Domain.Entities.Products;
+using PerfumeStore.Domain.Shared;
 using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.API.Controllers
@@ -93,13 +94,12 @@ namespace PerfumeStore.API.Controllers
 
             return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
         }
-
-        [Authorize]
+        [Authorize(Roles = Roles.Administrator)]
         [HttpGet]
         public async Task<IActionResult> CheckCart()
         {
 
-            var wad = HttpContext.Request.Cookies["AuthToken"];
+            var wad = HttpContext.Request.Cookies["AuthCookie"];
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
             if (result.IsSuccess && result.Entity == null)
