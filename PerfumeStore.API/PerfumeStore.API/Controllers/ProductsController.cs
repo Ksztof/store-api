@@ -85,14 +85,6 @@ namespace PerfumeStore.API.Controllers
 
             if (!result.Any())
                 return Ok("The list of products is empty");
-
-            var cookie = "";
-
-            if (HttpContext.Request.Cookies.TryGetValue("AuthToken", out string cookieValue))
-            {
-                // Logika, gdy ciasteczko istnieje
-                cookie = cookieValue;         
-            }
            
             return Ok(result);
         }

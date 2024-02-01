@@ -41,7 +41,7 @@ namespace PerfumeStore.Infrastructure.Services.HttpContext
 
         public void SendCookieWithToken(string token, CookieOptions cookieOptions)
         {
-            string cookieName = "AuthToken";
+            string cookieName = "AuthCookie";
 
             _httpContextAccessor?.HttpContext?.Response.Cookies.Append(cookieName, token, cookieOptions);
         }
