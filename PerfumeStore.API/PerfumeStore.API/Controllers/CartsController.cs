@@ -51,7 +51,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpDelete("products/{productId}")]
@@ -72,7 +72,7 @@ namespace PerfumeStore.API.Controllers
                 return resultErr;
             }
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpPatch("products")]
@@ -92,7 +92,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
         [Authorize(Roles = Roles.Administrator)]
         [HttpGet]
@@ -119,7 +119,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpGet("{cartId}")]
