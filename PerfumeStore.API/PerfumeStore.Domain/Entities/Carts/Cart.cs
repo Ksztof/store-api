@@ -81,6 +81,7 @@ namespace PerfumeStore.Domain.Entities.Carts
         {
             return CartLines.Select(cl => new CheckCartDomRes
             {
+                ProductId = cl.ProductId,
                 ProductName = cl.Product.Name,
                 ProductUnitPrice = cl.Product.Price,
                 ProductTotalPrice = cl.Product.Price * cl.Quantity,
