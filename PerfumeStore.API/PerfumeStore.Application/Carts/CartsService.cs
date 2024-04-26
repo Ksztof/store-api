@@ -370,7 +370,7 @@ namespace PerfumeStore.Application.Carts
             };
         }
 
-        public async Task<EntityResult<CartResponse>> ReplaceCartContentAsync(NewProductsDtoApp request)
+        public async Task<EntityResult<AboutCartDomRes>> ReplaceCartContentAsync(NewProductsDtoApp request)
         {
             bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
@@ -383,7 +383,7 @@ namespace PerfumeStore.Application.Carts
             {
                 int[] missingProdIds = newProductsIds.Except(existingProductsIds).ToArray();
 
-                return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingProdIds));
+                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Product, int>.MissingEntities(missingProdIds));
             }
 
             NewProductsDtoDom addProductsToCartDtoDomain = _mapper.Map<NewProductsDtoDom>(request);
@@ -407,9 +407,9 @@ namespace PerfumeStore.Application.Carts
                     userCart = await _cartsRepository.UpdateAsync(userCart);
                 }
 
-                CartResponse userCartContents = MapCartResponse(userCart);
+                AboutCartDomRes userCartDetails = userCart.CheckCart();
 
-                return EntityResult<CartResponse>.Success(userCartContents);
+                return EntityResult<AboutCartDomRes>.Success(userCartDetails);
             }
 
             Cart? guestCart;
@@ -420,7 +420,7 @@ namespace PerfumeStore.Application.Carts
 
                 if (guestCart is null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
                 }
 
                 guestCart.ReplaceProducts(newProductsIds);
@@ -436,9 +436,9 @@ namespace PerfumeStore.Application.Carts
                 _guestSessionService.SendCartIdToGuest(guestCart.Id);
             }
 
-            CartResponse guestCartContents = MapCartResponse(guestCart);
+            AboutCartDomRes guestCartDetails = guestCart.CheckCart();
 
-            return EntityResult<CartResponse>.Success(guestCartContents);
+            return EntityResult<AboutCartDomRes>.Success(guestCartDetails);
         }
     }
 }
