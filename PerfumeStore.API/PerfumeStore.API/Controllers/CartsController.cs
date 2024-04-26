@@ -33,7 +33,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost("products")]
-        public async Task<IActionResult> AddProductsToCart([FromBody] AddProductsToCartDtoApi request)
+        public async Task<IActionResult> AddProductsToCartAsync([FromBody] NewProductsDtoApi request)
         {
             var validationResult = await _validationService.ValidateAsync(request);
 
@@ -42,7 +42,7 @@ namespace PerfumeStore.API.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
+            NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
             
@@ -53,7 +53,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpDelete("products/{productId}")]
-        public async Task<IActionResult> DeleteProductFromCart(int productId)
+        public async Task<IActionResult> DeleteProductFromCartAsync(int productId)
         {
             if (productId <= 0)
                 return BadRequest("Wrong product id");
@@ -74,7 +74,7 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPatch("products")]
-        public async Task<IActionResult> ModifyProduct([FromBody] ModifyProductDtoApi modifiedProduct)
+        public async Task<IActionResult> ModifyProductAsync([FromBody] ModifyProductDtoApi modifiedProduct)
         {
             var validationResult = await _validationService.ValidateAsync(modifiedProduct);
 
@@ -95,7 +95,7 @@ namespace PerfumeStore.API.Controllers
 
         [Authorize(Roles = Roles.Administrator)]
         [HttpGet]
-        public async Task<IActionResult> CheckCart()
+        public async Task<IActionResult> CheckCartAsync()
         {
             var wad = HttpContext.Request.Cookies["AuthCookie"];
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
@@ -132,6 +132,26 @@ namespace PerfumeStore.API.Controllers
                 return BadRequest(result.Error);
 
             return Ok(result.Entity);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ReplaceCartContentAsync(NewProductsDtoApi request)
+        {
+            var validationResult = await _validationService.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
+
+            EntityResult<CartResponse> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
     }
 }

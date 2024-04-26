@@ -13,7 +13,7 @@ namespace PerfumeStore.API.Shared.Mapper
     {
         public MappingProfileApi()
         {
-            CreateMap<AddProductsToCartDtoApi, AddProductsToCartDtoApp>();
+            CreateMap<NewProductsDtoApi, NewProductsDtoApp>();
             CreateMap<ProductInCartApi, ProductInCartApp>();
 
             CreateMap<ModifyProductDtoApi, ModifyProductDtoApp>();

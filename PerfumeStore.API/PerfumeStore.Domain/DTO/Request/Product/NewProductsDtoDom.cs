@@ -2,7 +2,7 @@
 
 namespace PerfumeStore.Domain.DTO.Request.Product
 {
-    public class AddProductsToCartDtoDom
+    public class NewProductsDtoDom
     {
         public ProductInCartDom[] Products { get; set; }
     }
