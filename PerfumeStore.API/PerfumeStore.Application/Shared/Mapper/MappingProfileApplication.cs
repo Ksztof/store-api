@@ -14,7 +14,7 @@ namespace PerfumeStore.Application.Shared.Mapper
     {
         public MappingProfileApplication()
         {
-            CreateMap<AddProductsToCartDtoApp, AddProductsToCartDtoDom>();
+            CreateMap<NewProductsDtoApp, NewProductsDtoDom>();
             CreateMap<ProductInCartApp, ProductInCartDom>();
 
             CreateMap<ModifyProductDtoApp, ModifyProductDtoDom>();

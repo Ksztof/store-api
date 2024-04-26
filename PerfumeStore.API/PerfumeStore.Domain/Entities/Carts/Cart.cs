@@ -30,7 +30,22 @@ namespace PerfumeStore.Domain.Entities.Carts
             CartLines.AddRange(newCartLines);
         }
 
-        public void UpdateProductsQuantity(AddProductsToCartDtoDom productsWithQuantities)
+        public void ReplaceProducts(int[] productsIdsRequest)
+        {
+            int[] newProductIds = GetNewProductsIds(productsIdsRequest);
+
+            IEnumerable<CartLine> newCartLines = BuildNewCartLines(newProductIds);
+            if (CartLines.Any())
+            {
+                CartLines.Clear();
+                CartLines.AddRange(newCartLines);
+            }
+
+            CartLines.AddRange(newCartLines);
+        }
+
+
+        public void UpdateProductsQuantity(NewProductsDtoDom productsWithQuantities)
         {
             foreach (var productWithQuantity in productsWithQuantities.Products)
             {
@@ -41,14 +56,14 @@ namespace PerfumeStore.Domain.Entities.Carts
 
         public void DeleteCartLineFromCart(int productId)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(cl => cl.ProductId == productId);
+            CartLine? cartLine = CartLines.First(cl => cl.ProductId == productId);
 
             bool deleteSuccess = CartLines.Remove(cartLine);
         }
 
         public void ModifyProduct(ModifyProductDtoDom productModification)
         {
-            CartLine? cartLine = CartLines.FirstOrDefault(cl => cl.ProductId == productModification.Product.ProductId);
+            CartLine? cartLine = CartLines.First(cl => cl.ProductId == productModification.Product.ProductId);
 
             cartLine.Quantity = productModification.Product.Quantity;
         }
