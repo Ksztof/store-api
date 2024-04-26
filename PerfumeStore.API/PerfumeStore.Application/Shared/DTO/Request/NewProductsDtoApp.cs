@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.Application.Shared.DTO.Request
 {
-    public class AddProductsToCartDtoApp
+    public class NewProductsDtoApp
     {
         public ProductInCartApp[] Products { get; set; }
     }

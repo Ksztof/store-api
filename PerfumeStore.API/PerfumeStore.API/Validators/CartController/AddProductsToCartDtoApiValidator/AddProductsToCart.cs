@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace PerfumeStore.API.Validators.CartController.AddProductsToCartDtoApiValidator
 {
-    public sealed class AddProductsToCart : AbstractValidator<AddProductsToCartDtoApi>
+    public sealed class AddProductsToCart : AbstractValidator<NewProductsDtoApi>
     {
         public AddProductsToCart()
         {

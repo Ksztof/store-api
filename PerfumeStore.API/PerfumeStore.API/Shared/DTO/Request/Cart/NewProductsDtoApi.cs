@@ -2,7 +2,7 @@
 
 namespace PerfumeStore.API.Shared.DTO.Request.Cart
 {
-    public class AddProductsToCartDtoApi
+    public class NewProductsDtoApi
     {
         public ProductInCartApi[] Products { get; set; }
     }
