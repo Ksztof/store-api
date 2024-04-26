@@ -10,9 +10,7 @@ using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.Response.Cart;
-using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Shared;
-using System.ComponentModel.DataAnnotations;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -47,11 +45,11 @@ namespace PerfumeStore.API.Controllers
             AddProductsToCartDtoApp addProductToCartDto = _mapper.Map<AddProductsToCartDtoApp>(request);
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
-
+            
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpDelete("products/{productId}")]
@@ -72,7 +70,7 @@ namespace PerfumeStore.API.Controllers
                 return resultErr;
             }
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpPatch("products")]
@@ -92,13 +90,13 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
+
         [Authorize(Roles = Roles.Administrator)]
         [HttpGet]
         public async Task<IActionResult> CheckCart()
         {
-
             var wad = HttpContext.Request.Cookies["AuthCookie"];
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
@@ -119,7 +117,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.Id }, result.Entity);
+            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
         [HttpGet("{cartId}")]

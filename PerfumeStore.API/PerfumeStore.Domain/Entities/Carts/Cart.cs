@@ -81,8 +81,11 @@ namespace PerfumeStore.Domain.Entities.Carts
         {
             return CartLines.Select(cl => new CheckCartDomRes
             {
+                ProductId = cl.ProductId,
                 ProductName = cl.Product.Name,
                 ProductUnitPrice = cl.Product.Price,
+                Description = cl.Product.Description,
+                Manufacturer = cl.Product.Manufacturer,
                 ProductTotalPrice = cl.Product.Price * cl.Quantity,
                 Quantity = cl.Quantity,
             });

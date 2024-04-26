@@ -2,7 +2,7 @@
 {
     public class CartResponse
     {
-        public int? Id { get; set; }
+        public int? CartId { get; set; }
         public IEnumerable<CartLineResponse> CartLineResponse { get; set; }
     }
 }
