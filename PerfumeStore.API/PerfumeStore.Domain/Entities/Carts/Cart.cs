@@ -1,4 +1,4 @@
-using PerfumeStore.Domain.DTO.Request.Product;
+﻿using PerfumeStore.Domain.DTO.Request.Product;
 using PerfumeStore.Domain.DTO.Response.Cart;
 using PerfumeStore.Domain.Entities.CarLines;
 using PerfumeStore.Domain.Entities.StoreUsers;
@@ -32,16 +32,9 @@ namespace PerfumeStore.Domain.Entities.Carts
 
         public void ReplaceProducts(int[] productsIdsRequest)
         {
-            int[] newProductIds = GetNewProductsIds(productsIdsRequest);
-
-            IEnumerable<CartLine> newCartLines = BuildNewCartLines(newProductIds);
-            if (CartLines.Any())
-            {
-                CartLines.Clear();
-                CartLines.AddRange(newCartLines);
-            }
-
-            CartLines.AddRange(newCartLines);
+            IEnumerable<CartLine> newCartLines = BuildNewCartLines(productsIdsRequest);
+            CartLines?.Clear();
+            CartLines?.AddRange(newCartLines);
         }
 
 
@@ -49,8 +42,9 @@ namespace PerfumeStore.Domain.Entities.Carts
         {
             foreach (var productWithQuantity in productsWithQuantities.Products)
             {
-                CartLine cartLine = CartLines.First(cl => cl.ProductId == productWithQuantity.ProductId);
-                cartLine.Quantity += productWithQuantity.Quantity;
+                CartLine? cartLine = CartLines?.FirstOrDefault(cl => cl.ProductId == productWithQuantity.ProductId);
+                if(cartLine != null)
+                    cartLine.Quantity += productWithQuantity.Quantity;
             }
         }
 
