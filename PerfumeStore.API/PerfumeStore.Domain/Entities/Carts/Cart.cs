@@ -15,10 +15,12 @@ namespace PerfumeStore.Domain.Entities.Carts
         public string? StoreUserId { get; set; }
         public StoreUser? StoreUser { get; set; }
         public CartStatus CartStatus { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public Cart()
         {
             CartStatus = CartStatus.Active;
+            CreatedAt = DateTime.UtcNow;
         }
 
         public void AddProducts(int[] productsIdsRequest)
