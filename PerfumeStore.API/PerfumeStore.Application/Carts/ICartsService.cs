@@ -21,6 +21,6 @@ namespace PerfumeStore.Application.Carts
         public Task<EntityResult<CartResponse>> ClearCartAsync();
 
         public Task<EntityResult<CartResponse>> AssignGuestCartToUserAsync(string userId, int cartId);
-        public Task<EntityResult<CartResponse>> ReplaceCartContentAsync(NewProductsDtoApp request);
+        public Task<EntityResult<AboutCartDomRes>> ReplaceCartContentAsync(NewProductsDtoApp request);
     }
 }

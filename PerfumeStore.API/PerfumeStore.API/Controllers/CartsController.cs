@@ -146,12 +146,15 @@ namespace PerfumeStore.API.Controllers
 
             NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
-            EntityResult<CartResponse> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
+            EntityResult<AboutCartDomRes> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
+
+            if (result.IsSuccess && result.Entity == null)
+                return Ok("Cart is empty");
 
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            return Ok(result.Entity);
         }
     }
 }
