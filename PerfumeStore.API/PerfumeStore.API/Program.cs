@@ -223,7 +223,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers();  // lub inna konfiguracja routingu
+    endpoints.MapControllers(); 
 });
 
 app.Run();

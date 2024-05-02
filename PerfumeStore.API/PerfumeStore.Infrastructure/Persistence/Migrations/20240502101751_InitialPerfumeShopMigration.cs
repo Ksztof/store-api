@@ -214,7 +214,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StoreUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CartStatus = table.Column<int>(type: "int", nullable: false)
+                    CartStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

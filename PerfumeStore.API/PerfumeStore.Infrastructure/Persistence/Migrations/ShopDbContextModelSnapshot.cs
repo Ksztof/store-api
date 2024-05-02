@@ -192,6 +192,9 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                     b.Property<int>("CartStatus")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("StoreUserId")
                         .HasColumnType("nvarchar(450)");
 

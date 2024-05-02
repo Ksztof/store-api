@@ -12,7 +12,7 @@ using PerfumeStore.Infrastructure.Persistence;
 namespace PerfumeStore.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20240108145554_InitialPerfumeShopMigration")]
+    [Migration("20240502101751_InitialPerfumeShopMigration")]
     partial class InitialPerfumeShopMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -193,6 +193,9 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("CartStatus")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("StoreUserId")
                         .HasColumnType("nvarchar(450)");
