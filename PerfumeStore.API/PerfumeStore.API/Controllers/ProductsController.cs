@@ -84,7 +84,7 @@ namespace PerfumeStore.API.Controllers
             IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
 
             if (!result.Any())
-                return Ok("The list of products is empty");
+                return Ok(result);
            
             return Ok(result);
         }
