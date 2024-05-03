@@ -77,7 +77,8 @@ namespace PerfumeStore.Domain.Entities.Carts
             AboutCartDomRes aboutCart = new AboutCartDomRes
             {
                 AboutProductsInCart = aboutProducts,
-                TotalCartValue = totalCartValue
+                TotalCartValue = totalCartValue,
+                CreatedAt = this.CreatedAt, 
             };
 
             return aboutCart;
