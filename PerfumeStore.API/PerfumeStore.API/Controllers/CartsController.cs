@@ -101,7 +101,7 @@ namespace PerfumeStore.API.Controllers
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
             if (result.IsSuccess && result.Entity == null)
-                return Ok("Cart is empty");
+                return NoContent();
 
             if (result.IsFailure)
                 return BadRequest(result.Error);
