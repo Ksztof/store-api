@@ -8,7 +8,7 @@ namespace PerfumeStore.Application.Abstractions.Result.Authentication
 
         public static readonly Error UserNotAuthenticated = new("Authentication.UserNotAuthenticated", "User is not authenticated");
 
-        public static readonly Error MissingCartIdCookieUserNotAuthenticated = new("Authentication.MissingCartIdCookieUserNotAuthenticated", "User is not authenticated and cookie with cart Id is missing");
+        public static readonly Error MissingCartIdOrUserCookieNotAuthenticated = new("Authentication.MissingCartIdCookieUserNotAuthenticated", "User is not authenticated and cookie with cart Id is missing");
 
         public static readonly Error UserDoesNotExist = new("Authentication.UserDoesntExist", "User doesn't exist, please create account before you log in");
 

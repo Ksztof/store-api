@@ -180,10 +180,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("https://localhost:3000", "https://localhost:5445") // Produkcyjny adres frontendu
+            builder.WithOrigins("https://localhost:3000", "https://localhost:5445")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials(); // Włącz, jeśli potrzebujesz obsługi uwierzytelniania
+                .AllowCredentials();
         });
 });
 

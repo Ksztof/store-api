@@ -68,5 +68,15 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
 
             await _shopDbContext.SaveChangesAsync();
         }
+
+        public async Task<DateTime> GetCartDateByIdAsync(int cartId)
+        {
+            DateTime createdAt = await _shopDbContext.Carts
+                .Where(c => c.Id == cartId)
+                .Select(c => c.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            return createdAt;
+        }
     }
 }
