@@ -119,7 +119,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -193,7 +193,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -240,7 +240,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<AboutCartDomRes>.Failure(error);
             }
@@ -280,7 +280,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -347,27 +347,6 @@ namespace PerfumeStore.Application.Carts
             await _cartsRepository.UpdateAsync(userCart);
 
             return EntityResult<CartResponse>.Success();
-        }
-
-        private static NewProductsDtoDom GetProductsAndQuantitiesToAssign(Cart? guestCart)
-        {
-            return new NewProductsDtoDom
-            {
-                Products = guestCart.CartLines.Select(cl => new ProductInCartDom
-                {
-                    ProductId = cl.ProductId,
-                    Quantity = cl.Quantity,
-                }).ToArray()
-            };
-        }
-
-        private CartResponse MapCartResponse(Cart cart)
-        {
-            return new CartResponse
-            {
-                CartId = cart.Id,
-                CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(cart.CartLines),
-            };
         }
 
         public async Task<EntityResult<AboutCartDomRes>> ReplaceCartContentAsync(NewProductsDtoApp request)
@@ -440,5 +419,60 @@ namespace PerfumeStore.Application.Carts
 
             return EntityResult<AboutCartDomRes>.Success(guestCartDetails);
         }
+
+        public async Task<EntityResult<AboutCartDomRes>> IsCurrentCartAsync(IsCurrentCartDtoApp addProductToCartDto)
+        {
+            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
+            int? GuestCartId = _guestSessionService.GetCartId();
+
+            if (GuestCartId == null && isUserAuthenticated == false)
+            {
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+
+                return EntityResult<AboutCartDomRes>.Failure(error);
+            }
+
+            DateTime createdAtDb = await _cartsRepository.GetCartDateByIdAsync(addProductToCartDto.CartId);
+
+            bool isCartActual = IsCreationDateActual(addProductToCartDto.CreatedAt, createdAtDb);
+
+            if (isCartActual)
+            {
+                return EntityResult<AboutCartDomRes>.Success();
+            }
+
+            Cart cart = await _cartsRepository.GetByIdAsync(addProductToCartDto.CartId);
+
+            AboutCartDomRes userCartDetails = cart.CheckCart();
+
+            return EntityResult<AboutCartDomRes>.Success(userCartDetails);
+        }
+
+        private static NewProductsDtoDom GetProductsAndQuantitiesToAssign(Cart? guestCart)
+        {
+            return new NewProductsDtoDom
+            {
+                Products = guestCart.CartLines.Select(cl => new ProductInCartDom
+                {
+                    ProductId = cl.ProductId,
+                    Quantity = cl.Quantity,
+                }).ToArray()
+            };
+        }
+
+        private CartResponse MapCartResponse(Cart cart)
+        {
+            return new CartResponse
+            {
+                CartId = cart.Id,
+                CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(cart.CartLines),
+            };
+        }
+
+        private static bool IsCreationDateActual(DateTime requestCartDate, DateTime dbCartDate)
+        {
+            return requestCartDate == dbCartDate;
+        }
+
     }
 }

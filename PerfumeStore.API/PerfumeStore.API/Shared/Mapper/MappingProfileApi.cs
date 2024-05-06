@@ -31,6 +31,8 @@ namespace PerfumeStore.API.Shared.Mapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Login));
 
             CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
+
+            CreateMap<IsCurrentCartDtoApi, IsCurrentCartDtoApp>();
         }
     }
 }

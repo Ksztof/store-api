@@ -156,5 +156,28 @@ namespace PerfumeStore.API.Controllers
 
             return Ok(result.Entity);
         }
+
+        [HttpPost("is-current-cart")]
+        public async Task<IActionResult> IsCurrentCartAsync([FromBody] IsCurrentCartDtoApi request)
+        {
+            var validationResult = await _validationService.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            IsCurrentCartDtoApp addProductToCartDto = _mapper.Map<IsCurrentCartDtoApp>(request);
+
+            EntityResult<AboutCartDomRes> result = await _cartsService.IsCurrentCartAsync(addProductToCartDto);
+
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            if (result.Entity == null)
+                return NoContent();
+            else 
+                return Ok(result.Entity);
+        }
     }
 }

@@ -51,7 +51,7 @@ namespace PerfumeStore.Application.Orders
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -174,7 +174,7 @@ namespace PerfumeStore.Application.Orders
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdCookieUserNotAuthenticated;
+                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
