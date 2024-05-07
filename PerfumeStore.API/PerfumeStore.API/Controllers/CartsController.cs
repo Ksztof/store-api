@@ -45,7 +45,7 @@ namespace PerfumeStore.API.Controllers
             NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
-            
+
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -157,17 +157,18 @@ namespace PerfumeStore.API.Controllers
             return Ok(result.Entity);
         }
 
-        [HttpPost("is-current-cart")]
-        public async Task<IActionResult> IsCurrentCartAsync([FromBody] IsCurrentCartDtoApi request)
+        [Authorize(Roles = Roles.Administrator)]
+        [HttpPost("check-current-cart")]
+        public async Task<IActionResult> CheckCurrentCartAsync([FromBody] CheckCurrentCartDtoApi request)
         {
-            var validationResult = await _validationService.ValidateAsync(request);
+            FluentValidation.Results.ValidationResult validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
 
-            IsCurrentCartDtoApp addProductToCartDto = _mapper.Map<IsCurrentCartDtoApp>(request);
+            CheckCurrentCartDtoApp addProductToCartDto = _mapper.Map<CheckCurrentCartDtoApp>(request);
 
             EntityResult<AboutCartDomRes> result = await _cartsService.IsCurrentCartAsync(addProductToCartDto);
 
@@ -176,8 +177,8 @@ namespace PerfumeStore.API.Controllers
 
             if (result.Entity == null)
                 return NoContent();
-            else 
-                return Ok(result.Entity);
+
+            return Ok(result.Entity);
         }
     }
 }

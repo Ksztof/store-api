@@ -22,6 +22,6 @@ namespace PerfumeStore.Application.Carts
 
         public Task<EntityResult<CartResponse>> AssignGuestCartToUserAsync(string userId, int cartId);
         public Task<EntityResult<AboutCartDomRes>> ReplaceCartContentAsync(NewProductsDtoApp request);
-        public Task<EntityResult<AboutCartDomRes>> IsCurrentCartAsync(IsCurrentCartDtoApp addProductToCartDto);
+        public Task<EntityResult<AboutCartDomRes>> IsCurrentCartAsync(CheckCurrentCartDtoApp addProductToCartDto);
     }
 }

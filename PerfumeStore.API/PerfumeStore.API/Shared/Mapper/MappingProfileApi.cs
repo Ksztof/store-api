@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PerfumeStore.API.Shared.DTO.Models;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
 using PerfumeStore.API.Shared.DTO.Request.Order;
@@ -32,7 +32,7 @@ namespace PerfumeStore.API.Shared.Mapper
 
             CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
 
-            CreateMap<IsCurrentCartDtoApi, IsCurrentCartDtoApp>();
+            CreateMap<CheckCurrentCartDtoApi, CheckCurrentCartDtoApp>();
         }
     }
 }
