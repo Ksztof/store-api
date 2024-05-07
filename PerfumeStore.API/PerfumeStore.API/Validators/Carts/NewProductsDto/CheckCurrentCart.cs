@@ -3,14 +3,10 @@ using PerfumeStore.API.Shared.DTO.Request.Cart;
 
 namespace PerfumeStore.API.Validators.Carts.NewProductsDto
 {
-    public class IsCurrentCart : AbstractValidator<IsCurrentCartDtoApi>
+    public class CheckCurrentCart : AbstractValidator<CheckCurrentCartDtoApi>
     {
-        public IsCurrentCart() 
+        public CheckCurrentCart() 
         {
-            RuleFor(x => x.CartId)
-                .GreaterThan(0)
-                .WithMessage("Cart ID must be greater than 0.");
-
             RuleFor(x => x.CreatedAt)
                         .Must(ValidationUtils.BeAValidUtcDateTime)
                         .WithMessage("CreatedAt must be a valid UTC date.");

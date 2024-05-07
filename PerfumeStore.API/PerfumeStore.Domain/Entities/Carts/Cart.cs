@@ -26,17 +26,20 @@ namespace PerfumeStore.Domain.Entities.Carts
         public void AddProducts(int[] productsIdsRequest)
         {
             int[] newProductIds = GetNewProductsIds(productsIdsRequest);
-
             IEnumerable<CartLine> newCartLines = BuildNewCartLines(newProductIds);
 
             CartLines.AddRange(newCartLines);
+            CreatedAt = DateTime.UtcNow;
+
         }
 
         public void ReplaceProducts(int[] productsIdsRequest)
         {
             IEnumerable<CartLine> newCartLines = BuildNewCartLines(productsIdsRequest);
+
             CartLines?.Clear();
             CartLines?.AddRange(newCartLines);
+            CreatedAt = DateTime.UtcNow;
         }
 
 
@@ -53,15 +56,15 @@ namespace PerfumeStore.Domain.Entities.Carts
         public void DeleteCartLineFromCart(int productId)
         {
             CartLine? cartLine = CartLines.First(cl => cl.ProductId == productId);
-
             bool deleteSuccess = CartLines.Remove(cartLine);
+            CreatedAt = DateTime.UtcNow;
         }
 
         public void ModifyProduct(ModifyProductDtoDom productModification)
         {
             CartLine? cartLine = CartLines.First(cl => cl.ProductId == productModification.Product.ProductId);
-
             cartLine.Quantity = productModification.Product.Quantity;
+            CreatedAt = DateTime.UtcNow;
         }
 
         public void ClearCart()

@@ -15,5 +15,7 @@ namespace PerfumeStore.Domain.Repositories
         public Task<Cart> GetByUserEmailAsync(string email);
         public Task DeleteAsync(Cart cart);
         public Task<DateTime> GetCartDateByIdAsync(int cartId);
+
+        public Task<int> GetCartIdByUserId(string userId);  
     }
 }

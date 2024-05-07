@@ -420,11 +420,11 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<AboutCartDomRes>.Success(guestCartDetails);
         }
 
-        public async Task<EntityResult<AboutCartDomRes>> IsCurrentCartAsync(IsCurrentCartDtoApp addProductToCartDto)
+        public async Task<EntityResult<AboutCartDomRes>> IsCurrentCartAsync(CheckCurrentCartDtoApp addProductToCartDto)
         {
             bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
-
+            int cartId = int.MinValue;
             if (GuestCartId == null && isUserAuthenticated == false)
             {
                 Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
@@ -432,20 +432,37 @@ namespace PerfumeStore.Application.Carts
                 return EntityResult<AboutCartDomRes>.Failure(error);
             }
 
-            DateTime createdAtDb = await _cartsRepository.GetCartDateByIdAsync(addProductToCartDto.CartId);
-
-            bool isCartActual = IsCreationDateActual(addProductToCartDto.CreatedAt, createdAtDb);
-
-            if (isCartActual)
+            if (isUserAuthenticated)
             {
-                return EntityResult<AboutCartDomRes>.Success();
+                string userId = _contextService.GetUserId();
+                cartId = await _cartsRepository.GetCartIdByUserId(userId);
+            }
+            else if (GuestCartId != null)
+            {
+                cartId = GuestCartId.Value;
             }
 
-            Cart cart = await _cartsRepository.GetByIdAsync(addProductToCartDto.CartId);
+            if (cartId > int.MinValue)
+            {
+                DateTime createdAtDb = await _cartsRepository.GetCartDateByIdAsync(cartId);
 
-            AboutCartDomRes userCartDetails = cart.CheckCart();
+                bool isCartActual = IsCreationDateActual(addProductToCartDto.CreatedAt, createdAtDb);
 
-            return EntityResult<AboutCartDomRes>.Success(userCartDetails);
+                if (isCartActual)
+                {
+                    return EntityResult<AboutCartDomRes>.Success();
+                }
+
+                Cart cart = await _cartsRepository.GetByIdAsync(cartId);
+
+                AboutCartDomRes userCartDetails = cart.CheckCart();
+
+                return EntityResult<AboutCartDomRes>.Success(userCartDetails);
+            }
+            else
+            {
+                throw new InvalidOperationException("Cart ID was not properly initialized.");
+            }
         }
 
         private static NewProductsDtoDom GetProductsAndQuantitiesToAssign(Cart? guestCart)

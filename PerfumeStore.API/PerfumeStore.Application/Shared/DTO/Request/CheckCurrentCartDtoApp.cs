@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Application.Shared.DTO.Request
 {
-    public class IsCurrentCartDtoApp
+    public class CheckCurrentCartDtoApp
     {
-        public int CartId { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

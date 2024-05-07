@@ -29,7 +29,7 @@
 
         public static bool BeAValidUtcDateTime(DateTime date)
         {
-            return date.Kind == DateTimeKind.Utc;
+            return date.Kind == DateTimeKind.Unspecified;
         }
     }
 }

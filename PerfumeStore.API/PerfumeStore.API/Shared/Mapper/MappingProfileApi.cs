@@ -32,7 +32,7 @@ namespace PerfumeStore.API.Shared.Mapper
 
             CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
 
-            CreateMap<IsCurrentCartDtoApi, IsCurrentCartDtoApp>();
+            CreateMap<CheckCurrentCartDtoApi, CheckCurrentCartDtoApp>();
         }
     }
 }
