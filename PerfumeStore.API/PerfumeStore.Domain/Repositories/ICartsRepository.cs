@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Entities.Carts;
 
 namespace PerfumeStore.Domain.Repositories
 {
