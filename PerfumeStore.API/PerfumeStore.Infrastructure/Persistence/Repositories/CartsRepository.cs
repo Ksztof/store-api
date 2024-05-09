@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Repositories;

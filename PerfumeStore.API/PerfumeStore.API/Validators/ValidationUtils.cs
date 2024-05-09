@@ -1,4 +1,4 @@
-﻿namespace PerfumeStore.API.Validators
+namespace PerfumeStore.API.Validators
 {
     public static class ValidationUtils
     {
