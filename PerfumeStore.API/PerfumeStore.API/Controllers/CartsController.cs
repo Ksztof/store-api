@@ -93,7 +93,6 @@ namespace PerfumeStore.API.Controllers
             return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
         }
 
-        [Authorize(Roles = Roles.Administrator)]
         [HttpGet]
         public async Task<IActionResult> CheckCartAsync()
         {
@@ -157,7 +156,6 @@ namespace PerfumeStore.API.Controllers
             return Ok(result.Entity);
         }
 
-        [Authorize(Roles = Roles.Administrator)]
         [HttpPost("check-current-cart")]
         public async Task<IActionResult> CheckCurrentCartAsync([FromBody] CheckCurrentCartDtoApi request)
         {
