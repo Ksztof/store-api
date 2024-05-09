@@ -27,9 +27,9 @@
             return password.Any(ch => "!@#$%^&*()_+-=[]{};':\",.<>/?\\|".Contains(ch));
         }
 
-        public static bool BeAValidUtcDateTime(DateTime date)
+        public static bool BeAValidDateTime(DateTime date)
         {
-            return date.Kind == DateTimeKind.Unspecified;
+            return date.Kind == DateTimeKind.Utc;
         }
     }
 }

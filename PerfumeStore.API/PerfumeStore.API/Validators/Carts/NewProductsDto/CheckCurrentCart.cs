@@ -8,8 +8,8 @@ namespace PerfumeStore.API.Validators.Carts.NewProductsDto
         public CheckCurrentCart() 
         {
             RuleFor(x => x.CreatedAt)
-                        .Must(ValidationUtils.BeAValidUtcDateTime)
-                        .WithMessage("CreatedAt must be a valid UTC date.");
+                        .Must(ValidationUtils.BeAValidDateTime)
+                        .WithMessage("CreatedAt must be a valid date.");
         }
     }
 }

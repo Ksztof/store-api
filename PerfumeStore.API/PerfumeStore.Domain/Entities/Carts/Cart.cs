@@ -76,12 +76,13 @@ namespace PerfumeStore.Domain.Entities.Carts
         {
             decimal totalCartValue = CartLines.Sum(cl => cl.Product.Price * cl.Quantity);
             IEnumerable<CheckCartDomRes> aboutProducts = GetInformationAboutProducts();
+            CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc);
 
             AboutCartDomRes aboutCart = new AboutCartDomRes
             {
                 AboutProductsInCart = aboutProducts,
                 TotalCartValue = totalCartValue,
-                CreatedAt = this.CreatedAt, 
+                CreatedAt = CreatedAt, 
             };
 
             return aboutCart;
