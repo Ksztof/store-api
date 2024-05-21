@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Domain.Entities.StoreUsers;
@@ -12,13 +11,13 @@ using System.Text;
 
 namespace PerfumeStore.Infrastructure.Services.Tokens
 {
-    public class TokenService : ITokenService
+    public class JwtTokenService : ITokenService
     {
         private readonly IOptions<JwtOptions> _jwtOptions;
         private readonly UserManager<StoreUser> _userManager;
         private readonly ICookieService _cookieService;
 
-        public TokenService(
+        public JwtTokenService(
             UserManager<StoreUser> userManager,
             IOptions<JwtOptions> jwtOptions,
             ICookieService coookiesService)

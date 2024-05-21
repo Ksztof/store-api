@@ -18,7 +18,9 @@ using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
+using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Orders;
+using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Application.Shared.Mapper;
 using PerfumeStore.Application.Users;
@@ -32,8 +34,10 @@ using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.Tokens;
+using Stripe;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +55,7 @@ builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<ITokenService, JwtTokenService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IPermissionService, PermissionService>();
@@ -72,11 +76,17 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
+builder.Services.ConfigureOptions<StripeOptionsSetup>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
+
+builder.Services.AddSingleton<PaymentIntentService>();
+builder.Services.AddScoped<IPaymentsService, PaymentsService>();
+
 
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -126,8 +136,8 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
   .AddEntityFrameworkStores<ShopDbContext>()
   .AddDefaultTokenProviders();
 
-var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
 var key = Encoding.ASCII.GetBytes(jwtOptions.SecurityKey);
 
 builder.Services.AddAuthentication(options =>
@@ -188,6 +198,10 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("StripeOptions"));
+var stripeOptions = builder.Configuration.GetSection("StripeOptions").Get<StripeOptions>();
+StripeConfiguration.ApiKey = stripeOptions.SecretKey;
 
 var app = builder.Build();
 
