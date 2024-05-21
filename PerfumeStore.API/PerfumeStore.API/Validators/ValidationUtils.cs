@@ -31,5 +31,11 @@ namespace PerfumeStore.API.Validators
         {
             return date.Kind == DateTimeKind.Utc;
         }
+
+        public static bool BeAValidCurrency(string currency)
+        {
+            var isoCurrencies = new HashSet<string>(new[] { "PLN", "USD", "EUR", "GBP" }); 
+            return isoCurrencies.Contains(currency);
+        }
     }
 }
