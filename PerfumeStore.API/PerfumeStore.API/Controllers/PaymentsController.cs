@@ -8,6 +8,7 @@ using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
+using Stripe;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -33,7 +34,6 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> PayWithCard([FromBody] PayWithCardDtoApi request)
         {
             var validationResult = await _validationService.ValidateAsync(request);
-
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
@@ -43,7 +43,13 @@ namespace PerfumeStore.API.Controllers
 
             await _paymentsService.PayWithCardAsync(createOrderDtoApp);
 
+            return Ok();
+        }
 
+        [HttpPost("webhook")]
+        public async Task<IActionResult> StripeWebhook()
+        {
+            await _paymentsService.VerifyPaymentAsync();
 
             return Ok();
         }
