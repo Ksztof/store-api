@@ -1,4 +1,7 @@
-﻿using PerfumeStore.Application.Shared.DTO.Request;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using PerfumeStore.Application.Contracts.Stripe.Payments;
+using PerfumeStore.Application.Shared.DTO.Request;
 using Stripe;
 using Stripe.Forwarding;
 using System;
@@ -12,10 +15,17 @@ namespace PerfumeStore.Application.Payments
     public class PaymentsService : IPaymentsService
     {
         private readonly PaymentIntentService _paymentIntentService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly StripeOptions _stripeOptions;
 
-        public PaymentsService(PaymentIntentService paymentIntentService)
+        public PaymentsService(
+            PaymentIntentService paymentIntentService,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<StripeOptions> stripeOptions)
         {
             _paymentIntentService = paymentIntentService;
+            _httpContextAccessor = httpContextAccessor;
+            _stripeOptions = stripeOptions.Value;
         }
 
         public async Task PayWithCardAsync(PayWithCardDtoApp form)
@@ -44,11 +54,43 @@ namespace PerfumeStore.Application.Payments
             }
             catch (StripeException ex)
             {
-                throw new StripeException(ex.Message);
+                throw new StripeException($"Stripe error occurred: {ex.Message}");
             }
             catch (Exception ex)
             {
-                throw new Exception("An unexpected error occurred while processing the payment.", ex);
+                throw new Exception($"An unexpected error occurred while processing the payment: {ex.Message}");
+            }
+        }
+
+        public async Task VerifyPaymentAsync()
+        {
+            var json = await new StreamReader(_httpContextAccessor.HttpContext.Request.Body).ReadToEndAsync();
+            Event stripeEvent;
+
+            try
+            {
+                stripeEvent = EventUtility.ConstructEvent(
+                    json,
+                    _httpContextAccessor.HttpContext.Request.Headers["Stripe-Signature"],
+                    _stripeOptions.WebhookSecret
+                );
+            }
+            catch (StripeException e)
+            {
+                throw new StripeException($"Stripe exception has occured durring payment verification with message: {e.Message}");
+            }
+
+            if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+            {
+                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                // Zaktualizuj stan zamówienia w bazie danych na podstawie paymentIntent.Id
+                Console.WriteLine($"PaymentIntent was successful: {paymentIntent.Id}");
+            }
+            else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
+            {
+                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                // Zaktualizuj stan zamówienia w bazie danych na podstawie paymentIntent.Id
+                Console.WriteLine($"PaymentIntent failed: {paymentIntent.Id}");
             }
         }
     }
