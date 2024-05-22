@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;

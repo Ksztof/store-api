@@ -10,6 +10,7 @@ namespace PerfumeStore.Application.Payments
     public interface IPaymentsService
     {
         public Task PayWithCardAsync(PayWithCardDtoApp form);
+      
         public Task VerifyPaymentAsync();
     }
 }
