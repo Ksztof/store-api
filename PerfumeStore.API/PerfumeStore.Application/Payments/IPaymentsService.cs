@@ -1,4 +1,5 @@
-﻿using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Application.Abstractions.Result.Result;
+using PerfumeStore.Application.Shared.DTO.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,7 @@ namespace PerfumeStore.Application.Payments
 {
     public interface IPaymentsService
     {
-        public Task PayWithCardAsync(PayWithCardDtoApp form);
-      
+        public Task<Result> PayWithCardAsync(PayWithCardDtoApp form);
         public Task VerifyPaymentAsync();
     }
 }
