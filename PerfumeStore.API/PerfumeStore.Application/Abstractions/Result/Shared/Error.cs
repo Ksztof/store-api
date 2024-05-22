@@ -1,4 +1,6 @@
 ﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
+using PerfumeStore.Application.Abstractions.Result.Result;
+
 
 namespace PerfumeStore.Application.Abstractions.Result.Shared
 {

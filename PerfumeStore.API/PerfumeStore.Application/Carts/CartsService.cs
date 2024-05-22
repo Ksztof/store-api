@@ -435,7 +435,7 @@ namespace PerfumeStore.Application.Carts
             if (isUserAuthenticated)
             {
                 string userId = _contextService.GetUserId();
-                cartId = await _cartsRepository.GetCartIdByUserId(userId);
+                cartId = await _cartsRepository.GetCartIdByUserIdAsync(userId);
             }
             else if (GuestCartId != null)
             {
