@@ -79,7 +79,7 @@ namespace PerfumeStore.Application.Orders
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    var error = EntityErrors<Cart, int>.MissingEntity(userId);
+                    Error error = EntityErrors<Cart, int>.MissingEntity(userId);
 
                     return EntityResult<OrderResponse>.Failure(error);
                 }

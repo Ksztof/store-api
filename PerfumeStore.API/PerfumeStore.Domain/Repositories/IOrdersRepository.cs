@@ -12,15 +12,11 @@ namespace PerfumeStore.Domain.Repositories
 
         public Task DeleteOrdersAsync(IEnumerable<Order> orders);
 
-
         public Task UpdateAsync(Order order);
 
         public Task<ShippingDet> GetShippingDetailsByUserIdAsync(string userId);
 
         public Task<ShippingDet> GetShippingDetailsByCartIdAsync(int cartId);
-
-/*        public Task<IEnumerable<Order>> GetByCartIdAsync(int cartId);
-*/
 
         public Task<Order?> GetByCartIdAsync(int cartId);
 
