@@ -11,7 +11,9 @@ using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.Entities.CarLines;
 using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Entities.Orders;
 using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Shared.Enums;
 using Stripe;
 using Stripe.Forwarding;
 using System;
@@ -30,7 +32,7 @@ namespace PerfumeStore.Application.Payments
         private readonly ICartsRepository _cartsRepository;
         private readonly IGuestSessionService _guestSessionService;
         private readonly IHttpContextService _contextService;
-
+        public readonly IOrdersRepository _ordersRepository;
 
         public PaymentsService(
             PaymentIntentService paymentIntentService,
@@ -38,7 +40,8 @@ namespace PerfumeStore.Application.Payments
             IOptions<StripeOptions> stripeOptions,
             ICartsRepository cartsRepository,
             IGuestSessionService guestSessionService,
-            IHttpContextService contextService)
+            IHttpContextService contextService,
+            IOrdersRepository ordersRepository)
         {
             _paymentIntentService = paymentIntentService;
             _httpContextAccessor = httpContextAccessor;
@@ -46,6 +49,7 @@ namespace PerfumeStore.Application.Payments
             _cartsRepository = cartsRepository;
             _guestSessionService = guestSessionService;
             _contextService = contextService;
+            _ordersRepository = ordersRepository;
         }
 
         public async Task<Result> PayWithCardAsync(PayWithCardDtoApp form)
@@ -118,7 +122,7 @@ namespace PerfumeStore.Application.Payments
         }
 
 
-        public async Task VerifyPaymentAsync()
+        public async Task<Result> VerifyPaymentAsync()
         {
             var json = await new StreamReader(_httpContextAccessor.HttpContext.Request.Body).ReadToEndAsync();
             Event stripeEvent;
@@ -136,19 +140,33 @@ namespace PerfumeStore.Application.Payments
                 throw new StripeException($"Stripe exception has occured durring payment verification with message: {e.Message}");
             }
 
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            string cartIdMetadata = paymentIntent.Metadata["CartID"];
+            int cartId;
+            if (!int.TryParse(cartIdMetadata, out cartId))
+            {
+                Error error = new Error("StringToInt.ParsingError", "There was a problem with parsing string cart Id from metadata to int");
+                return Result.Failure(error);
+            }
+
+            Order? order = await _ordersRepository.GetByCartIdAsync(cartId);
+            if (order == null)
+            {
+                Error error = EntityErrors<Order, int>.MissingEntityByCartId(cartId);
+
+                return Result.Failure(error);
+            }
+
             if (stripeEvent.Type == Events.PaymentIntentSucceeded)
             {
-                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                var cartId = paymentIntent.Metadata["CartID"];
+                order.Status = OrderStatuses.Paid;
+                await _ordersRepository.UpdateAsync(order);
 
-                // Zaktualizuj stan zamówienia w bazie danych na podstawie paymentIntent.Id
-                Console.WriteLine($"PaymentIntent was successful: {paymentIntent.Id}");
+                return Result.Success();
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
-                var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                // Zaktualizuj stan zamówienia w bazie danych na podstawie paymentIntent.Id
-                Console.WriteLine($"PaymentIntent failed: {paymentIntent.Id}");
+                Error error = new Error("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
             }
         }
     }
