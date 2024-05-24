@@ -167,7 +167,11 @@ namespace PerfumeStore.Application.Payments
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
                 Error error = new Error("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
+
+                return Result.Failure(error);
             }
+
+            throw new Exception("Unexpected scenario for payment verification");
         }
     }
 }
