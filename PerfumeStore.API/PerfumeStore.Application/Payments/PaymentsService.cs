@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
@@ -9,6 +10,7 @@ using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
+using PerfumeStore.Application.SignalR;
 using PerfumeStore.Domain.Entities.CarLines;
 using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Entities.Orders;
@@ -33,6 +35,7 @@ namespace PerfumeStore.Application.Payments
         private readonly IGuestSessionService _guestSessionService;
         private readonly IHttpContextService _contextService;
         public readonly IOrdersRepository _ordersRepository;
+        private readonly INotificationService _notificationService;
 
         public PaymentsService(
             PaymentIntentService paymentIntentService,
@@ -41,7 +44,8 @@ namespace PerfumeStore.Application.Payments
             ICartsRepository cartsRepository,
             IGuestSessionService guestSessionService,
             IHttpContextService contextService,
-            IOrdersRepository ordersRepository)
+            IOrdersRepository ordersRepository,
+            INotificationService notificationService)
         {
             _paymentIntentService = paymentIntentService;
             _httpContextAccessor = httpContextAccessor;
@@ -50,6 +54,7 @@ namespace PerfumeStore.Application.Payments
             _guestSessionService = guestSessionService;
             _contextService = contextService;
             _ordersRepository = ordersRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<Result> PayWithCardAsync(PayWithCardDtoApp form)
@@ -122,7 +127,7 @@ namespace PerfumeStore.Application.Payments
         }
 
 
-        public async Task<Result> VerifyPaymentAsync()
+        public async Task VerifyPaymentAsync()
         {
             var json = await new StreamReader(_httpContextAccessor.HttpContext.Request.Body).ReadToEndAsync();
             Event stripeEvent;
@@ -137,7 +142,9 @@ namespace PerfumeStore.Application.Payments
             }
             catch (StripeException e)
             {
-                throw new StripeException($"Stripe exception has occured durring payment verification with message: {e.Message}");
+                var exceptionError = new Error("StripeException", e.Message);
+                await _notificationService.SendPaymentStatusAsync("unknown", "failed", exceptionError);
+                return;
             }
 
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
@@ -146,32 +153,32 @@ namespace PerfumeStore.Application.Payments
             if (!int.TryParse(cartIdMetadata, out cartId))
             {
                 Error error = new Error("StringToInt.ParsingError", "There was a problem with parsing string cart Id from metadata to int");
-                return Result.Failure(error);
+                await _notificationService.SendPaymentStatusAsync("unknown", "failed", error);
+                return;
             }
 
             Order? order = await _ordersRepository.GetByCartIdAsync(cartId);
             if (order == null)
             {
                 Error error = EntityErrors<Order, int>.MissingEntityByCartId(cartId);
-
-                return Result.Failure(error);
+                await _notificationService.SendPaymentStatusAsync(cartId.ToString(), "failed", error);
+                return;
             }
 
             if (stripeEvent.Type == Events.PaymentIntentSucceeded)
             {
                 order.Status = OrderStatuses.Paid;
                 await _ordersRepository.UpdateAsync(order);
-
-                return Result.Success();
+                await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "succeeded", null);
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
                 Error error = new Error("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
-
-                return Result.Failure(error);
+                await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", error);
             }
 
-            throw new Exception("Unexpected scenario for payment verification");
+            var scenarioExceptionError = new Error("UnexpectedScenario", "Unexpected scenario for payment verification");
+            await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", scenarioExceptionError);
         }
     }
 }
