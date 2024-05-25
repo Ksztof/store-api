@@ -23,6 +23,7 @@ using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Products;
 using PerfumeStore.Application.Shared.Mapper;
+using PerfumeStore.Application.SignalR;
 using PerfumeStore.Application.Users;
 using PerfumeStore.Domain.Entities.StoreUsers;
 using PerfumeStore.Domain.Repositories;
@@ -33,6 +34,7 @@ using PerfumeStore.Infrastructure.Services.Cookies;
 using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
+using PerfumeStore.Infrastructure.Services.SignalR;
 using PerfumeStore.Infrastructure.Services.Tokens;
 using Stripe;
 using System.IdentityModel.Tokens.Jwt;
@@ -44,6 +46,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 
 // Add services to the container.\
+builder.Services.AddSignalR(); 
+builder.Services.AddSingleton<PaymentHub>();
+builder.Services.AddTransient<IPaymentsService, PaymentsService>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
 
 builder.Services.AddTransient<IProductsService, ProductsService>();
 builder.Services.AddTransient<IHttpContextService, HttpContextService>();
@@ -239,5 +245,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers(); 
 });
+app.MapHub<PaymentHub>("/paymentHub"); 
+
 
 app.Run();

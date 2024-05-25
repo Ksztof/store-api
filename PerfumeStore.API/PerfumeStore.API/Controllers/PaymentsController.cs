@@ -51,14 +51,9 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost("webhook")]
-        public async Task<IActionResult> StripeWebhook()
+        public async Task StripeWebhook()
         {
-            Result result = await _paymentsService.VerifyPaymentAsync();
-
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return Ok();
+            await _paymentsService.VerifyPaymentAsync();
         }
     }
 }
