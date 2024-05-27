@@ -453,7 +453,11 @@ namespace PerfumeStore.Application.Carts
                     return EntityResult<AboutCartDomRes>.Success();
                 }
 
-                Cart cart = await _cartsRepository.GetByIdAsync(cartId);
+                Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
+                if (cart == null)
+                {
+                    return EntityResult<AboutCartDomRes>.Success();
+                }
 
                 AboutCartDomRes userCartDetails = cart.CheckCart();
 

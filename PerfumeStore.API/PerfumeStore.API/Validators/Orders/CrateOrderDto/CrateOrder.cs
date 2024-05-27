@@ -45,7 +45,7 @@ namespace PerfumeStore.API.Validators.Orders.CrateOrderDto
 
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"^\d{9}$").WithMessage("Phone number must be exactly 9 digits.");
+                .Matches(@"^\d{3}-\d{3}-\d{3}$").WithMessage("Phone number must be exactly 9 digits.");
         }
     }
 }

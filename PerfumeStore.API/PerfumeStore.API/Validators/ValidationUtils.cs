@@ -29,7 +29,7 @@ namespace PerfumeStore.API.Validators
 
         public static bool BeAValidUtcDateTime(DateTime date)
         {
-            return date.Kind == DateTimeKind.Unspecified;
+            return date.Kind == DateTimeKind.Utc;
         }
 
         public static bool BeAValidCurrency(string currency)

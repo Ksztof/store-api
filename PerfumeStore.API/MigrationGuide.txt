@@ -29,5 +29,5 @@ insert into dbo.ProductCategories(Id, Name) values (3, 'catC');
 
 SET IDENTITY_INSERT dbo.ProductCategories ON
 
-stripe -login
+stripe login
 stripe listen --forward-to localhost:5445/api/Payments/webhook

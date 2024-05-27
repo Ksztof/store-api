@@ -56,14 +56,7 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(GuestCartId.Value);
-
-            if (guestOrder != null)
-            {
-                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, GuestCartId.Value);
-
-                return EntityResult<OrderResponse>.Failure(error);
-            }
+            
 
             ShippingDet shippingDetail = new ShippingDet();
             CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
@@ -106,6 +99,15 @@ namespace PerfumeStore.Application.Orders
                 await _emailService.SendOrderSummary(userOrderContent);
 
                 return EntityResult<OrderResponse>.Success(userOrderContent);
+            }
+
+            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(GuestCartId.Value);
+
+            if (guestOrder != null)
+            {
+                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, GuestCartId.Value);
+
+                return EntityResult<OrderResponse>.Failure(error);
             }
 
             Cart? guestCart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
