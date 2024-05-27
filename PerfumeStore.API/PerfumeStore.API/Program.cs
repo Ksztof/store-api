@@ -1,13 +1,10 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Shared.Mapper;
@@ -35,9 +32,7 @@ using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.SignalR;
-using PerfumeStore.Infrastructure.Services.Tokens;
 using Stripe;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenService;
 
@@ -45,9 +40,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 
-// Add services to the container.\
 builder.Services.AddSignalR(); 
-builder.Services.AddSingleton<PaymentHub>();
 builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 
@@ -115,7 +108,6 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer"
     });
 
-    //Swagger place for token 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
   {
     {
@@ -166,7 +158,6 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Middleware do odczytywania JWT z ciasteczka
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -196,7 +187,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "MyAllowSpecificOrigins",
         builder =>
         {
-            builder.WithOrigins("https://localhost:3000", "https://localhost:5445")
+            builder.WithOrigins(
+                "https://localhost:3000",
+                "https://localhost:5445",
+                "http://localhost:5002",
+                "https://dashboard.stripe.com",
+                "https://hooks.stripe.com")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

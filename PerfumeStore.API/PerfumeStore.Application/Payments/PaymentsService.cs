@@ -88,7 +88,11 @@ namespace PerfumeStore.Application.Payments
                         Amount = form.Amount,
                         Currency = form.Currency,
                         PaymentMethod = form.PaymentMethodId,
-                        ConfirmationMethod = "manual",
+                        AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                        {
+                            Enabled = true
+                        },
+                        ReturnUrl = "https://localhost:3000/order",
                         Confirm = true,
                         Metadata = new Dictionary<string, string>
                         {
