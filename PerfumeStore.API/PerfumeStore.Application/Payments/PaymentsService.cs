@@ -61,7 +61,7 @@ namespace PerfumeStore.Application.Payments
         {
             bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
-            int cartId = int.MinValue;
+            int orderId = 0;
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
@@ -73,15 +73,15 @@ namespace PerfumeStore.Application.Payments
             if (isUserAuthenticated)
             {
                 string userId = _contextService.GetUserId();
-                cartId = await _cartsRepository.GetCartIdByUserIdAsync(userId);
+                orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(userId);
             }
 
             if (GuestCartId != null)
-                cartId = GuestCartId.Value;
+                orderId = await _ordersRepository.GetOrderIdByCartIdAsync(GuestCartId.Value);
 
             try
             {
-                if (cartId != int.MinValue)
+                if (orderId > 0)
                 {
                     var options = new PaymentIntentCreateOptions
                     {
@@ -96,7 +96,7 @@ namespace PerfumeStore.Application.Payments
                         Confirm = true,
                         Metadata = new Dictionary<string, string>
                         {
-                            { "CartID", cartId.ToString() }
+                            { "OrderId", orderId.ToString() }
                         }
                     };
 
@@ -115,7 +115,7 @@ namespace PerfumeStore.Application.Payments
                 }
                 else
                 {
-                    Error error = new Error("Wrong cart Id", "Cart Id cannot be 0");
+                    Error error = new Error("Wrong order Id", "Cart Id cannot be 0");
 
                     return Result.Failure(error);
                 }

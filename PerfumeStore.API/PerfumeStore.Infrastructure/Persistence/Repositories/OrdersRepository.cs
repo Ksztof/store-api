@@ -114,5 +114,26 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
 
             return null;
         }
+
+        public async Task<int> GetNewestOrderIdByUserIdAsync(string userId)
+        {
+            int orderId = await _shopDbContext.Orders
+                .Where(o => o.StoreUserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .Select(o => o.Id)
+                .FirstOrDefaultAsync();
+
+            return orderId;
+        }
+
+        public async Task<int> GetOrderIdByCartIdAsync(int cartId)
+        {
+            int orderId = await _shopDbContext.Orders
+                .Where(o => o.CartId == cartId)
+                .Select(o => o.Id)
+                .FirstOrDefaultAsync();
+
+            return orderId;
+        }
     }
 }

@@ -35,17 +35,21 @@ namespace PerfumeStore.Infrastructure.Persistence
             modelBuilder.Entity<CartLine>()
                 .HasOne(cl => cl.Product)
                 .WithMany()
-                .HasForeignKey(cl => cl.ProductId);
+                .HasForeignKey(cl => cl.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Cart)
-                .WithMany()
-                .HasForeignKey(o => o.CartId);
+                .WithOne(c => c.Order)
+                .HasForeignKey<Order>(o => o.CartId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.StoreUser)
-                .WithMany()
-                .HasForeignKey(o => o.StoreUserId);
+                .WithMany(su => su.Orders)
+                .HasForeignKey(o => o.StoreUserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProductProductCategory>()
                  .HasKey(pc => new { pc.Id });
@@ -53,22 +57,26 @@ namespace PerfumeStore.Infrastructure.Persistence
             modelBuilder.Entity<ProductProductCategory>()
                 .HasOne(pc => pc.Product)
                 .WithMany(p => p.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductId);
+                .HasForeignKey(pc => pc.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<ProductProductCategory>()
                 .HasOne(pc => pc.ProductCategory)
                 .WithMany(c => c.ProductProductCategories)
-                .HasForeignKey(pc => pc.ProductCategoryId);
+                .HasForeignKey(pc => pc.ProductCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StoreUser>()
                 .HasOne(su => su.Cart)
                 .WithOne(c => c.StoreUser)
-                .HasForeignKey<Cart>(c => c.StoreUserId);
+                .HasForeignKey<Cart>(c => c.StoreUserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.ShippingDetail)
                 .WithOne(sd => sd.Order)
-                .HasForeignKey<Order>(o => o.ShippingDetailId);
+                .HasForeignKey<Order>(o => o.ShippingDetailId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
