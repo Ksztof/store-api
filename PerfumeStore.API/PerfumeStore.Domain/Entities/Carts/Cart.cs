@@ -1,6 +1,7 @@
 ﻿using PerfumeStore.Domain.DTO.Request.Product;
 using PerfumeStore.Domain.DTO.Response.Cart;
 using PerfumeStore.Domain.Entities.CarLines;
+using PerfumeStore.Domain.Entities.Orders;
 using PerfumeStore.Domain.Entities.StoreUsers;
 using PerfumeStore.Domain.Repositories.Generics;
 using System.ComponentModel.DataAnnotations;
@@ -16,6 +17,8 @@ namespace PerfumeStore.Domain.Entities.Carts
         public StoreUser? StoreUser { get; set; }
         public CartStatus CartStatus { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Order? Order { get; set; }
+
 
         public Cart()
         {

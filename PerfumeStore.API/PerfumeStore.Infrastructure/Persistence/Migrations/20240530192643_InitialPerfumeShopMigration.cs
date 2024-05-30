@@ -224,7 +224,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                         name: "FK_Carts_AspNetUsers_StoreUserId",
                         column: x => x.StoreUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,13 +245,13 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                         column: x => x.ProductCategoryId,
                         principalTable: "ProductCategories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProductProductCategories_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -276,7 +277,7 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -298,19 +299,20 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                         name: "FK_Orders_AspNetUsers_StoreUserId",
                         column: x => x.StoreUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Orders_ShippingDetails_ShippingDetailId",
                         column: x => x.ShippingDetailId,
                         principalTable: "ShippingDetails",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -372,7 +374,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CartId",
                 table: "Orders",
-                column: "CartId");
+                column: "CartId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_ShippingDetailId",

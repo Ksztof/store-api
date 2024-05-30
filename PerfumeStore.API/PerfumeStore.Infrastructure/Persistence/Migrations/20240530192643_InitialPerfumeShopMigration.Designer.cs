@@ -12,7 +12,7 @@ using PerfumeStore.Infrastructure.Persistence;
 namespace PerfumeStore.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20240502101751_InitialPerfumeShopMigration")]
+    [Migration("20240530192643_InitialPerfumeShopMigration")]
     partial class InitialPerfumeShopMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,7 +234,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
+                    b.HasIndex("CartId")
+                        .IsUnique();
 
                     b.HasIndex("ShippingDetailId")
                         .IsUnique();
@@ -493,7 +494,7 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                     b.HasOne("PerfumeStore.Domain.Entities.Products.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -503,7 +504,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", "StoreUser")
                         .WithOne("Cart")
-                        .HasForeignKey("PerfumeStore.Domain.Entities.Carts.Cart", "StoreUserId");
+                        .HasForeignKey("PerfumeStore.Domain.Entities.Carts.Cart", "StoreUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("StoreUser");
                 });
@@ -511,20 +513,21 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.Order", b =>
                 {
                     b.HasOne("PerfumeStore.Domain.Entities.Carts.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne("Order")
+                        .HasForeignKey("PerfumeStore.Domain.Entities.Orders.Order", "CartId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PerfumeStore.Domain.Entities.Orders.ShippingDet", "ShippingDetail")
                         .WithOne("Order")
                         .HasForeignKey("PerfumeStore.Domain.Entities.Orders.Order", "ShippingDetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", "StoreUser")
-                        .WithMany()
-                        .HasForeignKey("StoreUserId");
+                        .WithMany("Orders")
+                        .HasForeignKey("StoreUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cart");
 
@@ -538,13 +541,13 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
                     b.HasOne("PerfumeStore.Domain.Entities.ProductCategories.ProductCategory", "ProductCategory")
                         .WithMany("ProductProductCategories")
                         .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PerfumeStore.Domain.Entities.Products.Product", "Product")
                         .WithMany("ProductProductCategories")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -555,6 +558,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Entities.Carts.Cart", b =>
                 {
                     b.Navigation("CartLines");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("PerfumeStore.Domain.Entities.Orders.ShippingDet", b =>
@@ -576,6 +581,8 @@ namespace PerfumeStore.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("PerfumeStore.Domain.Entities.StoreUsers.StoreUser", b =>
                 {
                     b.Navigation("Cart");
+
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

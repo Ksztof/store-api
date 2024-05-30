@@ -56,8 +56,6 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            
-
             ShippingDet shippingDetail = new ShippingDet();
             CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
             shippingDetail.CreateShippingDetail(createOrderDtoDom);
