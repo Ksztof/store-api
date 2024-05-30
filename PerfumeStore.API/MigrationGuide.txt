@@ -31,3 +31,4 @@ SET IDENTITY_INSERT dbo.ProductCategories ON
 
 stripe login
 stripe listen --forward-to http://localhost:5002/api/Payments/webhook
+
