@@ -424,7 +424,7 @@ namespace PerfumeStore.Application.Carts
         {
             bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
-            int cartId = int.MinValue;
+            int cartId = 0;
             if (GuestCartId == null && isUserAuthenticated == false)
             {
                 Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
@@ -442,7 +442,7 @@ namespace PerfumeStore.Application.Carts
                 cartId = GuestCartId.Value;
             }
 
-            if (cartId > int.MinValue)
+            if (cartId > 0)
             {
                 DateTime createdAtDb = await _cartsRepository.GetCartDateByIdAsync(cartId);
 

@@ -1,5 +1,6 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -33,11 +34,30 @@ using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.SignalR;
 using Stripe;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/*builder.WebHost.ConfigureKestrel(options =>
+{
+    var kestrelConfigHttps = builder.Configuration.GetSection("Kestrel:Endpoints:Https:Certificate");
+    var certPathHttps = kestrelConfigHttps.GetValue<string>("Path");
+    var certPasswordHttps = kestrelConfigHttps.GetValue<string>("Password");
+    var fullCertPathHttps = Path.Combine(Directory.GetCurrentDirectory(), certPathHttps);
+
+    var certificateHttps = new X509Certificate2(fullCertPathHttps, certPasswordHttps);
+
+    options.ListenLocalhost(5004, listenOptions =>
+    {
+        listenOptions.UseHttps(certificateHttps);
+    });
+    options.ListenLocalhost(5447, listenOptions =>
+    {
+        listenOptions.UseHttps(certificateHttps);
+    });
+});*/
 builder.Services.AddHttpClient();
 
 builder.Services.AddSignalR(); 
@@ -231,6 +251,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
     });
 }
+
 
 app.UseRouting();
 app.UseCors("MyAllowSpecificOrigins");
