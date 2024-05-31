@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
@@ -51,6 +52,8 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost("webhook")]
+        [AllowAnonymous]
+
         public async Task StripeWebhook()
         {
             await _paymentsService.VerifyPaymentAsync();
