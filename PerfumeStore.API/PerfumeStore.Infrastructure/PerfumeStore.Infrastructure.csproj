@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Configuration\certs\localhost.pfx">
+    <ApplicationDefinition Include="Configuration\certs\localhost.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </ApplicationDefinition>
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +33,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Configuration\NewFolder\" />
     <Folder Include="Persistence\Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Configuration\DataSeeder.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
 </Project>
