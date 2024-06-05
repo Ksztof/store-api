@@ -20,6 +20,11 @@ namespace PerfumeStore.Application.Abstractions.Result.Entity
             return new Error($"{typeof(T).Name}.MissingEntityByCartId", $"Entity with cart ID: {cartId} is missing");
         }
 
+        public static Error MissingEntityByOrderId(int orderId)
+        {
+            return new Error($"{typeof(T).Name}.MissingEntityByOrderId", $"Entity with order ID: {orderId} is missing");
+        }
+
         public static Error MissingEntityByUserId(string userId)
         {
             return new Error($"{typeof(T).Name}.MissingEntityByUserId", $"For user with Id = {userId} the entity is missing");

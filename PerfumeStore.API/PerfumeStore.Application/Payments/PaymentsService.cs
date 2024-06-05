@@ -152,20 +152,33 @@ namespace PerfumeStore.Application.Payments
             }
 
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-            string cartIdMetadata = paymentIntent.Metadata["CartID"];
-            int cartId;
-            if (!int.TryParse(cartIdMetadata, out cartId))
+
+            if (paymentIntent == null)
             {
-                Error error = new Error("StringToInt.ParsingError", "There was a problem with parsing string cart Id from metadata to int");
+                var nullIntentError = new Error("PaymentIntentNull", "PaymentIntent object is null");
+                await _notificationService.SendPaymentStatusAsync("unknown", "failed", nullIntentError);
+                return;
+            }
+
+            if (!paymentIntent.Metadata.TryGetValue("OrderId", out string? orderIdMetadata))
+            {
+                var missingOrderIdError = new Error("OrderIdMissing", "OrderId is missing in the payment intent metadata");
+                await _notificationService.SendPaymentStatusAsync("unknown", "failed", missingOrderIdError);
+                return;
+            }
+
+            if (!int.TryParse(orderIdMetadata, out int orderId))
+            {
+                Error error = new Error("StripeMetadata.ParsingErrorStringToInt", "There was a problem with parsing string order Id from stripe metadata to int");
                 await _notificationService.SendPaymentStatusAsync("unknown", "failed", error);
                 return;
             }
 
-            Order? order = await _ordersRepository.GetByCartIdAsync(cartId);
+            Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
-                Error error = EntityErrors<Order, int>.MissingEntityByCartId(cartId);
-                await _notificationService.SendPaymentStatusAsync(cartId.ToString(), "failed", error);
+                Error error = EntityErrors<Order, int>.MissingEntityByOrderId(orderId);
+                await _notificationService.SendPaymentStatusAsync(orderId.ToString(), "failed", error);
                 return;
             }
 
@@ -174,11 +187,13 @@ namespace PerfumeStore.Application.Payments
                 order.Status = OrderStatuses.Paid;
                 await _ordersRepository.UpdateAsync(order);
                 await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "succeeded", null);
+                return;
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
                 Error error = new Error("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
                 await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", error);
+                return;
             }
 
             var scenarioExceptionError = new Error("UnexpectedScenario", "Unexpected scenario for payment verification");
