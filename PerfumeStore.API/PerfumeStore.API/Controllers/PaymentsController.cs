@@ -48,7 +48,7 @@ namespace PerfumeStore.API.Controllers
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpPost("webhook")]
