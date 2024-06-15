@@ -32,7 +32,7 @@ namespace PerfumeStore.API.Validators.Orders.CrateOrderDto
 
             RuleFor(x => x.HomeNumber).NotEmpty().WithMessage("Home number is required.")
                 .Must(ValidationUtils.NotContainWhiteSpace).WithMessage("HomeNumber must not contain any white spaces.")
-                .MaximumLength(3).WithMessage("The field must not exceed 100 characters.");
+                .MaximumLength(6).WithMessage("The field must not exceed 6 characters.");
 
             RuleFor(x => x.PostCode).NotEmpty().WithMessage("Post code is required.")
                 .Matches(@"^\d{2}-\d{3}$").WithMessage("Post code must be in the format XX-XXX.")
