@@ -37,5 +37,20 @@ namespace PerfumeStore.API.Validators
             var isoCurrencies = new HashSet<string>(new[] { "PLN", "USD", "EUR", "GBP" }); 
             return isoCurrencies.Contains(currency);
         }
+
+        public static bool HaveAtLeastOneLetter(string login)
+        {
+            return login.Any(char.IsLetter);
+        }
+
+        public static bool StartWithLetter(string login)
+        {
+            return char.IsLetter(login.FirstOrDefault());
+        }
+
+        public static bool NotContainSpecialCharactersOrWhiteSpace(string login)
+        {
+            return login.All(c => char.IsLetterOrDigit(c));
+        }
     }
 }
