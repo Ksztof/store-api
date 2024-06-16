@@ -54,7 +54,7 @@ namespace PerfumeStore.Application.Carts
             {
                 int[] missingProdIds = newProductsIds.Except(existingProductsIds).ToArray();
 
-                return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.MissingEntities(missingProdIds));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.NotFoundEntitiesByIds(missingProdIds));
             }
 
             NewProductsDtoDom addProductsToCartDtoDomain = _mapper.Map<NewProductsDtoDom>(request);
@@ -91,7 +91,7 @@ namespace PerfumeStore.Application.Carts
 
                 if (guestCart is null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
                 }
 
                 guestCart.AddProducts(newProductsIds);
@@ -125,7 +125,7 @@ namespace PerfumeStore.Application.Carts
             {
                 int[] missingProdIds = newProductsIds.Except(existingProductsIds).ToArray();
 
-                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Product, int>.MissingEntities(missingProdIds));
+                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Product, int>.NotFoundEntitiesByIds(missingProdIds));
             }
 
             NewProductsDtoDom addProductsToCartDtoDomain = _mapper.Map<NewProductsDtoDom>(request);
@@ -162,7 +162,7 @@ namespace PerfumeStore.Application.Carts
 
                 if (guestCart is null)
                 {
-                    return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
                 }
 
                 guestCart.ReplaceProducts(newProductsIds);
@@ -190,7 +190,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -202,14 +202,14 @@ namespace PerfumeStore.Application.Carts
 
                 if (userCart == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.NotFound(productId));
                 }
 
                 CartLine? userCartLine = userCart?.CartLines?.FirstOrDefault(cl => cl.ProductId == productId);
 
                 if (userCartLine == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntity(productId));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.NotFound(productId));
                 }
 
                 userCart.DeleteCartLineFromCart(productId);
@@ -225,14 +225,14 @@ namespace PerfumeStore.Application.Carts
 
             if (guestCart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
             }
 
             CartLine? cartLine = guestCart.CartLines.FirstOrDefault(x => x.ProductId == productId);
 
             if (cartLine == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.MissingEntityByProductId(productId));
+                return EntityResult<CartResponse>.Failure(EntityErrors<CartLine, int>.NotFoundByProductId(productId));
             }
 
             guestCart.DeleteCartLineFromCart(productId);
@@ -249,7 +249,7 @@ namespace PerfumeStore.Application.Carts
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(cartId));
             }
 
             CartResponse cartResponse = MapCartResponse(cart);
@@ -264,7 +264,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -278,7 +278,7 @@ namespace PerfumeStore.Application.Carts
 
                 if (userCart == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(productModification.Product.ProductId));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(productModification.Product.ProductId));
                 }
 
                 userCart.ModifyProduct(modifiedProductForDomain);
@@ -293,7 +293,7 @@ namespace PerfumeStore.Application.Carts
 
             if (guestCart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
             }
 
             guestCart.ModifyProduct(modifiedProductForDomain);
@@ -311,7 +311,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<AboutCartDomRes>.Failure(error);
             }
@@ -336,7 +336,7 @@ namespace PerfumeStore.Application.Carts
 
             if (guestCart == null)
             {
-                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<AboutCartDomRes>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
             }
 
             AboutCartDomRes guestCartDetails = guestCart.CheckCart();
@@ -351,7 +351,7 @@ namespace PerfumeStore.Application.Carts
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<CartResponse>.Failure(error);
             }
@@ -363,7 +363,7 @@ namespace PerfumeStore.Application.Carts
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
                 }
 
                 ICollection<CartLine> userCartLines = userCart.CartLines;
@@ -379,7 +379,7 @@ namespace PerfumeStore.Application.Carts
 
             if (guestCart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(GuestCartId.Value));
             }
 
             ICollection<CartLine> cartLines = guestCart.CartLines;
@@ -397,7 +397,7 @@ namespace PerfumeStore.Application.Carts
 
             if (guestCart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.MissingEntity(cartId));
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(cartId));
             }
 
             Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
@@ -427,7 +427,7 @@ namespace PerfumeStore.Application.Carts
             int cartId = 0;
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<AboutCartDomRes>.Failure(error);
             }

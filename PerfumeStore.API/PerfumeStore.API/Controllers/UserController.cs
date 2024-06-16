@@ -38,7 +38,7 @@ namespace PerfumeStore.API.Controllers
 
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
 
-            AuthenticationResult result = await _userService.Login(authenticateUserDto);
+            UserResult result = await _userService.Login(authenticateUserDto);
 
             if (result.IsFailure)
                 return Unauthorized(result.Error);
@@ -68,7 +68,7 @@ namespace PerfumeStore.API.Controllers
                 Password = userRegRequest.Password
             };
 
-            AuthenticationResult result = await _userService.RegisterUser(registerUserDtoApp);
+            UserResult result = await _userService.RegisterUser(registerUserDtoApp);
 
             if (result.IsFailure)
                 return BadRequest(result.Error);
@@ -82,7 +82,7 @@ namespace PerfumeStore.API.Controllers
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
                 return BadRequest("Wrong token.");
 
-            AuthenticationResult result = await _userService.ConfirmEmail(userId, token);
+            UserResult result = await _userService.ConfirmEmail(userId, token);
 
             if (result.IsFailure)
                 return BadRequest(result.Error);
@@ -93,7 +93,7 @@ namespace PerfumeStore.API.Controllers
         [HttpPatch("request-deletion")]
         public async Task<IActionResult> RequestDeletion()
         {
-            AuthenticationResult result = await _userService.RequestDeletion();
+            UserResult result = await _userService.RequestDeletion();
 
             if (result.IsFailure)
                 return BadRequest(result.Error);
@@ -105,7 +105,7 @@ namespace PerfumeStore.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> SubmitDeletion(string id)
         {
-            AuthenticationResult result = await _userService.SubmitDeletion(id);
+            UserResult result = await _userService.SubmitDeletion(id);
 
             if (result.IsFailure)
                 return BadRequest(result.Error);

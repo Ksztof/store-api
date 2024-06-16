@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Abstractions.Result.Result;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
@@ -58,31 +59,31 @@ namespace PerfumeStore.Application.Users
             _ordersRepository = ordersRepository;
         }
 
-        public async Task<AuthenticationResult> Login(AuthenticateUserDtoApp userForAuthentication)
+        public async Task<UserResult> Login(AuthenticateUserDtoApp userForAuthentication)
         {
             StoreUser user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
 
             if (user == null)
             {
-                return AuthenticationErrors.UserDoesntExist;
+                return UserResult.Failure(UserErrors.UserDoesntExist);
             }
 
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
             {
-                return AuthenticationErrors.InvalidCredentials;
+                return UserResult.Failure(UserErrors.InvalidCredentials);
             }
 
             if (!user.EmailConfirmed)
             {
-                return AuthenticationErrors.EmailNotConfirmed;
+                return UserResult.Failure(UserErrors.EmailNotConfirmed);
             }
 
             string issueResult = await _tokenService.IssueJwtToken(user);
 
-           /* if (issueResult != true)
+            if (issueResult == string.Empty)
             {
-                return AuthenticationErrors.UnableToSetCookieWithJwtToken;
-            }*/
+                return UserResult.Failure(UserErrors.UnableToSetCookieWithJwtToken);
+            }
 
             int? cartId = _guestSessionService.GetCartId();
 
@@ -92,16 +93,16 @@ namespace PerfumeStore.Application.Users
 
                 if (result.IsFailure)
                 {
-                    return AuthenticationResult.Failure(result.Error);
+                    return UserResult.Failure(result.Error);
                 }
             }
 
             _guestSessionService.SetCartIdCookieAsExpired();
 
-            return AuthenticationResult.Success();
+            return UserResult.Success();
         }
 
-        public async Task<AuthenticationResult> RegisterUser(RegisterUserDtoApp userForRegistration)
+        public async Task<UserResult> RegisterUser(RegisterUserDtoApp userForRegistration)
         {
             StoreUser storeUser = userForRegistration.StoreUser;
 
@@ -109,7 +110,7 @@ namespace PerfumeStore.Application.Users
 
             if (userExists != null)
             {
-                return AuthenticationErrors.EmailAlreadyTaken;
+                return UserResult.Failure(UserErrors.EmailAlreadyTaken);
             }
 
             var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
@@ -119,7 +120,7 @@ namespace PerfumeStore.Application.Users
                 IEnumerable<string> errors = result.Errors.Select(e => e.Description);
                 string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errorMessage);
+                return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
             }
 
             int? cartId = _guestSessionService.GetCartId();
@@ -131,7 +132,7 @@ namespace PerfumeStore.Application.Users
 
                 if (assignResult.IsFailure)
                 {
-                    return AuthenticationResult.Failure(assignResult.Error);
+                    return UserResult.Failure(assignResult.Error);
                 }
             }
 
@@ -143,7 +144,7 @@ namespace PerfumeStore.Application.Users
 
             await _emailService.SendActivationLink(userDetails, encodedToken);
 
-            return AuthenticationResult.Success();
+            return UserResult.Success();
         }
 
         public async Task<string> GenerateEncodedEmailConfirmationTokenAsync(StoreUser user)
@@ -154,11 +155,11 @@ namespace PerfumeStore.Application.Users
             return encodedToken;
         }
 
-        public async Task<AuthenticationResult> ConfirmEmail(string userId, string emailToken)
+        public async Task<UserResult> ConfirmEmail(string userId, string emailToken)
         {
             string decodedToken = _emailService.DecodeBaseUrlToken(emailToken);
 
-            AuthenticationResult findUser = await FindByIdAsync(userId);
+            UserResult findUser = await FindByIdAsync(userId);
             StoreUser storeUser = findUser.StoreUser;
 
             var result = await _userManager.ConfirmEmailAsync(storeUser, decodedToken);
@@ -167,20 +168,20 @@ namespace PerfumeStore.Application.Users
             {
                 IEnumerable<string> errors = result.Errors.Select(x => x.Description);
 
-                return AuthenticationErrors.CantConfirmEmail(errors);
+                return UserResult.Failure(UserErrors.CantConfirmEmail(errors));
             }
 
-            return AuthenticationResult.Success();
+            return UserResult.Success();
         }
 
-        public async Task<AuthenticationResult> FindByIdAsync(string userId)
+        public async Task<UserResult> FindByIdAsync(string userId)
         {
             StoreUser user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                AuthenticationErrors.CantFindUserById(userId);
+                UserErrors.CantFindUserById(userId);
 
-            return AuthenticationResult.Success(user);
+            return UserResult.Success(user);
         }
 
         private static UserDetailsForActivationLinkDto CreateUserDetailsForActivationLink(StoreUser user)
@@ -193,17 +194,17 @@ namespace PerfumeStore.Application.Users
             };
         }
 
-        public async Task<AuthenticationResult> RequestDeletion()
+        public async Task<UserResult> RequestDeletion()
         {
             var userId = _httpContextService.GetUserId();
 
             if (string.IsNullOrEmpty(userId))
-                return AuthenticationErrors.MissingUserIdClaim;
+                return UserResult.Failure(UserErrors.CantAuthenticateMissingJwtUserIdClaim);
 
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null || user.IsDeleteRequested is true)
-                return AuthenticationErrors.UserDoesntExist;
+                return UserResult.Failure(UserErrors.UserDoesntExist);
 
             user.IsDeleteRequested = true;
 
@@ -214,18 +215,18 @@ namespace PerfumeStore.Application.Users
                 IEnumerable<string> errors = updateResult.Errors.Select(e => e.Description);
                 string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errorMessage);
+                return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
             }
 
-            return AuthenticationResult.Success();
+            return UserResult.Success();
         }
 
-        public async Task<AuthenticationResult> SubmitDeletion(string Id)
+        public async Task<UserResult> SubmitDeletion(string Id)
         {
             StoreUser user = await _userManager.FindByIdAsync(Id);
 
             if (user is null)
-                return AuthenticationErrors.UserDoesntExist;
+                return UserResult.Failure(UserErrors.UserDoesntExist);
 
             Cart? cart = await _cartsRepository.GetByUserIdAsync(Id);
 
@@ -238,7 +239,7 @@ namespace PerfumeStore.Application.Users
                 await _ordersRepository.DeleteOrdersAsync(orders);
 
             if (user.IsDeleteRequested is not true)
-                return AuthenticationErrors.NotRequestedForAccountDeletion;
+                return UserResult.Failure(UserErrors.NotRequestedForAccountDeletion);
 
             var deleteResult = await _userManager.DeleteAsync(user);
 
@@ -247,10 +248,10 @@ namespace PerfumeStore.Application.Users
                 IEnumerable<string> errors = deleteResult.Errors.Select(e => e.Description);
                 string errorMessage = String.Join(", ", errors);
 
-                return AuthenticationErrors.IdentityErrors(errorMessage);
+                return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
             }
 
-            return AuthenticationResult.Success();
+            return UserResult.Success();
         }
     }
 }

@@ -65,7 +65,7 @@ namespace PerfumeStore.Application.Payments
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return Result.Failure(error);
             }
@@ -146,7 +146,7 @@ namespace PerfumeStore.Application.Payments
             }
             catch (StripeException e)
             {
-                var exceptionError = new Error("StripeException", e.Message);
+                SignalrError exceptionError = new SignalrError("StripeException", e.Message);
                 await _notificationService.SendPaymentStatusAsync("unknown", "failed", exceptionError);
                 return;
             }
@@ -155,21 +155,21 @@ namespace PerfumeStore.Application.Payments
 
             if (paymentIntent == null)
             {
-                var nullIntentError = new Error("PaymentIntentNull", "PaymentIntent object is null");
+                SignalrError nullIntentError = new SignalrError("PaymentIntentNull", "PaymentIntent object is null");
                 await _notificationService.SendPaymentStatusAsync("unknown", "failed", nullIntentError);
                 return;
             }
 
             if (!paymentIntent.Metadata.TryGetValue("OrderId", out string? orderIdMetadata))
             {
-                var missingOrderIdError = new Error("OrderIdMissing", "OrderId is missing in the payment intent metadata");
+                SignalrError missingOrderIdError = new SignalrError("OrderIdMissing", "OrderId is missing in the payment intent metadata");
                 await _notificationService.SendPaymentStatusAsync("unknown", "failed", missingOrderIdError);
                 return;
             }
 
             if (!int.TryParse(orderIdMetadata, out int orderId))
             {
-                Error error = new Error("StripeMetadata.ParsingErrorStringToInt", "There was a problem with parsing string order Id from stripe metadata to int");
+                SignalrError error = new SignalrError("StripeMetadata.ParsingErrorStringToInt", "There was a problem with parsing string order Id from stripe metadata to int", ErrorType.Failure);
                 await _notificationService.SendPaymentStatusAsync("unknown", "failed", error);
                 return;
             }
@@ -177,7 +177,7 @@ namespace PerfumeStore.Application.Payments
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
-                Error error = EntityErrors<Order, int>.MissingEntityByOrderId(orderId);
+                SignalrError error = EntityErrors<Order, int>.NotFoundByOrderId(orderId);
                 await _notificationService.SendPaymentStatusAsync(orderId.ToString(), "failed", error);
                 return;
             }
@@ -191,12 +191,12 @@ namespace PerfumeStore.Application.Payments
             }
             else if (stripeEvent.Type == Events.PaymentIntentPaymentFailed)
             {
-                Error error = new Error("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
+                SignalrError error = new SignalrError("PaymentFailed", $"Payment for Order with Id: {order.Id} failed with status: PaymentIntentPaymentFailed");
                 await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", error);
                 return;
             }
 
-            var scenarioExceptionError = new Error("UnexpectedScenario", "Unexpected scenario for payment verification");
+            var scenarioExceptionError = new SignalrError("UnexpectedScenario", "Unexpected scenario for payment verification");
             await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", scenarioExceptionError);
         }
     }
