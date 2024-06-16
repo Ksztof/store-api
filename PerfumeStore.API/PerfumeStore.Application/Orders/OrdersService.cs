@@ -51,7 +51,7 @@ namespace PerfumeStore.Application.Orders
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -70,7 +70,7 @@ namespace PerfumeStore.Application.Orders
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
                 {
-                    Error error = EntityErrors<Cart, int>.MissingEntity(userId);
+                    Error error = EntityErrors<Cart, int>.NotFoundByUserId(userId);
 
                     return EntityResult<OrderResponse>.Failure(error);
                 }
@@ -112,7 +112,7 @@ namespace PerfumeStore.Application.Orders
 
             if (guestCart == null)
             {
-                var error = EntityErrors<Cart, int>.MissingEntity(GuestCartId.Value);
+                var error = EntityErrors<Cart, int>.NotFound(GuestCartId.Value);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -139,7 +139,7 @@ namespace PerfumeStore.Application.Orders
 
             if (order == null)
             {
-                var error = EntityErrors<Order, int>.MissingEntity(orderId);
+                var error = EntityErrors<Order, int>.NotFound(orderId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -157,7 +157,7 @@ namespace PerfumeStore.Application.Orders
 
             if (order == null)
             {
-                var error = EntityErrors<Order, int>.MissingEntity(orderId);
+                var error = EntityErrors<Order, int>.NotFound(orderId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -174,7 +174,7 @@ namespace PerfumeStore.Application.Orders
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = AuthenticationErrors.MissingCartIdOrUserCookieNotAuthenticated;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -183,7 +183,7 @@ namespace PerfumeStore.Application.Orders
 
             if (order == null)
             {
-                var error = EntityErrors<Order, int>.MissingEntity(orderId);
+                var error = EntityErrors<Order, int>.NotFound(orderId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }

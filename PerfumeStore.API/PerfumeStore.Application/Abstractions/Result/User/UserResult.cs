@@ -3,7 +3,7 @@ using PerfumeStore.Domain.Entities.StoreUsers;
 
 namespace PerfumeStore.Application.Abstractions.Result.Authentication
 {
-    public class AuthenticationResult
+    public class UserResult
     {
         public bool IsSuccess { get; }
         public bool IsFailure => !IsSuccess;
@@ -11,7 +11,7 @@ namespace PerfumeStore.Application.Abstractions.Result.Authentication
         public Error Error { get; }
         public StoreUser? StoreUser { get; }
 
-        public AuthenticationResult(bool isSuccess, Error error, StoreUser? storeUser = default, string? token = default)
+        public UserResult(bool isSuccess, Error error, StoreUser? storeUser = default, string? token = default)
         {
             if (isSuccess && error != Error.None ||
                 !isSuccess && error == Error.None)
@@ -25,9 +25,9 @@ namespace PerfumeStore.Application.Abstractions.Result.Authentication
             Token = token;
         }
 
-        public static AuthenticationResult Success() => new(true, Error.None);
-        public static AuthenticationResult Success(string token) => new(true, Error.None, null, token);
-        public static AuthenticationResult Success(StoreUser storeUser) => new(true, Error.None, storeUser);
-        public static AuthenticationResult Failure(Error error) => new(false, error, default);
+        public static UserResult Success() => new(true, Error.None);
+        public static UserResult Success(string token) => new(true, Error.None, null, token);
+        public static UserResult Success(StoreUser storeUser) => new(true, Error.None, storeUser);
+        public static UserResult Failure(Error error) => new(false, error, default);
     }
 }

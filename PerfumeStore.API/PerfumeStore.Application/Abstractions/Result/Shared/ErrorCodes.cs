@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Application.Abstractions.Result.Shared
 {
-    public enum ErrorCode
+    public enum ErrorType
     {
-        None,
-        Authentication,
-        Authorization,
-        Validation,
-        Server,
-        NotFound
+        Failure = 0,
+        Validation = 1,
+        NotFound = 2, 
+        Conflict = 3,
+        Authentication = 4,
+        Authorization = 5,
+        Server = 6,
     }
 }

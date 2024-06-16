@@ -48,7 +48,7 @@ namespace PerfumeStore.Application.Products
                 int[] foundIds = productCategories.Select(pc => pc.Id).ToArray();
                 int[] notFoundIds = createProductForm.ProductCategoriesIds.Except(foundIds).ToArray();
 
-                Error error = EntityErrors<ProductCategory, int>.MissingEntities(notFoundIds);
+                Error error = EntityErrors<ProductCategory, int>.NotFoundEntitiesByIds(notFoundIds);
 
                 return EntityResult<ProductResponse>.Failure(error);
             }
@@ -69,7 +69,7 @@ namespace PerfumeStore.Application.Products
 
             if (product == null)
             {
-                var error = EntityErrors<Product, int>.MissingEntity(productId);
+                var error = EntityErrors<Product, int>.NotFound(productId);
 
                 return EntityResult<Product>.Failure(error);
             }
@@ -85,7 +85,7 @@ namespace PerfumeStore.Application.Products
 
             if (product is null)
             {
-                var productError = EntityErrors<Product, int>.MissingEntity(productId);
+                var productError = EntityErrors<Product, int>.NotFound(productId);
                 return EntityResult<ProductResponse>.Failure(productError);
             }
 
@@ -109,7 +109,7 @@ namespace PerfumeStore.Application.Products
 
             if (product is null)
             {
-                var error = EntityErrors<Product, int>.MissingEntity(updateForm.productId);
+                var error = EntityErrors<Product, int>.NotFound(updateForm.productId);
 
                 return EntityResult<ProductResponse>.Failure(error);
             }
@@ -120,7 +120,7 @@ namespace PerfumeStore.Application.Products
             {
                 var foundIds = newProductCategories.Select(pc => pc.Id);
                 var notFoundIds = updateForm.ProductCategoriesIds.Except(foundIds);
-                var error = EntityErrors<Product, int>.MissingEntities(notFoundIds);
+                var error = EntityErrors<Product, int>.NotFoundEntitiesByIds(notFoundIds);
 
                 return EntityResult<ProductResponse>.Failure(error);
             }
