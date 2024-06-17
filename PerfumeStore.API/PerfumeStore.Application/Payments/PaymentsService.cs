@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using PerfumeStore.Application.Abstractions;
 namespace PerfumeStore.Application.Payments
 {
     public class PaymentsService : IPaymentsService
