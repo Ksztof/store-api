@@ -1,4 +1,3 @@
-using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Domain.Repositories.Generics;
 
 namespace PerfumeStore.Application.Abstractions.Result.Entity
@@ -31,5 +30,8 @@ namespace PerfumeStore.Application.Abstractions.Result.Entity
 
         public static Error ProductAlreadyExists(TId entityId, string productName) => Error.Conflict(
             $"{typeof(T).Name}.ProductAlreadyExists", $"Product with id: {entityId} and name: {productName} already exists.");
+
+        public static Error WrongEntityId(TId entityId) => new Error(
+            $"{typeof(T).Name}.WrongEntityId", $"Entity ID of type: {typeof(T).Name} is smaller than 1. ID = {entityId}");
     }
 }

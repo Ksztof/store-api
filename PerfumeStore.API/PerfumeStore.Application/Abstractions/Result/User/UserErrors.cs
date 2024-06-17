@@ -1,6 +1,4 @@
-﻿using PerfumeStore.Application.Abstractions.Result.Shared;
-
-namespace PerfumeStore.Application.Abstractions.Result.Authentication
+﻿namespace PerfumeStore.Application.Abstractions.Result.Authentication
 {
     public static class UserErrors
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
+using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Result;
 using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.HttpContext;
@@ -65,7 +65,7 @@ namespace PerfumeStore.Application.Payments
 
             if (GuestCartId == null && isUserAuthenticated == false)
             {
-                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
+                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie; 
 
                 return Result.Failure(error);
             }
@@ -115,7 +115,7 @@ namespace PerfumeStore.Application.Payments
                 }
                 else
                 {
-                    Error error = new Error("Wrong order Id", "Cart Id cannot be 0");
+                    Error error = EntityErrors<Order, int>.WrongEntityId(orderId);
 
                     return Result.Failure(error);
                 }
@@ -177,7 +177,7 @@ namespace PerfumeStore.Application.Payments
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
-                SignalrError error = EntityErrors<Order, int>.NotFoundByOrderId(orderId);
+                Error error = EntityErrors<Order, int>.NotFoundByOrderId(orderId);
                 await _notificationService.SendPaymentStatusAsync(orderId.ToString(), "failed", error);
                 return;
             }

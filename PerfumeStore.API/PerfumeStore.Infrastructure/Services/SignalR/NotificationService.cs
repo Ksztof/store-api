@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using PerfumeStore.Application.Abstractions.Result.Shared;
+using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.SignalR;
 using System;
 using System.Collections.Generic;

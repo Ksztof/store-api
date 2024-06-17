@@ -1,7 +1,7 @@
 ﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Result;
+using PerfumeStore.Application.Abstractions.Result.Shared;
 
-namespace PerfumeStore.Application.Abstractions.Result.Shared
+namespace PerfumeStore.Application.Abstractions
 {
     public sealed record Error
     {
@@ -14,6 +14,14 @@ namespace PerfumeStore.Application.Abstractions.Result.Shared
             Description = description;
             Type = errorType;
         }
+
+        public Error(string code, string? description)
+        {
+            Code = code;
+            Description = description;
+        }
+
+        public static implicit operator UserResult(Error error) => UserResult.Failure(error);
 
         public string Code { get; }
         public string Description { get; }

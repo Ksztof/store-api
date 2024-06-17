@@ -1,5 +1,3 @@
-using PerfumeStore.Application.Abstractions.Result.Shared;
-
 namespace PerfumeStore.Application.Abstractions.Result.Entity
 {
     public class EntityResult<TEntity>

@@ -1,6 +1,6 @@
 using AutoMapper;
+using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;

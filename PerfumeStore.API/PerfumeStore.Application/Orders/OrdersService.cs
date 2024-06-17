@@ -1,7 +1,7 @@
 using AutoMapper;
+using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.HttpContext;
