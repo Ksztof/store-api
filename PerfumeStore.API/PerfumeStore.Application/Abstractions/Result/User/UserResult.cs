@@ -1,5 +1,4 @@
-﻿using PerfumeStore.Application.Abstractions.Result.Shared;
-using PerfumeStore.Domain.Entities.StoreUsers;
+﻿using PerfumeStore.Domain.Entities.StoreUsers;
 
 namespace PerfumeStore.Application.Abstractions.Result.Authentication
 {

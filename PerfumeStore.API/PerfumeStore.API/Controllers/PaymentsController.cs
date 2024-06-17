@@ -5,7 +5,7 @@ using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Result;
+using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;

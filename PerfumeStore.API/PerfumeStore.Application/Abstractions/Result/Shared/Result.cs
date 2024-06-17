@@ -1,12 +1,11 @@
 ﻿using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PerfumeStore.Application.Abstractions.Result.Result
+namespace PerfumeStore.Application.Abstractions.Result.Shared
 {
     public class Result
     {

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
+using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Result;
 using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.HttpContext;
