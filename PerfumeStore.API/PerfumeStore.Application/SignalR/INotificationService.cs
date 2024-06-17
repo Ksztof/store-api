@@ -9,6 +9,6 @@ namespace PerfumeStore.Application.SignalR
 {
     public interface INotificationService
     {
-        public Task SendPaymentStatusAsync(string orderId, string status, SignalrError? error);
+        public Task SendPaymentStatusAsync(string orderId, string status, Error? error);
     }
 }

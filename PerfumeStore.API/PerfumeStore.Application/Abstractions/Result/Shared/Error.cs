@@ -15,6 +15,14 @@ namespace PerfumeStore.Application.Abstractions.Result.Shared
             Type = errorType;
         }
 
+        private Error(string code, string? description)
+        {
+            Code = code;
+            Description = description;
+        }
+
+        public static implicit operator UserResult(Error error) => UserResult.Failure(error);
+        
         public string Code { get; }
         public string Description { get; }
         public ErrorType Type { get; }
