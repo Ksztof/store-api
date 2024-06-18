@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Order;
+using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Orders;
@@ -40,52 +41,33 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity.Id }, result.Entity);
 
-            return CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity.Id }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpGet("{orderId}")]
         public async Task<IActionResult> GetOrderById(int orderId)
         {
-            if (orderId <= 0)
-                return BadRequest("Wrong order id");
-
             EntityResult<OrderResponse> result = await _orderService.GetByIdAsync(orderId);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return Ok(result.Entity);
+            return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
         }
 
         [HttpDelete("{orderId}")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
-            if (orderId <= 0)
-                return BadRequest("Wrong order id");
-
             EntityResult<OrderResponse> result = await _orderService.DeleteOrderAsync(orderId);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return NoContent();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpPatch("{orderId}/mark-as-deleted")]
         public async Task<IActionResult> MarkOrderAsDeleted(int orderId)
         {
-            if (orderId <= 0)
-                return BadRequest("Wrong order id");
-
             EntityResult<OrderResponse> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return NoContent();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpGet]
@@ -93,10 +75,7 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<IEnumerable<OrdersResDto>> result = await _orderService.GetOrdersAsync();
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return Ok(result.Entity);
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
     }
 }

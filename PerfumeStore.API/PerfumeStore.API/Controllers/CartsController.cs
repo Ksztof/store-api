@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
+using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Shared;
 
 namespace PerfumeStore.API.Controllers
@@ -46,10 +48,9 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpDelete("products/{productId}")]
@@ -60,17 +61,9 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
 
-            if (result.IsFailure)
-            {
-                var resultErr = new ObjectResult(result.Error)
-                {
-                    StatusCode = StatusCodes.Status403Forbidden
-                };
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
 
-                return resultErr;
-            }
-
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpPatch("products")]
@@ -87,16 +80,14 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<CartResponse> result = await _cartsService.ModifyProductAsync(modifyProductDto);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpGet]
         public async Task<IActionResult> CheckCartAsync()
         {
-            var wad = HttpContext.Request.Cookies["AuthCookie"];
             EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
 
             if (result.IsSuccess && result.Entity == null)
@@ -113,24 +104,17 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<CartResponse> result = await _cartsService.ClearCartAsync();
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
 
-            return CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpGet("{cartId}")]
         public async Task<IActionResult> GetCartById(int cartId)
         {
-            if (cartId <= 0)
-                return BadRequest("Wrong cart id");
-
             EntityResult<CartResponse> result = await _cartsService.GetCartResponseByIdAsync(cartId);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return Ok(result.Entity);
+            return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
         }
 
         [HttpPut]
@@ -148,10 +132,10 @@ namespace PerfumeStore.API.Controllers
             EntityResult<AboutCartDomRes> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
 
             if (result.IsSuccess && result.Entity == null)
-                return Ok("Cart is empty");
+                return NoContent();   //changed form Ok() --> check if it works on front
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return result.ToProblemDetails();
 
             return Ok(result.Entity);
         }
@@ -171,7 +155,7 @@ namespace PerfumeStore.API.Controllers
             EntityResult<AboutCartDomRes> result = await _cartsService.IsCurrentCartAsync(addProductToCartDto);
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return result.ToProblemDetails();
 
             if (result.Entity == null)
                 return NoContent();

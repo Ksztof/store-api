@@ -10,7 +10,7 @@ namespace PerfumeStore.Application.Users
 
         public Task<UserResult> RegisterUser(RegisterUserDtoApp userForRegistration);
 
-        public Task<UserResult> ConfirmEmail(string userId, string emailToken);
+        public Task<UserResult> ConfirmEmail(string userId, string token);
 
         public Task<UserResult> RequestDeletion();
 

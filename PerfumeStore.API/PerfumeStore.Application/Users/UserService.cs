@@ -154,9 +154,12 @@ namespace PerfumeStore.Application.Users
             return encodedToken;
         }
 
-        public async Task<UserResult> ConfirmEmail(string userId, string emailToken)
+        public async Task<UserResult> ConfirmEmail(string userId, string token)
         {
-            string decodedToken = _emailService.DecodeBaseUrlToken(emailToken);
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+                return UserResult.Failure(UserErrors.WrongAccountActivationToken(token));
+
+            string decodedToken = _emailService.DecodeBaseUrlToken(token);
 
             UserResult findUser = await FindByIdAsync(userId);
             StoreUser storeUser = findUser.StoreUser;

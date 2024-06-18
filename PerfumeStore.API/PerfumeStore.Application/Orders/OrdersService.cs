@@ -135,8 +135,10 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<OrderResponse>> GetByIdAsync(int orderId)
         {
-            Order? order = await _ordersRepository.GetByIdAsync(orderId);
+            if (orderId <= 0)
+                return EntityResult<OrderResponse>.Failure(EntityErrors<Order, int>.WrongEntityId(orderId));
 
+            Order? order = await _ordersRepository.GetByIdAsync(orderId);
             if (order == null)
             {
                 var error = EntityErrors<Order, int>.NotFound(orderId);
@@ -153,6 +155,9 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId)
         {
+            if (orderId <= 0)
+                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+
             Order? order = await _ordersRepository.GetByIdAsync(orderId);
 
             if (order == null)
@@ -169,6 +174,9 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId)
         {
+            if (orderId <= 0)
+                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
 

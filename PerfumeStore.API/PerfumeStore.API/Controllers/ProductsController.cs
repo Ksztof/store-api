@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Product;
+using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Products;
@@ -43,39 +44,26 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
 
-            return CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
 
         [HttpDelete("{productId}")]
         //[Authorize(Roles.Administrator)]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
-            if (productId <= 0)
-                return BadRequest("Wrong product id");
-
             EntityResult<Product> result = await _productService.DeleteProductAsync(productId);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return NoContent();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetProductById(int productId)
         {
-            if (productId <= 0)
-                return BadRequest("Wrong product id");
-
             EntityResult<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
 
-            if (result.IsFailure)
-                return NotFound(result.Error);
-
-            return Ok(result.Entity);
+            return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
         }
 
         [HttpGet]
@@ -83,9 +71,6 @@ namespace PerfumeStore.API.Controllers
         {
             IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
 
-            if (!result.Any())
-                return Ok(result);
-           
             return Ok(result);
         }
 
@@ -103,10 +88,9 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<ProductResponse> result = await _productService.UpdateProductAsync(updateProductDtoApp);
 
-            if (result.IsFailure)
-                return NotFound(result.Error);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
 
-            return CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
+            return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
     }
 }
