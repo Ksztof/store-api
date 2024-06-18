@@ -246,6 +246,9 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> GetCartResponseByIdAsync(int cartId)
         {
+            if (cartId <= 0)
+                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(cartId));
+
             Cart? cart = await _cartsRepository.GetByIdAsync(cartId);
             if (cart == null)
             {

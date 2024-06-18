@@ -5,6 +5,7 @@ using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Domain.DTO.Request.Product;
+using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Entities.ProductCategories;
 using PerfumeStore.Domain.Entities.Products;
 using PerfumeStore.Domain.Repositories;
@@ -65,6 +66,9 @@ namespace PerfumeStore.Application.Products
 
         public async Task<EntityResult<Product>> DeleteProductAsync(int productId)
         {
+            if (productId <= 0)
+                return EntityResult<Product>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
+
             Product? product = await _productsRepository.GetByIdAsync(productId);
 
             if (product == null)
@@ -81,6 +85,9 @@ namespace PerfumeStore.Application.Products
 
         public async Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId)
         {
+            if (productId <= 0)
+                return EntityResult<ProductResponse>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
+
             Product? product = await _productsRepository.GetByIdAsync(productId);
 
             if (product is null)

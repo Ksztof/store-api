@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
+using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Abstractions.Result.Shared;
@@ -45,10 +46,7 @@ namespace PerfumeStore.API.Controllers
 
             Result result = await _paymentsService.PayWithCardAsync(createOrderDtoApp);
 
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-
-            return NoContent();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpPost("webhook")]
