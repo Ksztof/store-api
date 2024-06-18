@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Result;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
