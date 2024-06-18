@@ -7,6 +7,7 @@ namespace PerfumeStore.Application.Abstractions
     {
         public static readonly Error None = new(string.Empty, string.Empty, ErrorType.Failure);
         public static readonly Error NullValue = new("Error.NullValue", "Null value was provided", ErrorType.Failure);
+        public static readonly Error NoneRaw = new(string.Empty, string.Empty);
 
         private Error(string code, string? description, ErrorType errorType)
         {
