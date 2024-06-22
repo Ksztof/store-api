@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Infrastructure.Middlewares;
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 public class ExceptionHandlingMiddleware
 {
@@ -35,13 +32,31 @@ public class ExceptionHandlingMiddleware
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var error = new GlobalExceptionError(
-            code: "UnexpectedError.Status500InternalServerError", 
-            description: "Unexpected server error has occured, please contact application owner",
+            code: "UnexpectedError.Status500InternalServerError",
+            description: "Unexpected server error has occurred, please contact application owner",
             errorType: ErrorType.Server
         );
 
         var problemDetailsResult = CreateProblemDetailsResult(error);
         var problemDetails = problemDetailsResult.Value as ProblemDetails;
+
+        if (problemDetails == null)
+        {
+            problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "Conversion Error",
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+            };
+
+            var conversionError = new GlobalExceptionError(
+                        code: "ProblemDetails.ConversionError",
+                        description: "Unexpected server error has occurred, durring ObjectResult conversion",
+                        errorType: ErrorType.Server
+                    );
+            problemDetails.Extensions.Add("errors", new[] { conversionError });
+
+        }
 
         var json = JsonSerializer.Serialize(problemDetails);
 
@@ -51,13 +66,13 @@ public class ExceptionHandlingMiddleware
         return context.Response.WriteAsync(json);
     }
 
-    private static ObjectResult CreateProblemDetailsResult(Error error)
+    private static ObjectResult CreateProblemDetailsResult(GlobalExceptionError error)
     {
         var problemDetails = new ProblemDetails
         {
-            Status = GetStatusCode(error.Type),
-            Title = GetTitle(error.Type),
-            Type = GetType(error.Type),
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "Critical Server Failure",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
         };
         problemDetails.Extensions.Add("errors", new[] { error });
 
