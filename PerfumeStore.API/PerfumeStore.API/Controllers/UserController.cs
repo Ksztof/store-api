@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -30,12 +31,11 @@ namespace PerfumeStore.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthenticateUserDtoApi userAuthRequest)
         {
-            var validationResult = await _validationService.ValidateAsync(userAuthRequest);
+            ValidationResult validationResult = await _validationService.ValidateAsync(userAuthRequest);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             AuthenticateUserDtoApp authenticateUserDto = _mapper.Map<AuthenticateUserDtoApp>(userAuthRequest);
 
@@ -50,7 +50,7 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(userRegRequest);
 
             if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+                return validationResult.ToValidationProblemDetails();
 
 
             StoreUser StoreUser = _mapper.Map<StoreUser>(userRegRequest);

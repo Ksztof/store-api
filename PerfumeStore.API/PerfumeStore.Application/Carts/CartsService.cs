@@ -185,6 +185,9 @@ namespace PerfumeStore.Application.Carts
 
         public async Task<EntityResult<CartResponse>> DeleteCartLineFromCartAsync(int productId)
         {
+            if (productId <= 0)
+                return EntityResult<CartResponse>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
+
             bool isUserAuthenticated = _contextService.IsUserAuthenticated();
             int? GuestCartId = _guestSessionService.GetCartId();
 
