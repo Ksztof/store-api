@@ -40,9 +40,8 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
@@ -56,9 +55,6 @@ namespace PerfumeStore.API.Controllers
         [HttpDelete("products/{productId}")]
         public async Task<IActionResult> DeleteProductFromCartAsync(int productId)
         {
-            if (productId <= 0)
-                return BadRequest("Wrong product id");
-
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
 
             CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
@@ -72,9 +68,8 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(modifiedProduct);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             ModifyProductDtoApp modifyProductDto = _mapper.Map<ModifyProductDtoApp>(modifiedProduct);
 
@@ -94,7 +89,7 @@ namespace PerfumeStore.API.Controllers
                 return NoContent();
 
             if (result.IsFailure)
-                return BadRequest(result.Error);
+                return result.ToProblemDetails();
 
             return Ok(result.Entity);
         }
@@ -123,16 +118,15 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
             EntityResult<AboutCartDomRes> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
 
             if (result.IsSuccess && result.Entity == null)
-                return NoContent();   //changed form Ok() --> check if it works on front
+                return NoContent(); 
 
             if (result.IsFailure)
                 return result.ToProblemDetails();
@@ -146,9 +140,8 @@ namespace PerfumeStore.API.Controllers
             FluentValidation.Results.ValidationResult validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             CheckCurrentCartDtoApp addProductToCartDto = _mapper.Map<CheckCurrentCartDtoApp>(request);
 

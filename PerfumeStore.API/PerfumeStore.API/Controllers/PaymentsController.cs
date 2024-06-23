@@ -38,9 +38,7 @@ namespace PerfumeStore.API.Controllers
         {
             var validationResult = await _validationService.ValidateAsync(request);
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
 
             PayWithCardDtoApp createOrderDtoApp = _mapper.Map<PayWithCardDtoApp>(request);
 

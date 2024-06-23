@@ -36,9 +36,8 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(createProductForm);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
 
@@ -80,9 +79,8 @@ namespace PerfumeStore.API.Controllers
             var validationResult = await _validationService.ValidateAsync(updateProductForm);
 
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return validationResult.ToValidationProblemDetails();
+
 
             UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);
 
