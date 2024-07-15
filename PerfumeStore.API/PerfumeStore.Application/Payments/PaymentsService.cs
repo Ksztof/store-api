@@ -51,68 +51,57 @@ namespace PerfumeStore.Application.Payments
             _notificationService = notificationService;
         }
 
-        public async Task<Result> PayWithCardAsync(PayWithCardDtoApp form)
+        public async Task<Result<PaymentIntent>> StartOrderAsync(StartOrderDtoApp form)
         {
-            bool isUserAuthenticated = _contextService.IsUserAuthenticated();
-            int? GuestCartId = _guestSessionService.GetCartId();
-            int orderId = 0;
-
-            if (GuestCartId == null && isUserAuthenticated == false)
-            {
-                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie; 
-
-                return Result.Failure(error);
-            }
-
-            if (isUserAuthenticated)
-            {
-                string userId = _contextService.GetUserId();
-                orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(userId);
-            }
-
-            if (GuestCartId != null)
-                orderId = await _ordersRepository.GetOrderIdByCartIdAsync(GuestCartId.Value);
-
             try
             {
-                if (orderId > 0)
+                bool isUserAuthenticated = _contextService.IsUserAuthenticated();
+                int? GuestCartId = _guestSessionService.GetCartId();
+                int orderId = 0;
+
+                if (GuestCartId == null && isUserAuthenticated == false)
                 {
-                    var options = new PaymentIntentCreateOptions
-                    {
-                        Amount = form.Amount,
-                        Currency = form.Currency,
-                        PaymentMethod = form.PaymentMethodId,
-                        AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                        {
-                            Enabled = true
-                        },
-                        ReturnUrl = "https://localhost:3000/order",
-                        Confirm = true,
-                        Metadata = new Dictionary<string, string>
-                        {
-                            { "OrderId", orderId.ToString() }
-                        }
-                    };
+                    Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
-                    PaymentIntent paymentIntent = await _paymentIntentService.CreateAsync(options);
-
-                    if (paymentIntent.Status == "requires_confirmation")
-                    {
-                        var confirmOptions = new PaymentIntentConfirmOptions
-                        {
-                            PaymentMethod = form.PaymentMethodId
-                        };
-                        paymentIntent = await _paymentIntentService.ConfirmAsync(paymentIntent.Id, confirmOptions);
-                    }
-
-                    return Result.Success();
+                    return Result<PaymentIntent>.Failure(error);
                 }
-                else
+
+                if (isUserAuthenticated)
+                {
+                    string userId = _contextService.GetUserId();
+                    orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(userId);
+                }
+
+                if (GuestCartId != null)
+                    orderId = await _ordersRepository.GetOrderIdByCartIdAsync(GuestCartId.Value);
+
+                if (orderId <= 0)
                 {
                     Error error = EntityErrors<Order, int>.WrongEntityId(orderId);
 
-                    return Result.Failure(error);
+                    return Result<PaymentIntent>.Failure(error);
                 }
+
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = form.Amount,
+                    Currency = form.Currency,
+                    PaymentMethod = form.PaymentMethodId,
+                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                    {
+                        Enabled = true
+                    },
+                    ReturnUrl = "https://localhost:3000/order",
+                    Confirm = true,
+                    Metadata = new Dictionary<string, string>
+                        {
+                            { "OrderId", orderId.ToString() }
+                        }
+                };
+
+                PaymentIntent paymentIntent = await _paymentIntentService.CreateAsync(options);
+
+                return Result<PaymentIntent>.Success(paymentIntent);
             }
             catch (StripeException ex)
             {
@@ -124,6 +113,21 @@ namespace PerfumeStore.Application.Payments
             }
         }
 
+
+        public async Task<Result> ConfirmPaymentAsync(ConfirmPaymentDtoApp request)
+        {
+            PaymentIntent paymentIntent = await _paymentIntentService.GetAsync(request.PaymentIntent.Id);
+            if (paymentIntent.Status == "requires_confirmation")
+            {
+                var confirmOptions = new PaymentIntentConfirmOptions
+                {
+                    PaymentMethod = paymentIntent.PaymentMethodId
+                };
+                paymentIntent = await _paymentIntentService.ConfirmAsync(paymentIntent.Id, confirmOptions);
+            }
+
+            return Result.Success();
+        }
 
         public async Task VerifyPaymentAsync()
         {

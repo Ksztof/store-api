@@ -40,7 +40,7 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity.Id }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity?.Id }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }

@@ -5,6 +5,7 @@ using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
 using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
+using PerfumeStore.API.Validators.Payments.PayWithCardDto;
 using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Orders;
@@ -34,22 +35,35 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PayWithCard([FromBody] PayWithCardDtoApi request)
+        public async Task<IActionResult> StartOrder([FromBody] StartOrderDtoApi request)
         {
             var validationResult = await _validationService.ValidateAsync(request);
             if (!validationResult.IsValid)
                 return validationResult.ToValidationProblemDetails();
 
-            PayWithCardDtoApp createOrderDtoApp = _mapper.Map<PayWithCardDtoApp>(request);
+            StartOrderDtoApp createOrderDtoApp = _mapper.Map<StartOrderDtoApp>(request);
 
-            Result result = await _paymentsService.PayWithCardAsync(createOrderDtoApp);
+            Result<PaymentIntent> result = await _paymentsService.StartOrderAsync(createOrderDtoApp);
+
+            return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+        }
+
+        [HttpPost("confirm-payment")]
+        public async Task<IActionResult> ConfirmPayment([FromBody] ConfirmPaymentDtoApi request)
+        {
+            var validationResult = await _validationService.ValidateAsync(request);
+            if (!validationResult.IsValid)
+                return validationResult.ToValidationProblemDetails();
+
+            ConfirmPaymentDtoApp createOrderDtoApp = _mapper.Map<ConfirmPaymentDtoApp>(request);
+
+            Result result = await _paymentsService.ConfirmPaymentAsync(createOrderDtoApp);
 
             return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpPost("webhook")]
         [AllowAnonymous]
-
         public async Task StripeWebhook()
         {
             await _paymentsService.VerifyPaymentAsync();

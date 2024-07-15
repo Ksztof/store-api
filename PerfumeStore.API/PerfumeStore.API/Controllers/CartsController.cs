@@ -47,7 +47,7 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity?.CartId }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
@@ -57,7 +57,7 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<CartResponse> result = await _cartsService.DeleteCartLineFromCartAsync(productId);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity?.CartId }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
@@ -75,7 +75,7 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<CartResponse> result = await _cartsService.ModifyProductAsync(modifyProductDto);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity?.CartId }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
@@ -99,7 +99,7 @@ namespace PerfumeStore.API.Controllers
         {
             EntityResult<CartResponse> result = await _cartsService.ClearCartAsync();
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity.CartId }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity?.CartId }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PerfumeStore.Application.Shared.DTO.Request
 {
-    public class PayWithCardDtoApp
+    public class StartOrderDtoApp
     {
         public string PaymentMethodId { get; set; }
         public int Amount { get; set; }
