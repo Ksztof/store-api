@@ -43,7 +43,7 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity?.Id }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }
@@ -86,7 +86,7 @@ namespace PerfumeStore.API.Controllers
 
             EntityResult<ProductResponse> result = await _productService.UpdateProductAsync(updateProductDtoApp);
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity.Id }, result.Entity);
+            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductById), new { productId = result.Entity?.Id }, result.Entity);
 
             return result.IsSuccess ? creationResult : result.ToProblemDetails();
         }

@@ -1,6 +1,6 @@
 ﻿namespace PerfumeStore.API.Shared.DTO.Request.Payments
 {
-    public class PayWithCardDtoApi
+    public class StartOrderDtoApi
     {
         public string PaymentMethodId { get; set; }
         public int Amount { get; set; }

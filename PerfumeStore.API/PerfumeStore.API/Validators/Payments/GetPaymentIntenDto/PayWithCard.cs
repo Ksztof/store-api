@@ -3,7 +3,7 @@ using PerfumeStore.API.Shared.DTO.Request.Payments;
 
 namespace PerfumeStore.API.Validators.Payments.PayWithCardDto
 {
-    public class PayWithCard : AbstractValidator<PayWithCardDtoApi>
+    public class PayWithCard : AbstractValidator<StartOrderDtoApi>
     {
         public PayWithCard()
         {

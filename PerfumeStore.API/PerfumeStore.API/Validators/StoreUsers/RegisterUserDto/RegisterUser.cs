@@ -29,7 +29,7 @@ namespace PerfumeStore.API.Validators.StoreUsers.RegisterUserDto
             .Must(ValidationUtils.NotContainWhiteSpace).WithMessage("Password must not contain any white spaces.");
 
             RuleFor(x => x.ConfirmPassword)
-                .NotEmpty().WithMessage("Confirm password is required.")
+                .NotEmpty().WithMessage("Password confirmation is required.")
                 .Equal(x => x.Password).WithMessage("Confirm password must match password.")
                 .MinimumLength(7).WithMessage("Confirm password must be at least 7 characters long.")
                 .Must(ValidationUtils.HaveMinimumNumberOfLetters).WithMessage("Confirm password must contain at least 4 letters.")

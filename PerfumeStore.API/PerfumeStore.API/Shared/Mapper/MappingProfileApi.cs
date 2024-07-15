@@ -35,7 +35,9 @@ namespace PerfumeStore.API.Shared.Mapper
 
             CreateMap<CheckCurrentCartDtoApi, CheckCurrentCartDtoApp>();
 
-            CreateMap<PayWithCardDtoApi, PayWithCardDtoApp>();
+            CreateMap<StartOrderDtoApi, StartOrderDtoApp>();
+
+            CreateMap<ConfirmPaymentDtoApi, ConfirmPaymentDtoApp>();
         }
     }
 }
