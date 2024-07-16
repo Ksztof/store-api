@@ -86,13 +86,11 @@ namespace PerfumeStore.Application.Payments
                 {
                     Amount = form.Amount,
                     Currency = form.Currency,
-                    PaymentMethod = form.PaymentMethodId,
                     AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
                     {
                         Enabled = true
                     },
                     ReturnUrl = "https://localhost:3000/order",
-                    Confirm = true,
                     Metadata = new Dictionary<string, string>
                         {
                             { "OrderId", orderId.ToString() }
@@ -116,17 +114,34 @@ namespace PerfumeStore.Application.Payments
 
         public async Task<Result> ConfirmPaymentAsync(ConfirmPaymentDtoApp request)
         {
-            PaymentIntent paymentIntent = await _paymentIntentService.GetAsync(request.PaymentIntent.Id);
-            if (paymentIntent.Status == "requires_confirmation")
+            try
             {
-                var confirmOptions = new PaymentIntentConfirmOptions
+                PaymentIntent paymentIntent = await _paymentIntentService.GetAsync(request.PaymentIntentId);
+                if (paymentIntent.Status == "requires_confirmation")
                 {
-                    PaymentMethod = paymentIntent.PaymentMethodId
-                };
-                paymentIntent = await _paymentIntentService.ConfirmAsync(paymentIntent.Id, confirmOptions);
-            }
+                    if (string.IsNullOrEmpty(request.PaymentMethodId))
+                    {
+                        throw new Exception("PaymentMethodId is required to confirm the payment.");
+                    }
 
-            return Result.Success();
+                    var confirmOptions = new PaymentIntentConfirmOptions
+                    {
+                        PaymentMethod = request.PaymentMethodId
+                    };
+
+                    paymentIntent = await _paymentIntentService.ConfirmAsync(paymentIntent.Id, confirmOptions);
+                }
+
+                return Result.Success();
+            }
+            catch (StripeException ex)
+            {
+                throw new StripeException($"Stripe error occurred: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred while confirming the payment: {ex.Message}");
+            }
         }
 
         public async Task VerifyPaymentAsync()

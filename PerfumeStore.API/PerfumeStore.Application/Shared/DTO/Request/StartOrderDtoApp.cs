@@ -8,7 +8,6 @@ namespace PerfumeStore.Application.Shared.DTO.Request
 {
     public class StartOrderDtoApp
     {
-        public string PaymentMethodId { get; set; }
         public int Amount { get; set; }
         public string Currency { get; set; }
     }

@@ -4,6 +4,7 @@ namespace PerfumeStore.API.Shared.DTO.Request.Payments
 {
     public class ConfirmPaymentDtoApi
     {
-        public PaymentIntent PaymentIntent { get; set; }
+        public string PaymentIntentId { get; set; }
+        public string PaymentMethodId { get; set; }
     }
 }
