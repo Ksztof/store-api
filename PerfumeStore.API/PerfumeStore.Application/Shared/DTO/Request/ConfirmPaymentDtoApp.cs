@@ -9,6 +9,7 @@ namespace PerfumeStore.Application.Shared.DTO.Request
 {
     public class ConfirmPaymentDtoApp
     {
-        public PaymentIntent PaymentIntent { get; set; }
+        public string PaymentIntentId { get; set; }
+        public string PaymentMethodId { get; set; }
     }
 }
