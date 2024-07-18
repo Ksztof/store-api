@@ -33,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Configuration\NewFolder\" />
     <Folder Include="Persistence\Migrations\" />
   </ItemGroup>
 

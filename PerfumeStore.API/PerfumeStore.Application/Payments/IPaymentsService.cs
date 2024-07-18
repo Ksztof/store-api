@@ -11,7 +11,8 @@ namespace PerfumeStore.Application.Payments
 {
     public interface IPaymentsService
     {
-        public Task<Result<PaymentIntent>> StartOrderAsync(StartOrderDtoApp form);
+        public Task<Result<string>> GetClientSecretAsync(GetClientSecretDtoApp form);
+        public Task<Result> UpdatePaymentIntentAsync(UpdatePaymentIntentDtoApp form);
         public Task<Result> ConfirmPaymentAsync(ConfirmPaymentDtoApp form);
         public Task VerifyPaymentAsync();
     }
