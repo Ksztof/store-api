@@ -51,7 +51,48 @@ namespace PerfumeStore.Application.Payments
             _notificationService = notificationService;
         }
 
-        public async Task<Result<PaymentIntent>> StartOrderAsync(StartOrderDtoApp form)
+        public async Task<Result<string>> GetClientSecretAsync(GetClientSecretDtoApp form)
+        {
+            try
+            {
+                bool isUserAuthenticated = _contextService.IsUserAuthenticated();
+                int? GuestCartId = _guestSessionService.GetCartId();
+
+                if (GuestCartId == null && isUserAuthenticated == false)
+                {
+                    Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
+
+                    return Result<string>.Failure(error);
+                }
+
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = form.Amount,
+                    Currency = form.Currency,
+                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                    {
+                        Enabled = true
+                    },
+                    Confirm = false,
+                };
+
+                PaymentIntent paymentIntent = await _paymentIntentService.CreateAsync(options);
+                string clientSecret = paymentIntent.ClientSecret;
+
+                return Result<string>.Success(clientSecret);
+            }
+            catch (StripeException ex)
+            {
+                throw new StripeException($"Stripe error occurred while getting client secret with message: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred while getting client secret with message: {ex.Message}");
+            }
+        }
+
+
+        public async Task<Result> UpdatePaymentIntentAsync(UpdatePaymentIntentDtoApp form)
         {
             try
             {
@@ -63,7 +104,7 @@ namespace PerfumeStore.Application.Payments
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
-                    return Result<PaymentIntent>.Failure(error);
+                    return Result<string>.Failure(error);
                 }
 
                 if (isUserAuthenticated)
@@ -79,35 +120,27 @@ namespace PerfumeStore.Application.Payments
                 {
                     Error error = EntityErrors<Order, int>.WrongEntityId(orderId);
 
-                    return Result<PaymentIntent>.Failure(error);
+                    return Result<string>.Failure(error);
                 }
 
-                var options = new PaymentIntentCreateOptions
+                var options = new PaymentIntentUpdateOptions
                 {
-                    Amount = form.Amount,
-                    Currency = form.Currency,
-                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                    {
-                        Enabled = true
-                    },
-                    ReturnUrl = "https://localhost:3000/order",
                     Metadata = new Dictionary<string, string>
-                        {
-                            { "OrderId", orderId.ToString() }
-                        }
+                    {
+                        { "OrderId", orderId.ToString() }
+                    }
                 };
 
-                PaymentIntent paymentIntent = await _paymentIntentService.CreateAsync(options);
-
-                return Result<PaymentIntent>.Success(paymentIntent);
+                PaymentIntent paymentIntent = await _paymentIntentService.UpdateAsync(form.PaymentIntentId, options);
+                return Result.Success();
             }
             catch (StripeException ex)
             {
-                throw new StripeException($"Stripe error occurred: {ex.Message}");
+                throw new StripeException($"Stripe error occurred while updating metadata with order ID with message: {ex.Message}");
             }
             catch (Exception ex)
             {
-                throw new Exception($"An unexpected error occurred while processing the payment: {ex.Message}");
+                throw new Exception($"An unexpected error occurred while updating metadata with order ID with message: {ex.Message}");
             }
         }
 

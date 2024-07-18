@@ -35,17 +35,31 @@ namespace PerfumeStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StartOrder([FromBody] StartOrderDtoApi request)
+        public async Task<IActionResult> GetClientSecret([FromBody] GetClientSecretDtoApi request)
         {
             var validationResult = await _validationService.ValidateAsync(request);
             if (!validationResult.IsValid)
                 return validationResult.ToValidationProblemDetails();
 
-            StartOrderDtoApp createOrderDtoApp = _mapper.Map<StartOrderDtoApp>(request);
+            GetClientSecretDtoApp getClientSecretDtoApp = _mapper.Map<GetClientSecretDtoApp>(request);
 
-            Result<PaymentIntent> result = await _paymentsService.StartOrderAsync(createOrderDtoApp);
+            Result<string> result = await _paymentsService.GetClientSecretAsync(getClientSecretDtoApp);
 
             return result.IsSuccess ? Ok(result.Value) : result.ToProblemDetails();
+        }
+
+        [HttpPost("update-payment-intent")]
+        public async Task<IActionResult> UpdatePaymentIntent([FromBody] UpdatePaymentIntentDtoApi request)
+        {
+            var validationResult = await _validationService.ValidateAsync(request);
+            if (!validationResult.IsValid)
+                return validationResult.ToValidationProblemDetails();
+
+            UpdatePaymentIntentDtoApp updatePaymentIntentDtoApp = _mapper.Map<UpdatePaymentIntentDtoApp>(request);
+
+            Result result = await _paymentsService.UpdatePaymentIntentAsync(updatePaymentIntentDtoApp);
+
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpPost("confirm-payment")]

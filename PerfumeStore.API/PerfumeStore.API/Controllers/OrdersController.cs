@@ -35,7 +35,6 @@ namespace PerfumeStore.API.Controllers
             if (!validationResult.IsValid)
                 return validationResult.ToValidationProblemDetails();
 
-
             CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);
 
             EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
