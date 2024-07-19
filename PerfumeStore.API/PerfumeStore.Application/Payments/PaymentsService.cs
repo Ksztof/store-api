@@ -104,7 +104,7 @@ namespace PerfumeStore.Application.Payments
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
-                    return Result<string>.Failure(error);
+                    return Result.Failure(error);
                 }
 
                 if (isUserAuthenticated)
@@ -120,7 +120,34 @@ namespace PerfumeStore.Application.Payments
                 {
                     Error error = EntityErrors<Order, int>.WrongEntityId(orderId);
 
-                    return Result<string>.Failure(error);
+                    return Result.Failure(error);
+                }
+
+                string paymentIntentId = ExtractPaymentIntentIdFromClientSecret(form.clientSecret);
+                if (string.IsNullOrEmpty(paymentIntentId))
+                {
+                    throw new ArgumentException("Invalid client secret.");
+                }
+
+                PaymentIntent paymentIntent = await _paymentIntentService.GetAsync(paymentIntentId);
+                if (paymentIntent.Metadata != null && paymentIntent.Metadata.ContainsKey("OrderId"))
+                {
+                    bool parsingResult = int.TryParse(paymentIntent.Metadata["OrderId"], out int metadataOrderId);
+                    if (!parsingResult)
+                    {
+                        Error error = EntityErrors<Order, int>.ParsingEntityIdFailed();
+
+                        return Result.Failure(error);
+                    }
+
+                    if (metadataOrderId != orderId)
+                    {
+                        Error error = EntityErrors<Order, int>.EntityIdNotMatch(metadataOrderId, orderId);
+
+                        return Result.Failure(error);
+                    }
+
+                    return Result.Success();
                 }
 
                 var options = new PaymentIntentUpdateOptions
@@ -131,7 +158,9 @@ namespace PerfumeStore.Application.Payments
                     }
                 };
 
-                PaymentIntent paymentIntent = await _paymentIntentService.UpdateAsync(form.PaymentIntentId, options);
+                paymentIntent = await _paymentIntentService.UpdateAsync(paymentIntentId, options);
+                _guestSessionService.SetCartIdCookieAsExpired();
+
                 return Result.Success();
             }
             catch (StripeException ex)
@@ -244,6 +273,22 @@ namespace PerfumeStore.Application.Payments
 
             var scenarioExceptionError = new Error("UnexpectedScenario", "Unexpected scenario for payment verification");
             await _notificationService.SendPaymentStatusAsync(order.Id.ToString(), "failed", scenarioExceptionError);
+        }
+
+        private string ExtractPaymentIntentIdFromClientSecret(string clientSecret)
+        {
+            if (string.IsNullOrEmpty(clientSecret))
+            {
+                throw new InvalidOperationException("Client secret is empty.");
+            }
+
+            var parts = clientSecret.Split('_');
+            if (parts.Length < 3 || !parts[0].StartsWith("pi"))
+            {
+                throw new InvalidOperationException("Client secret format in not valid");
+            }
+
+            return $"{parts[0]}_{parts[1]}";
         }
     }
 }

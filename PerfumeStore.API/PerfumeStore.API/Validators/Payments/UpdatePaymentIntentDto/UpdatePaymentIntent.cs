@@ -7,9 +7,9 @@ namespace PerfumeStore.API.Validators.Payments.UpdatePaymentIntentDto
     {
         public UpdatePaymentIntent()
         {
-            RuleFor(x => x.PaymentIntentId)
-                .NotEmpty().WithMessage("Payment intent Id cannot be empty")
-                .Matches(@"^pi_\w+$").WithMessage("Payment intent Id must start with 'pi_' and contain only alphanumeric characters.");
+            RuleFor(x => x.clientSecret)
+                .NotEmpty().WithMessage("Client secret cannot be empty")
+            .Matches(@"^pi_[a-zA-Z0-9]+_secret_[a-zA-Z0-9]+$").WithMessage("Client secret must be in the format 'pi_XXXXXXXXXXXXXXXX_secret_XXXXXXXXXXXXXXXX'.");
         }
     }
 }

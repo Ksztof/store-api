@@ -8,6 +8,6 @@ namespace PerfumeStore.Application.Shared.DTO.Request
 {
     public class UpdatePaymentIntentDtoApp
     {
-        public string PaymentIntentId { get; set; }
+        public string clientSecret { get; set; }
     }
 }

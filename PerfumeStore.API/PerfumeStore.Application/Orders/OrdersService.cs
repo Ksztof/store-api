@@ -128,8 +128,6 @@ namespace PerfumeStore.Application.Orders
 
             await _emailService.SendOrderSummary(guestOrderContents);
 
-            _guestSessionService.SetCartIdCookieAsExpired();
-
             return EntityResult<OrderResponse>.Success(guestOrderContents);
         }
 
