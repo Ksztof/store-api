@@ -41,7 +41,7 @@ namespace PerfumeStore.API.Controllers
 
             UserResult result = await _userService.Login(authenticateUserDto);
 
-            return result.IsSuccess ? Ok() : result.ToProblemDetails();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpPost]

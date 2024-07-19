@@ -2,6 +2,6 @@
 {
     public class UpdatePaymentIntentDtoApi
     {
-        public string PaymentIntentId { get; set; }
+        public string clientSecret { get; set; }
     }
 }

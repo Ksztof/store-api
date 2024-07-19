@@ -28,7 +28,7 @@ namespace PerfumeStore.API.Validators.Orders.CrateOrderDto
             RuleFor(x => x.StreetNumber).NotEmpty().WithMessage("Street number is required.")
                 .Matches(@"^\d+[a-zA-Z]*$").WithMessage("Street number must be a valid number with optional letter.")
                 .Must(ValidationUtils.NotContainWhiteSpace).WithMessage("Street number must not contain any white spaces.")
-                .MaximumLength(4).WithMessage("The field must not exceed 4 characters.");
+                .MaximumLength(6).WithMessage("The field must not exceed 6 characters.");
 
             RuleFor(x => x.HomeNumber).NotEmpty().WithMessage("Home number is required.")
                 .Must(ValidationUtils.NotContainWhiteSpace).WithMessage("HomeNumber must not contain any white spaces.")

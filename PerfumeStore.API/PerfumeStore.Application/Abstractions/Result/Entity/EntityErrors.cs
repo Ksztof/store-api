@@ -33,5 +33,11 @@ namespace PerfumeStore.Application.Abstractions.Result.Entity
 
         public static Error WrongEntityId(TId entityId) => Error.Validation(
             $"{typeof(T).Name}.WrongEntityId", $"Entity ID of type: {typeof(T).Name} is smaller than 1. ID = {entityId}");
+
+        public static Error ParsingEntityIdFailed() => Error.Validation(
+            $"{typeof(T).Name}.ParsingFailed", $"Entity ID of type: {typeof(T).Name} can't be parsed");
+
+        public static Error EntityIdNotMatch(int incomingId, int id) => Error.Validation(
+            $"{typeof(T).Name}.EntityIdNotMatch", $"Entity ID of type: {typeof(T).Name} doesn't match to ID of the compared object, incoming ID: {incomingId}, existing ID: {id} ");
     }
 }
