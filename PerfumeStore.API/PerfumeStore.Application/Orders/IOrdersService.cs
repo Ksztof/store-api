@@ -6,7 +6,7 @@ namespace PerfumeStore.Application.Orders
 {
     public interface IOrdersService
     {
-        public Task<EntityResult<OrderResponse>> CreateOrderAsync(CreateOrderDtoApp createOrderDtoApp);
+        public Task<EntityResult<OrderResponse>> CreateOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp);
 
         public Task<EntityResult<OrderResponse>> GetByIdAsync(int orderId);
 

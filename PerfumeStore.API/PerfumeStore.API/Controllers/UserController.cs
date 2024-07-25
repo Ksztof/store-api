@@ -63,7 +63,7 @@ namespace PerfumeStore.API.Controllers
 
             UserResult result = await _userService.RegisterUser(registerUserDtoApp);
 
-            return result.IsSuccess ? StatusCode(201) : result.ToProblemDetails();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpGet("confirm/{userId}/{token}")]
