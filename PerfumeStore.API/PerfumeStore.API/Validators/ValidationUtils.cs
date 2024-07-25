@@ -1,3 +1,5 @@
+using PerfumeStore.API.Shared.Enums;
+
 namespace PerfumeStore.API.Validators
 {
     public static class ValidationUtils
@@ -51,6 +53,11 @@ namespace PerfumeStore.API.Validators
         public static bool NotContainSpecialCharactersOrWhiteSpace(string login)
         {
             return login.All(c => char.IsLetterOrDigit(c));
+        }
+
+        public static bool BeAValidOrderMethod(string method)
+        {
+            return Enum.GetNames(typeof(OrderMethod)).Contains(method);
         }
     }
 }

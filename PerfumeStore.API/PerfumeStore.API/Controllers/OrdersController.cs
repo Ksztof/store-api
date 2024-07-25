@@ -27,17 +27,24 @@ namespace PerfumeStore.API.Controllers
             _validationService = validationService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitOrder([FromBody] CrateOrderDtoApi createOrderRequest)
+        [HttpPost("{method?}")]
+        public async Task<IActionResult> SubmitOrder(string? method, [FromBody] CrateOrderDtoApi createOrderRequest)
         {
-            var validationResult = await _validationService.ValidateAsync(createOrderRequest);
+            var dtoValidationResult = await _validationService.ValidateAsync(createOrderRequest);
 
-            if (!validationResult.IsValid)
-                return validationResult.ToValidationProblemDetails();
+            if (!dtoValidationResult.IsValid)
+                return dtoValidationResult.ToValidationProblemDetails();
+            
+            if (!string.IsNullOrEmpty(method)){
+                var parameterValidationResult = await _validationService.ValidateAsync(method);
+
+                if (!parameterValidationResult.IsValid)
+                    return parameterValidationResult.ToValidationProblemDetails();
+            }
 
             CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);
 
-            EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(createOrderDtoApp);
+            EntityResult<OrderResponse> result = await _orderService.CreateOrderAsync(method, createOrderDtoApp);
 
             CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetOrderById), new { orderId = result.Entity?.Id }, result.Entity);
 

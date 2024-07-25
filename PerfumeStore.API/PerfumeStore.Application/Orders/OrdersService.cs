@@ -43,7 +43,7 @@ namespace PerfumeStore.Application.Orders
             _emailService = emailService;
         }
 
-        public async Task<EntityResult<OrderResponse>> CreateOrderAsync(CreateOrderDtoApp createOrderDtoApp)
+        public async Task<EntityResult<OrderResponse>> CreateOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp)
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
             int? GuestCartId = _cookiesService.GetCartId();
@@ -127,6 +127,11 @@ namespace PerfumeStore.Application.Orders
             OrderResponse guestOrderContents = MapAboutCartToOrderRes(order, guestCartContent, shippingDetailsRes);
 
             await _emailService.SendOrderSummary(guestOrderContents);
+
+            if (!string.IsNullOrWhiteSpace(method))
+            {
+                _guestSessionService.SetCartIdCookieAsExpired();
+            }
 
             return EntityResult<OrderResponse>.Success(guestOrderContents);
         }
