@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.Guest;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Infrastructure.Services.Guest
 {
@@ -19,12 +19,12 @@ namespace PerfumeStore.Infrastructure.Services.Guest
 
             if (_httpContextAccessor.HttpContext == null)
             {
-                return Result<int>.Failure(UserErrors.MissingHttpContext());
+                return Result<int>.Failure(UserErrors.MissingHttpContext);
             }
 
             if (!_httpContextAccessor.HttpContext.Request.Cookies.ContainsKey("GuestSessionId"))
             {
-                return Result<int>.Failure(UserErrors.MissingGuestSessionId());
+                return Result<int>.Failure(UserErrors.MissingGuestSessionId);
             }
 
             string stringCartId = _httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"];
@@ -47,7 +47,7 @@ namespace PerfumeStore.Infrastructure.Services.Guest
                 return UserResult.Success();
             }
 
-            return UserResult.Failure(UserErrors.MissingHttpContext());
+            return UserResult.Failure(UserErrors.MissingHttpContext);
         }
 
         public UserResult SetCartIdCookieAsExpired()
@@ -66,7 +66,7 @@ namespace PerfumeStore.Infrastructure.Services.Guest
                 return UserResult.Success();
             }
 
-            return UserResult.Failure(UserErrors.MissingHttpContext());
+            return UserResult.Failure(UserErrors.MissingHttpContext);
         }
     }
 }

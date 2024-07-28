@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain.Entities.CarLines;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.CarLines;
 
 namespace PerfumeStore.Infrastructure.Persistence.Repositories
 {

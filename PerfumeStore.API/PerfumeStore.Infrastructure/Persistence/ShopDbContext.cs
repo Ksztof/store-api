@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain.Entities.CarLines;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Entities.Orders;
-using PerfumeStore.Domain.Entities.ProductCategories;
-using PerfumeStore.Domain.Entities.ProductProductCategories;
-using PerfumeStore.Domain.Entities.Products;
-using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Domain.ProductProductCategories;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Infrastructure.Persistence
 {

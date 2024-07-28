@@ -1,21 +1,16 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
-using PerfumeStore.Application.Abstractions;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
+using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Guest;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;
-using PerfumeStore.Application.Shared.DTO.Response;
 using PerfumeStore.Application.SignalR;
-using PerfumeStore.Domain.Entities.CarLines;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Entities.Orders;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
 using PerfumeStore.Domain.Shared.Enums;
+using PerfumeStore.Domain.Shared.Errors;
+using PerfumeStore.Domain.StoreUsers;
 using Stripe;
 
 namespace PerfumeStore.Application.Payments
@@ -55,10 +50,10 @@ namespace PerfumeStore.Application.Payments
         {
             try
             {
-                bool isUserAuthenticated = _contextService.IsUserAuthenticated();
+                Result isUserAuthenticated = _contextService.IsUserAuthenticated();
                 Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-                if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
+                if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -96,21 +91,27 @@ namespace PerfumeStore.Application.Payments
         {
             try
             {
-                bool isUserAuthenticated = _contextService.IsUserAuthenticated();
+                Result isUserAuthenticated = _contextService.IsUserAuthenticated();
                 Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
                 int orderId = 0;
 
-                if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
+                if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
                     return Result.Failure(error);
                 }
 
-                if (isUserAuthenticated)
+                if (isUserAuthenticated.IsSuccess)
                 {
-                    string userId = _contextService.GetUserId();
-                    orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(userId);
+                    Result<string> result = _contextService.GetUserId();
+
+                    if (result.IsFailure)
+                    {
+                        return Result.Failure(result.Error);
+                    }
+
+                    orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(result.Value);
                 }
 
                 orderId = await _ordersRepository.GetOrderIdByCartIdAsync(receiveCartIdResult.Value);

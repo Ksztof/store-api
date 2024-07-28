@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.Entities.Products;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -34,8 +32,9 @@ namespace PerfumeStore.API.Controllers
 
             if (!dtoValidationResult.IsValid)
                 return dtoValidationResult.ToValidationProblemDetails();
-            
-            if (!string.IsNullOrEmpty(method)){
+
+            if (!string.IsNullOrEmpty(method))
+            {
                 var parameterValidationResult = await _validationService.ValidateAsync(method);
 
                 if (!parameterValidationResult.IsValid)

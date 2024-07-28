@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Infrastructure.Configuration
 {

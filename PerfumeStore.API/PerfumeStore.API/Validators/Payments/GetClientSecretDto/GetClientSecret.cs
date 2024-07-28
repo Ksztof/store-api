@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
 
-namespace PerfumeStore.API.Validators.Payments.PayWithCardDto
+namespace PerfumeStore.API.Validators.Payments.GetClientSecretDto
 {
     public class GetClientSecret : AbstractValidator<GetClientSecretDtoApi>
     {

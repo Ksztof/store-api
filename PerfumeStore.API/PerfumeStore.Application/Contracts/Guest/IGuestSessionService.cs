@@ -1,5 +1,4 @@
-﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Shared;
+﻿using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Application.Contracts.Guest
 {

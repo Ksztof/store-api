@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PerfumeStore.API.Shared.DTO.Request.StoreUser
+﻿namespace PerfumeStore.API.Shared.DTO.Request.StoreUser
 {
     public class AuthenticateUserDtoApi
     {

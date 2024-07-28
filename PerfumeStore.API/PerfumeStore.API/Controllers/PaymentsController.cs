@@ -1,18 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.API.Shared.DTO.Request.Order;
 using PerfumeStore.API.Shared.DTO.Request.Payments;
 using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
-using PerfumeStore.API.Validators.Payments.PayWithCardDto;
-using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
-using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;
-using PerfumeStore.Application.Shared.DTO.Response;
-using Stripe;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.API.Controllers
 {

@@ -1,6 +1,4 @@
-﻿using Stripe;
-
-namespace PerfumeStore.API.Shared.DTO.Request.Payments
+﻿namespace PerfumeStore.API.Shared.DTO.Request.Payments
 {
     public class ConfirmPaymentDtoApi
     {

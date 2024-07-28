@@ -22,7 +22,7 @@ namespace PerfumeStore.API.Validators.Products.UpdateProductDto
             RuleFor(x => x.ProductManufacturer)
                 .MaximumLength(100).WithMessage("The field must not exceed 100 characters.")
                 .When(x => !string.IsNullOrEmpty(x.ProductManufacturer));
-            
+
             RuleFor(x => x.ProductDescription)
                 .MaximumLength(500).WithMessage("The field must not exceed 500 characters.")
                 .When(x => !string.IsNullOrEmpty(x.ProductDescription));

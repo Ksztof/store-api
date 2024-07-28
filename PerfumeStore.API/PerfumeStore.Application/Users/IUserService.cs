@@ -1,6 +1,6 @@
-﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Shared.DTO.Request;
-using PerfumeStore.Domain.Entities.StoreUsers;
+﻿using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Users
 {
@@ -20,7 +20,7 @@ namespace PerfumeStore.Application.Users
 
         public Task<UserResult> FindByIdAsync(string userId);
 
-        public UserResult Logout();
+        public Result RemoveAuthCookie();
         public UserResult RemoveGuestSessionId();
     }
 }

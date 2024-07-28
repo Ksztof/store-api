@@ -1,10 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Domain.Abstractions;
-using PerfumeStore.Domain.Abstractions.Result.Shared;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Shared.Errors;
 
 namespace PerfumeStore.Infrastructure.Persistence.Repositories
 {

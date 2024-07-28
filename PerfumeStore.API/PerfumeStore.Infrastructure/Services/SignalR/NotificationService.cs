@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Infrastructure.Services.SignalR
 {

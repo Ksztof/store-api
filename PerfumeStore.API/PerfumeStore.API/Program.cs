@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -11,9 +10,9 @@ using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Shared.Mapper;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Carts;
+using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Application.Contracts.Stripe.Payments;
@@ -23,8 +22,12 @@ using PerfumeStore.Application.Products;
 using PerfumeStore.Application.Shared.Mapper;
 using PerfumeStore.Application.SignalR;
 using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Entities.StoreUsers;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.CarLines;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Configuration;
 using PerfumeStore.Infrastructure.Persistence;
 using PerfumeStore.Infrastructure.Persistence.Repositories;
@@ -34,14 +37,13 @@ using PerfumeStore.Infrastructure.Services.Guest;
 using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.SignalR;
 using Stripe;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
 
-builder.Services.AddSignalR(); 
+builder.Services.AddSignalR();
 builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IProductsService, ProductsService>();
@@ -241,9 +243,9 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllers(); 
+    endpoints.MapControllers();
 });
-app.MapHub<PaymentHub>("/paymentHub"); 
+app.MapHub<PaymentHub>("/paymentHub");
 
 
 app.Run();

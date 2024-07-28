@@ -1,18 +1,16 @@
 using AutoMapper;
-using PerfumeStore.Application.Abstractions;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
+using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.DTO.Request.Order;
-using PerfumeStore.Domain.DTO.Response.Cart;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Entities.Orders;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.Shared.DTO.Request.Order;
+using PerfumeStore.Domain.Shared.DTO.Response.Cart;
+using PerfumeStore.Domain.Shared.Errors;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Orders
 {
@@ -20,7 +18,7 @@ namespace PerfumeStore.Application.Orders
     {
         public readonly IOrdersRepository _ordersRepository;
         private readonly ICartsRepository _cartsRepository;
-        private readonly IHttpContextService _httpContextService;
+        private readonly IHttpContextService _contextService;
         private readonly IMapper _mapper;
         private readonly IGuestSessionService _guestSessionService;
         private readonly IEmailService _emailService;
@@ -36,7 +34,7 @@ namespace PerfumeStore.Application.Orders
         {
             _ordersRepository = ordersRepository;
             _cartsRepository = cartsRepository;
-            _httpContextService = httpContextService;
+            _contextService = httpContextService;
             _mapper = mapper;
             _guestSessionService = guestSessionService;
             _emailService = emailService;
@@ -44,11 +42,11 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<OrderResponse>> CreateOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp)
         {
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            Result isUserAuthenticated = _contextService.IsUserAuthenticated();
 
             Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
+            if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
             {
                 Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -62,9 +60,15 @@ namespace PerfumeStore.Application.Orders
 
             Order order = new Order();
 
-            if (isUserAuthenticated)
+            if (isUserAuthenticated.IsSuccess)
             {
-                string userId = _httpContextService.GetUserId();
+                Result<string> result = _contextService.GetUserId();
+                if (result.IsFailure)
+                {
+                    return EntityResult<OrderResponse>.Failure(result.Error);
+                }
+
+                string userId = result.Value;
 
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
                 if (userCart == null)
@@ -181,10 +185,10 @@ namespace PerfumeStore.Application.Orders
             if (orderId <= 0)
                 return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
 
-            bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
+            Result isUserAuthenticated = _contextService.IsUserAuthenticated();
             Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
+            if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
             {
                 Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -200,10 +204,15 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            if (isUserAuthenticated)
+            if (isUserAuthenticated.IsSuccess)
             {
-                string userId = _httpContextService.GetUserId();
-                if (order?.Cart?.StoreUser?.Id == userId)
+                Result<string> result = _contextService.GetUserId();
+                if (result.IsFailure)
+                {
+                    return EntityResult<OrderResponse>.Failure(result.Error);
+                }
+
+                if (order?.Cart?.StoreUser?.Id == result.Value)
                 {
                     order.MarkAsDeleted();
 
@@ -229,9 +238,13 @@ namespace PerfumeStore.Application.Orders
 
         public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
         {
-            string userId = _httpContextService.GetUserId();
+            Result<string> result = _contextService.GetUserId();
+            if (result.IsFailure)
+            {
+                return EntityResult<IEnumerable<OrdersResDto>>.Failure(result.Error);
+            }
 
-            IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(userId);
+            IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(result.Value);
             IEnumerable<OrdersResDto> userOrdersRes = GetOrdersDetails(userOrders);
 
             return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes);

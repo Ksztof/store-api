@@ -36,7 +36,7 @@ namespace PerfumeStore.API.Validators
 
         public static bool BeAValidCurrency(string currency)
         {
-            var isoCurrencies = new HashSet<string>(new[] { "PLN", "USD", "EUR", "GBP" }); 
+            var isoCurrencies = new HashSet<string>(new[] { "PLN", "USD", "EUR", "GBP" });
             return isoCurrencies.Contains(currency);
         }
 

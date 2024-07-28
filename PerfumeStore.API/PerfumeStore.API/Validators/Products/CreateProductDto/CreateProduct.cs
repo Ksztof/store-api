@@ -17,7 +17,7 @@ namespace PerfumeStore.API.Validators.Products.CreateProductDto
 
             RuleForEach(x => x.ProductCategoriesIds)
                      .Must(ValidationUtils.BeValidCategoryId).WithMessage("All category IDs must be greater than zero.");
-           
+
             RuleFor(x => x.ProductManufacturer)
                 .NotEmpty().WithMessage("Product manufacturer is required.")
                 .MaximumLength(100).WithMessage("The field must not exceed 100 characters.");
