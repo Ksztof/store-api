@@ -56,9 +56,9 @@ namespace PerfumeStore.Application.Payments
             try
             {
                 bool isUserAuthenticated = _contextService.IsUserAuthenticated();
-                int? GuestCartId = _guestSessionService.GetCartId();
+                Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-                if (GuestCartId == null && isUserAuthenticated == false)
+                if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -97,10 +97,10 @@ namespace PerfumeStore.Application.Payments
             try
             {
                 bool isUserAuthenticated = _contextService.IsUserAuthenticated();
-                int? GuestCartId = _guestSessionService.GetCartId();
+                Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
                 int orderId = 0;
 
-                if (GuestCartId == null && isUserAuthenticated == false)
+                if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
                 {
                     Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -113,8 +113,7 @@ namespace PerfumeStore.Application.Payments
                     orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(userId);
                 }
 
-                if (GuestCartId != null)
-                    orderId = await _ordersRepository.GetOrderIdByCartIdAsync(GuestCartId.Value);
+                orderId = await _ordersRepository.GetOrderIdByCartIdAsync(receiveCartIdResult.Value);
 
                 if (orderId <= 0)
                 {

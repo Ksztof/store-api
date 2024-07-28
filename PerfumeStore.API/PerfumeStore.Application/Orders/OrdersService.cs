@@ -2,6 +2,7 @@ using AutoMapper;
 using PerfumeStore.Application.Abstractions;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.HttpContext;
@@ -18,7 +19,6 @@ namespace PerfumeStore.Application.Orders
     public class OrdersService : IOrdersService
     {
         public readonly IOrdersRepository _ordersRepository;
-        private readonly IGuestSessionService _cookiesService;
         private readonly ICartsRepository _cartsRepository;
         private readonly IHttpContextService _httpContextService;
         private readonly IMapper _mapper;
@@ -35,7 +35,6 @@ namespace PerfumeStore.Application.Orders
             IEmailService emailService)
         {
             _ordersRepository = ordersRepository;
-            _cookiesService = cookiesService;
             _cartsRepository = cartsRepository;
             _httpContextService = httpContextService;
             _mapper = mapper;
@@ -46,10 +45,10 @@ namespace PerfumeStore.Application.Orders
         public async Task<EntityResult<OrderResponse>> CreateOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp)
         {
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
-            int? GuestCartId = _cookiesService.GetCartId();
 
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (GuestCartId == null && isUserAuthenticated == false)
+            if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
             {
                 Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -99,20 +98,22 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Success(userOrderContent);
             }
 
-            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(GuestCartId.Value);
+            int guestCartId = receiveCartIdResult.Value;
+
+            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(guestCartId);
 
             if (guestOrder != null)
             {
-                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, GuestCartId.Value);
+                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, guestCartId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            Cart? guestCart = await _cartsRepository.GetByIdAsync(GuestCartId.Value);
+            Cart? guestCart = await _cartsRepository.GetByIdAsync(guestCartId);
 
             if (guestCart == null)
             {
-                var error = EntityErrors<Cart, int>.NotFound(GuestCartId.Value);
+                var error = EntityErrors<Cart, int>.NotFound(guestCartId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -181,9 +182,9 @@ namespace PerfumeStore.Application.Orders
                 return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
 
             bool isUserAuthenticated = _httpContextService.IsUserAuthenticated();
-            int? GuestCartId = _cookiesService.GetCartId();
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (GuestCartId == null && isUserAuthenticated == false)
+            if (receiveCartIdResult.IsFailure && isUserAuthenticated == false)
             {
                 Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
@@ -202,7 +203,7 @@ namespace PerfumeStore.Application.Orders
             if (isUserAuthenticated)
             {
                 string userId = _httpContextService.GetUserId();
-                if (order.Cart.StoreUser.Id == userId)
+                if (order?.Cart?.StoreUser?.Id == userId)
                 {
                     order.MarkAsDeleted();
 
@@ -212,7 +213,7 @@ namespace PerfumeStore.Application.Orders
                 }
             }
 
-            if (order.Cart.Id == GuestCartId)
+            if (order.Cart.Id == receiveCartIdResult.Value)
             {
                 order.MarkAsDeleted();
 

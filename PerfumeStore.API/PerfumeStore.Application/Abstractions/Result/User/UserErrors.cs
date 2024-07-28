@@ -27,5 +27,7 @@
         public static Error IdentityErrors(string errors) => Error.Validation("User.IdentityError", $"{errors}");
 
         public static Error WrongAccountActivationToken(string token) => Error.Validation("User.WrongAccountActivationToken", $"Token used during account activation via email activation link is wrong. Token value: {token}");
+        public static Error MissingHttpContext() => Error.Server("User.MissingHttpContext", "Http context is missing");
+        public static Error MissingGuestSessionId() => Error.Server("User.MissingGuestSessionId", "Guest session ID is missing in GuestSessionId cookie.");
     }
 }

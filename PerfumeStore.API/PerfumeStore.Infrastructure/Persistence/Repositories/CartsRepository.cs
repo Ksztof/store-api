@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Abstractions.Result.Shared;
 using PerfumeStore.Domain.Entities.Carts;
 using PerfumeStore.Domain.Repositories;
 
@@ -69,21 +72,25 @@ namespace PerfumeStore.Infrastructure.Persistence.Repositories
             await _shopDbContext.SaveChangesAsync();
         }
 
-        public async Task<DateTime> GetCartDateByIdAsync(int cartId)
+        public async Task<Result<DateTime>> GetCartDateByIdAsync(int cartId)
         {
-            DateTime createdAt = await _shopDbContext.Carts
-                .Where(c => c.Id == cartId)
-                .Select(c => c.CreatedAt)
-                .FirstOrDefaultAsync();
+            Cart? cart = await GetByIdAsync(cartId);
+            if (cart == null)
+            {
+                Error error = EntityErrors<Cart, int>.NotFoundByCartId(cartId);
+                return Result<DateTime>.Failure(error);
+            }
 
-            return createdAt;
+            DateTime createdAt = cart.CreatedAt;
+
+            return Result<DateTime>.Success(createdAt);
         }
 
         public async Task<int> GetCartIdByUserIdAsync(string userId)
         {
             int cartId = await _shopDbContext.Carts
                 .Where(c => c.StoreUser.Id == userId)
-                .Select (c => c.Id)
+                .Select(c => c.Id)
                 .FirstOrDefaultAsync();
 
             return cartId;

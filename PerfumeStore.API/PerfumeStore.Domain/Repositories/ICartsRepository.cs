@@ -1,3 +1,4 @@
+using PerfumeStore.Domain.Abstractions.Result.Shared;
 using PerfumeStore.Domain.Entities.Carts;
 
 namespace PerfumeStore.Domain.Repositories
@@ -14,7 +15,7 @@ namespace PerfumeStore.Domain.Repositories
 
         public Task<Cart> GetByUserEmailAsync(string email);
         public Task DeleteAsync(Cart cart);
-        public Task<DateTime> GetCartDateByIdAsync(int cartId);
+        public Task<Result<DateTime>> GetCartDateByIdAsync(int cartId);
 
         public Task<int> GetCartIdByUserIdAsync(string userId);  
     }

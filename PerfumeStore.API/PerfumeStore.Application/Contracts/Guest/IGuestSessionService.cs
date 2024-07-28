@@ -1,11 +1,14 @@
-﻿namespace PerfumeStore.Application.Contracts.Guest
+﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
+using PerfumeStore.Application.Abstractions.Result.Shared;
+
+namespace PerfumeStore.Application.Contracts.Guest
 {
     public interface IGuestSessionService
     {
-        public void SendCartIdToGuest(int cartId);
+        public UserResult SendCartIdToGuest(int cartId);
 
-        public int? GetCartId();
+        public Result<int> GetCartId();
 
-        public void SetCartIdCookieAsExpired();
+        public UserResult SetCartIdCookieAsExpired();
     }
 }

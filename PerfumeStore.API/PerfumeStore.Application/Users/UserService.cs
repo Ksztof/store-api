@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Abstractions.Result.Entity;
+using PerfumeStore.Application.Abstractions.Result.Shared;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
@@ -84,16 +85,18 @@ namespace PerfumeStore.Application.Users
                 return UserResult.Failure(UserErrors.UnableToSetCookieWithJwtToken);
             }
 
-            int? cartId = _guestSessionService.GetCartId();
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (cartId is not null)
+            if (receiveCartIdResult.IsFailure)
             {
-                EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, cartId.Value);
+                return UserResult.Failure(receiveCartIdResult.Error);
+            }
 
-                if (result.IsFailure)
-                {
-                    return UserResult.Failure(result.Error);
-                }
+            EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, receiveCartIdResult.Value);
+
+            if (result.IsFailure)
+            {
+                return UserResult.Failure(result.Error);
             }
 
             _guestSessionService.SetCartIdCookieAsExpired();
@@ -122,17 +125,18 @@ namespace PerfumeStore.Application.Users
                 return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
             }
 
-            int? cartId = _guestSessionService.GetCartId();
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (cartId != null)
+            if (receiveCartIdResult.IsFailure)
             {
+                return UserResult.Failure(receiveCartIdResult.Error);
+            }
 
-                EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, cartId.Value);
+            EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
 
-                if (assignResult.IsFailure)
-                {
-                    return UserResult.Failure(assignResult.Error);
-                }
+            if (assignResult.IsFailure)
+            {
+                return UserResult.Failure(assignResult.Error);
             }
 
             await _permissionService.AssignVisitorRoleAsync(storeUser);
@@ -254,6 +258,19 @@ namespace PerfumeStore.Application.Users
             }
 
             return UserResult.Success();
+        }
+
+        public UserResult Logout()
+        {
+            throw new NotImplementedException();
+
+        }
+
+        public UserResult RemoveGuestSessionId()
+        {
+            UserResult result = _guestSessionService.SetCartIdCookieAsExpired();
+
+            return result;
         }
     }
 }

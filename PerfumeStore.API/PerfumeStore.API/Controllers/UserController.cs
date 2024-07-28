@@ -90,5 +90,21 @@ namespace PerfumeStore.API.Controllers
 
             return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
+
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            UserResult result = _userService.Logout();
+
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+        }
+
+        [HttpGet]
+        public IActionResult RemoveGuestSessionId()
+        {
+            UserResult result = _userService.RemoveGuestSessionId();
+
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+        }
     }
 }

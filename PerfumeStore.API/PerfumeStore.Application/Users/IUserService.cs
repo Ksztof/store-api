@@ -19,5 +19,8 @@ namespace PerfumeStore.Application.Users
         public Task<string> GenerateEncodedEmailConfirmationTokenAsync(StoreUser user);
 
         public Task<UserResult> FindByIdAsync(string userId);
+
+        public UserResult Logout();
+        public UserResult RemoveGuestSessionId();
     }
 }
