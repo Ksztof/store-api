@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using PerfumeStore.Domain.Entities.Orders;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Orders;
 
 namespace PerfumeStore.Infrastructure.Persistence.Repositories
 {

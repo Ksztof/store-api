@@ -5,7 +5,7 @@ namespace PerfumeStore.API.Validators.Carts.NewProductsDto
 {
     public class IsCurrentCart : AbstractValidator<IsCurrentCartDtoApi>
     {
-        public IsCurrentCart() 
+        public IsCurrentCart()
         {
             RuleFor(x => x.CartId)
                 .GreaterThan(0)

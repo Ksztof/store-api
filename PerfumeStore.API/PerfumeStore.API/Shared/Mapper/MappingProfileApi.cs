@@ -6,7 +6,7 @@ using PerfumeStore.API.Shared.DTO.Request.Payments;
 using PerfumeStore.API.Shared.DTO.Request.Product;
 using PerfumeStore.API.Shared.DTO.Request.StoreUser;
 using PerfumeStore.Application.Shared.DTO.Request;
-using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.API.Shared.Mapper
 {

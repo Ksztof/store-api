@@ -5,7 +5,7 @@ namespace PerfumeStore.API.Validators.Carts.NewProductsDto
 {
     public class CheckCurrentCart : AbstractValidator<CheckCurrentCartDtoApi>
     {
-        public CheckCurrentCart() 
+        public CheckCurrentCart()
         {
             RuleFor(x => x.CreatedAt)
                         .Must(ValidationUtils.BeAValidUtcDateTime)

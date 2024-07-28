@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using PerfumeStore.API.Shared.DTO.Request.Order;
 
 namespace PerfumeStore.API.Validators.Orders.CrateOrderDto
 {

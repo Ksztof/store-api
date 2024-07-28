@@ -1,20 +1,18 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Carts;
+using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Shared.DTO;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Entities.Orders;
-using PerfumeStore.Domain.Entities.StoreUsers;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Carts;
+using PerfumeStore.Domain.Orders;
+using PerfumeStore.Domain.StoreUsers;
 using System.Data;
 using System.Text;
 using String = System.String;
@@ -25,7 +23,6 @@ namespace PerfumeStore.Application.Users
     {
         private readonly UserManager<StoreUser> _userManager;
         private readonly IEmailService _emailService;
-        private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextService _httpContextService;
         private readonly IGuestSessionService _guestSessionService;
@@ -35,7 +32,6 @@ namespace PerfumeStore.Application.Users
         private readonly IOrdersRepository _ordersRepository;
 
         public UserService(
-            IMapper mapper,
             UserManager<StoreUser> userManager,
             IEmailService emailService,
             ITokenService tokenService,
@@ -46,7 +42,6 @@ namespace PerfumeStore.Application.Users
             ICartsRepository cartsRepository,
             IOrdersRepository ordersRepository)
         {
-            _mapper = mapper;
             _userManager = userManager;
             _emailService = emailService;
             _tokenService = tokenService;
@@ -77,18 +72,18 @@ namespace PerfumeStore.Application.Users
                 return UserResult.Failure(UserErrors.EmailNotConfirmed);
             }
 
-            string issueResult = await _tokenService.IssueJwtToken(user);
+            Result issueResult = await _tokenService.IssueJwtToken(user);
 
-            if (issueResult == string.Empty)
+            if (issueResult.IsFailure)
             {
-                return UserResult.Failure(UserErrors.UnableToSetCookieWithJwtToken);
+                return UserResult.Failure(issueResult.Error);
             }
 
-            int? cartId = _guestSessionService.GetCartId();
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (cartId is not null)
+            if (receiveCartIdResult.IsSuccess)
             {
-                EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, cartId.Value);
+                EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, receiveCartIdResult.Value);
 
                 if (result.IsFailure)
                 {
@@ -122,17 +117,18 @@ namespace PerfumeStore.Application.Users
                 return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
             }
 
-            int? cartId = _guestSessionService.GetCartId();
+            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (cartId != null)
+            if (receiveCartIdResult.IsFailure)
             {
+                return UserResult.Failure(receiveCartIdResult.Error);
+            }
 
-                EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, cartId.Value);
+            EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
 
-                if (assignResult.IsFailure)
-                {
-                    return UserResult.Failure(assignResult.Error);
-                }
+            if (assignResult.IsFailure)
+            {
+                return UserResult.Failure(assignResult.Error);
             }
 
             await _permissionService.AssignVisitorRoleAsync(storeUser);
@@ -141,7 +137,11 @@ namespace PerfumeStore.Application.Users
 
             string encodedToken = await GenerateEncodedEmailConfirmationTokenAsync(storeUser);
 
-            await _emailService.SendActivationLink(userDetails, encodedToken);
+            Result sendingResult = await _emailService.SendActivationLink(userDetails, encodedToken);
+            if (sendingResult.IsFailure)
+            {
+                return UserResult.Failure(sendingResult.Error);
+            }
 
             return UserResult.Success();
         }
@@ -198,12 +198,14 @@ namespace PerfumeStore.Application.Users
 
         public async Task<UserResult> RequestDeletion()
         {
-            var userId = _httpContextService.GetUserId();
+            Result<string> result = _httpContextService.GetUserId();
 
-            if (string.IsNullOrEmpty(userId))
-                return UserResult.Failure(UserErrors.CantAuthenticateMissingJwtUserIdClaim);
+            if (result.IsFailure)
+            {
+                return UserResult.Failure(result.Error);
+            }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(result.Value);
 
             if (user == null || user.IsDeleteRequested is true)
                 return UserResult.Failure(UserErrors.UserDoesntExist);
@@ -254,6 +256,21 @@ namespace PerfumeStore.Application.Users
             }
 
             return UserResult.Success();
+        }
+
+        public Result RemoveAuthCookie()
+        {
+            Result result = _tokenService.RemoveAuthCookie();
+
+            return result;
+        }
+
+
+        public UserResult RemoveGuestSessionId()
+        {
+            UserResult result = _guestSessionService.SetCartIdCookieAsExpired();
+
+            return result;
         }
     }
 }

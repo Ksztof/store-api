@@ -1,8 +1,7 @@
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.DTO.Response.Cart;
-using PerfumeStore.Domain.Entities.Carts;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Shared.DTO.Response.Cart;
 
 namespace PerfumeStore.Application.Carts
 {

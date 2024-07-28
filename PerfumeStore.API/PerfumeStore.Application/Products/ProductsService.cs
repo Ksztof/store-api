@@ -1,14 +1,12 @@
 using AutoMapper;
-using PerfumeStore.Application.Abstractions;
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.DTO.Request.Product;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Entities.ProductCategories;
-using PerfumeStore.Domain.Entities.Products;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.ProductCategories;
+using PerfumeStore.Domain.Products;
+using PerfumeStore.Domain.Shared.DTO.Request.Product;
+using PerfumeStore.Domain.Shared.Errors;
 
 namespace PerfumeStore.Application.Products
 {

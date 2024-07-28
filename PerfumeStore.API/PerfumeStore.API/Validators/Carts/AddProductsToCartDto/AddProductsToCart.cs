@@ -1,10 +1,5 @@
 ﻿using FluentValidation;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace PerfumeStore.API.Validators.Carts.AddProductsToCartDto
 {
     public sealed class AddProductsToCart : AbstractValidator<NewProductsDtoApi>

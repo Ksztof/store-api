@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Infrastructure.Services.Cookies
 {
-    public interface ICookieService 
+    public interface ICookieService
     {
-        public void SetCookieWithToken(string token);
+        public Result SetCookieWithToken(string token);
+        public Result SetExpiredAuthToken(CookieOptions options);
     }
 }

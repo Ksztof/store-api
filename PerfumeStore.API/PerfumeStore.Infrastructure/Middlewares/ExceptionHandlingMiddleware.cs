@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using PerfumeStore.Application.Abstractions.Result.Shared;
+using PerfumeStore.Domain.Shared;
 using PerfumeStore.Infrastructure.Middlewares;
 using System.Text.Json;
 

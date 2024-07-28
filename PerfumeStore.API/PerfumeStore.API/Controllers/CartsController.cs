@@ -1,18 +1,13 @@
 using AutoMapper;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.Cart;
 using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
-using PerfumeStore.Application.Abstractions.Result.Entity;
 using PerfumeStore.Application.Carts;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.DTO.Response.Cart;
-using PerfumeStore.Domain.Entities.Carts;
-using PerfumeStore.Domain.Shared;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Shared.DTO.Response.Cart;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -126,7 +121,7 @@ namespace PerfumeStore.API.Controllers
             EntityResult<AboutCartDomRes> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
 
             if (result.IsSuccess && result.Entity == null)
-                return NoContent(); 
+                return NoContent();
 
             if (result.IsFailure)
                 return result.ToProblemDetails();

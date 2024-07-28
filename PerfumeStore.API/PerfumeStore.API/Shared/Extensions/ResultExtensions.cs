@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Application.Abstractions;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Abstractions.Result.Entity;
-using PerfumeStore.Application.Abstractions.Result.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Shared;
 
 namespace PerfumeStore.API.Shared.Extensions;
 

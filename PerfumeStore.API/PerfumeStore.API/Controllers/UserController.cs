@@ -2,14 +2,13 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
 using PerfumeStore.API.Shared.DTO.Request.StoreUser;
 using PerfumeStore.API.Shared.Extensions;
 using PerfumeStore.API.Validators;
-using PerfumeStore.Application.Abstractions.Result.Authentication;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.Users;
-using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.API.Controllers
 {
@@ -87,6 +86,22 @@ namespace PerfumeStore.API.Controllers
         public async Task<IActionResult> SubmitDeletion(string id)
         {
             UserResult result = await _userService.SubmitDeletion(id);
+
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+        }
+
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            Result result = _userService.RemoveAuthCookie();
+
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+        }
+
+        [HttpGet]
+        public IActionResult RemoveGuestSessionId()
+        {
+            UserResult result = _userService.RemoveGuestSessionId();
 
             return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }

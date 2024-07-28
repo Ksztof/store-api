@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PerfumeStore.Application.Contracts.Guest;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Infrastructure.Services.Guest
 {
@@ -12,11 +14,17 @@ namespace PerfumeStore.Infrastructure.Services.Guest
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public int? GetCartId()
+        public Result<int> GetCartId()
         {
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return Result<int>.Failure(UserErrors.MissingHttpContext);
+            }
+
             if (!_httpContextAccessor.HttpContext.Request.Cookies.ContainsKey("GuestSessionId"))
             {
-                return null;
+                return Result<int>.Failure(UserErrors.MissingGuestSessionId);
             }
 
             string stringCartId = _httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"];
@@ -27,18 +35,24 @@ namespace PerfumeStore.Infrastructure.Services.Guest
                 throw new FormatException($"GuestSessionId is present but there were problems with parsing. Value: {stringCartId}");
             }
 
-            return cartId;
+            return Result<int>.Success(cartId);
         }
 
-        public void SendCartIdToGuest(int cartId)
+        public UserResult SendCartIdToGuest(int cartId)
         {
             string stringCartId = cartId.ToString();
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("GuestSessionId", stringCartId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                _httpContextAccessor?.HttpContext?.Response.Cookies.Append("GuestSessionId", stringCartId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
+                return UserResult.Success();
+            }
+
+            return UserResult.Failure(UserErrors.MissingHttpContext);
         }
 
-        public void SetCartIdCookieAsExpired()
+        public UserResult SetCartIdCookieAsExpired()
         {
-            if (_httpContextAccessor.HttpContext.Request.Cookies["GuestSessionId"] != null)
+            if (_httpContextAccessor?.HttpContext?.Request.Cookies["GuestSessionId"] != null)
             {
                 _httpContextAccessor.HttpContext.Response.Cookies.Append(
                     "GuestSessionId",
@@ -48,7 +62,11 @@ namespace PerfumeStore.Infrastructure.Services.Guest
                         Expires = DateTimeOffset.UtcNow.AddDays(-1)
                     }
                 );
+
+                return UserResult.Success();
             }
+
+            return UserResult.Failure(UserErrors.MissingHttpContext);
         }
     }
 }

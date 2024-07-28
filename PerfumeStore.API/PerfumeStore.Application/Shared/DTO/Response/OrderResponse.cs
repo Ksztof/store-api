@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.DTO.Response.Cart;
+﻿using PerfumeStore.Domain.Shared.DTO.Response.Cart;
 
 namespace PerfumeStore.Application.Shared.DTO.Response
 {

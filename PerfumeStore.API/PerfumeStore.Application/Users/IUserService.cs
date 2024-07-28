@@ -1,6 +1,6 @@
-﻿using PerfumeStore.Application.Abstractions.Result.Authentication;
-using PerfumeStore.Application.Shared.DTO.Request;
-using PerfumeStore.Domain.Entities.StoreUsers;
+﻿using PerfumeStore.Application.Shared.DTO.Request;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 
 namespace PerfumeStore.Application.Users
 {
@@ -19,5 +19,8 @@ namespace PerfumeStore.Application.Users
         public Task<string> GenerateEncodedEmailConfirmationTokenAsync(StoreUser user);
 
         public Task<UserResult> FindByIdAsync(string userId);
+
+        public Result RemoveAuthCookie();
+        public UserResult RemoveGuestSessionId();
     }
 }

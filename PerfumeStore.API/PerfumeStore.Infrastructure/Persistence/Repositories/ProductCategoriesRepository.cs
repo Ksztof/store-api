@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PerfumeStore.Domain.Entities.ProductCategories;
-using PerfumeStore.Domain.Repositories;
+using PerfumeStore.Domain.ProductCategories;
 
 namespace PerfumeStore.Infrastructure.Persistence.Repositories
 {

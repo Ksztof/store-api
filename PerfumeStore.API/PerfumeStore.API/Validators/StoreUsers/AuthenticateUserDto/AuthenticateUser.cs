@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using PerfumeStore.API.Shared.DTO.Request.StoreUser;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace PerfumeStore.API.Validators.StoreUsers.AuthenticateUserDto
 {

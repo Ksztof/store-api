@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PerfumeStore.Application.Abstractions;
-using PerfumeStore.Application.Abstractions.Result.Shared;
-using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation.Results;
+using Microsoft.AspNetCore.Mvc;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Shared.Errors;
 using FluentValidationResults = FluentValidation.Results.ValidationResult;
-using DataAnnotationsValidationResult = System.ComponentModel.DataAnnotations;
-using FluentValidation.Results;
-using PerfumeStore.Application.Abstractions.Result;
 
 namespace PerfumeStore.API.Shared.Extensions
 {

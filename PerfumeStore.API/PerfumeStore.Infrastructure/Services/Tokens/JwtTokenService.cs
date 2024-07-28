@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
-using PerfumeStore.Domain.Entities.StoreUsers;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Services.Cookies;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -27,7 +29,7 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             _cookieService = coookiesService;
         }
 
-        public async Task<string> IssueJwtToken(StoreUser user)
+        public async Task<Result> IssueJwtToken(StoreUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
@@ -43,9 +45,9 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
 
             string token = GenerateToken(authClaims);
 
-            _cookieService.SetCookieWithToken(token);
+            Result result = _cookieService.SetCookieWithToken(token);
 
-            return token;
+            return result;
         }
 
         private string GenerateToken(IEnumerable<Claim> claims)
@@ -66,6 +68,22 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public Result RemoveAuthCookie()
+        {
+            var expiredCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTimeOffset.Now.AddDays(-1),
+                IsEssential = false,
+                SameSite = SameSiteMode.None,
+            };
+
+            Result result = _cookieService.SetExpiredAuthToken(expiredCookieOptions);
+            
+            return result;
         }
     }
 }

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Email;
-using PerfumeStore.Application.Contracts.HttpContext;
 using PerfumeStore.Application.Shared.DTO;
 using PerfumeStore.Application.Shared.DTO.Response;
-using PerfumeStore.Domain.DTO.Response.Cart;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Shared.DTO.Response.Cart;
 using System.Text;
 
 namespace PerfumeStore.Infrastructure.Services.Email
@@ -26,15 +27,21 @@ namespace PerfumeStore.Infrastructure.Services.Email
             _httpContextService = httpContextService;
         }
 
-        public async Task SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken)
+        public async Task<Result> SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken)
         {
             string subject = "Activate you account";
+
+            Result<string> result = _httpContextService.GetActualProtocol();
+            if (result.IsFailure)
+            {
+                return Result.Failure(result.Error);
+            }
 
             var confirmationLink = _urlHelper.Action(
               action: "ConfirmEmail",
               controller: "User",
               values: new { userId = userDetails.UserId, token = encodedToken },
-              protocol: _httpContextService.GetActualProtocol());
+              protocol: result.Value);
 
             string message = $@"
               <h2>Hello {userDetails.UserName},</h2>
@@ -47,6 +54,8 @@ namespace PerfumeStore.Infrastructure.Services.Email
                   <a href='{confirmationLink}' style='color: #3498db; text-decoration: none;'>{confirmationLink}</a>
               </div>";
             await _emailSender.SendEmailAsync(userDetails.UserEmail, subject, message);
+
+            return Result.Success();
         }
 
         public async Task SendOrderSummary(OrderResponse orderResponse)

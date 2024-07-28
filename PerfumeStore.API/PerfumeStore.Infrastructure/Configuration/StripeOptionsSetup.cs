@@ -1,12 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Application.Contracts.Stripe.Payments;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PerfumeStore.Infrastructure.Configuration
 {
