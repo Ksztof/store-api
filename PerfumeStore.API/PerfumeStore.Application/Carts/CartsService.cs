@@ -378,7 +378,7 @@ namespace PerfumeStore.Application.Carts
             return EntityResult<AboutCartDomRes>.Success(guestCartDetails);
         }
 
-        public async Task<EntityResult<CartResponse>> ClearCartAsync()
+        public async Task<Result> ClearCartAsync()
         {
             Result isUserAuthenticated = _contextService.IsUserAuthenticated();
             Result<int> receiveGuestCartIdResult = _guestSessionService.GetCartId();
@@ -387,7 +387,7 @@ namespace PerfumeStore.Application.Carts
             {
                 Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
 
-                return EntityResult<CartResponse>.Failure(error);
+                return Result.Failure(error);
             }
 
             if (isUserAuthenticated.IsSuccess)
@@ -395,13 +395,13 @@ namespace PerfumeStore.Application.Carts
                 Result<string> result = _contextService.GetUserId();
                 if (result.IsFailure)
                 {
-                    return EntityResult<CartResponse>.Failure(result.Error);
+                    return Result.Failure(result.Error);
                 }
 
                 Cart? userCart = await _cartsRepository.GetByUserIdAsync(result.Value);
                 if (userCart == null)
                 {
-                    return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(receiveGuestCartIdResult.Value));
+                    return Result.Failure(EntityErrors<Cart, int>.NotFound(receiveGuestCartIdResult.Value));
                 }
 
                 ICollection<CartLine> userCartLines = userCart.CartLines;
@@ -410,14 +410,14 @@ namespace PerfumeStore.Application.Carts
 
                 CartResponse userCartContents = MapCartResponse(userCart);
 
-                return EntityResult<CartResponse>.Success(userCartContents);
+                return Result.Success();
             }
 
             Cart? guestCart = await _cartsRepository.GetByIdAsync(receiveGuestCartIdResult.Value);
 
             if (guestCart == null)
             {
-                return EntityResult<CartResponse>.Failure(EntityErrors<Cart, int>.NotFound(receiveGuestCartIdResult.Value));
+                return Result.Failure(EntityErrors<Cart, int>.NotFound(receiveGuestCartIdResult.Value));
             }
 
             ICollection<CartLine> cartLines = guestCart.CartLines;
@@ -426,7 +426,7 @@ namespace PerfumeStore.Application.Carts
 
             CartResponse guestCartContents = MapCartResponse(guestCart);
 
-            return EntityResult<CartResponse>.Success(guestCartContents);
+            return Result.Success();
         }
 
         public async Task<EntityResult<CartResponse>> AssignGuestCartToUserAsync(string userId, int cartId)

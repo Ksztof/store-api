@@ -92,11 +92,9 @@ namespace PerfumeStore.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> ClearCart()
         {
-            EntityResult<CartResponse> result = await _cartsService.ClearCartAsync();
+            Result result = await _cartsService.ClearCartAsync();
 
-            CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartById), new { cartId = result.Entity?.CartId }, result.Entity);
-
-            return result.IsSuccess ? creationResult : result.ToProblemDetails();
+            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
         }
 
         [HttpGet("{cartId}")]

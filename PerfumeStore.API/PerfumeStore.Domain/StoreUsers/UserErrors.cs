@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Domain.StoreUsers
 {
@@ -28,7 +28,7 @@ namespace PerfumeStore.Domain.StoreUsers
 
         public static Error CantConfirmEmail(IEnumerable<string> errors) => Error.Validation("User.CantConfirmEmail", $"Email confirmation failed with following identity errors: {errors}");
 
-        public static Error IdentityErrors(string errors) => Error.Validation("User.IdentityError", $"{errors}");
+        public static Error IdentityErrors(string errors) => Error.Validation("UserValidation.IdentityError", $"{errors}");
 
         public static Error WrongAccountActivationToken(string token) => Error.Validation("User.WrongAccountActivationToken", $"Token used during account activation via email activation link is wrong. Token value: {token}");
         public static readonly Error MissingHttpContext = Error.Server("User.MissingHttpContext", "Http context is missing");
