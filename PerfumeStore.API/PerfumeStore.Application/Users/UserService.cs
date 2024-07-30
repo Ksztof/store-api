@@ -108,10 +108,11 @@ namespace PerfumeStore.Application.Users
             }
 
             var result = await _userManager.CreateAsync(storeUser, userForRegistration.Password);
-
+            
             if (!result.Succeeded)
             {
-                IEnumerable<string> errors = result.Errors.Select(e => e.Description);
+                //Errors can be chacked like this: == nameof(IdentityErrorDescriber.DefaultError);
+                IEnumerable<string> errors = result.Errors.Select(e => e.Description); 
                 string errorMessage = String.Join(", ", errors);
 
                 return UserResult.Failure(UserErrors.IdentityErrors(errorMessage));
@@ -119,16 +120,14 @@ namespace PerfumeStore.Application.Users
 
             Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
 
-            if (receiveCartIdResult.IsFailure)
+            if (receiveCartIdResult.IsSuccess)
             {
-                return UserResult.Failure(receiveCartIdResult.Error);
-            }
+                EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
 
-            EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
-
-            if (assignResult.IsFailure)
-            {
-                return UserResult.Failure(assignResult.Error);
+                if (assignResult.IsFailure)
+                {
+                    return UserResult.Failure(assignResult.Error);
+                }
             }
 
             await _permissionService.AssignVisitorRoleAsync(storeUser);
@@ -138,6 +137,7 @@ namespace PerfumeStore.Application.Users
             string encodedToken = await GenerateEncodedEmailConfirmationTokenAsync(storeUser);
 
             Result sendingResult = await _emailService.SendActivationLink(userDetails, encodedToken);
+
             if (sendingResult.IsFailure)
             {
                 return UserResult.Failure(sendingResult.Error);
