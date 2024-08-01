@@ -1,4 +1,4 @@
-﻿using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Domain.StoreUsers
 {
