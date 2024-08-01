@@ -68,7 +68,7 @@ namespace PerfumeStore.Domain.Carts
 
         public void ClearCart()
         {
-            CartLines.Clear();
+            CartLines?.Clear();
         }
 
         public AboutCartDomRes CheckCart()

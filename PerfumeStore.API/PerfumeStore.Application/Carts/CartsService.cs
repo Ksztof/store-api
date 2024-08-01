@@ -405,8 +405,12 @@ namespace PerfumeStore.Application.Carts
                 }
 
                 ICollection<CartLine> userCartLines = userCart.CartLines;
-                userCart.ClearCart();
-                await _cartsRepository.UpdateAsync(userCart);
+                
+                if (userCartLines.Any())
+                {
+                    userCart.ClearCart();
+                    await _cartsRepository.UpdateAsync(userCart);
+                }
 
                 CartResponse userCartContents = MapCartResponse(userCart);
 
@@ -420,9 +424,13 @@ namespace PerfumeStore.Application.Carts
                 return Result.Failure(EntityErrors<Cart, int>.NotFound(receiveGuestCartIdResult.Value));
             }
 
-            ICollection<CartLine> cartLines = guestCart.CartLines;
-            await _cartLinesRepository.ClearCartAsync(cartLines);
-            guestCart.ClearCart();
+            ICollection<CartLine> guestCartLines = guestCart.CartLines;
+
+            if(guestCartLines.Any())
+            {
+                guestCart.ClearCart();
+                await _cartsRepository.UpdateAsync(guestCart);
+            }
 
             CartResponse guestCartContents = MapCartResponse(guestCart);
 
