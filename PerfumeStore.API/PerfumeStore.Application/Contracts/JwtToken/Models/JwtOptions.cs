@@ -8,5 +8,10 @@
 
         public string ValidAudience { get; init; } = string.Empty;
 
+        public double JwtTokenExpirationInHours { get; init; }
+
+        public double JwtCookieExpirationInHours { get; init; }
+
+        public double RefreshTokenExpirationInHours { get; init; }
     }
 }

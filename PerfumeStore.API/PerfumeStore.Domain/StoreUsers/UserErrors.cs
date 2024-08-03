@@ -22,6 +22,8 @@ namespace PerfumeStore.Domain.StoreUsers
 
         public static readonly Error CantAuthenticateMissingJwtUserIdClaim = Error.Authentication("User.CantAuthenticateMissingJwtUserIdClaim", "Can't find claim with store user Id in token");
 
+        public static readonly Error FailedToUpdateUserWithRefreshToken = Error.Authentication("User.FailedToUpdateUserWithRefreshToken", "User can't be updated and can't assign refresh token");
+
         public static readonly Error NotRequestedForAccountDeletion = Error.Validation("User.NotRequestedForAccountDeletion", "the user has not requested to delete the account");
 
         public static Error CantFindUserById(string userId) => Error.NotFound("User.CantFindUserById", $"the user with Id: {userId} cannot be found");
@@ -29,6 +31,7 @@ namespace PerfumeStore.Domain.StoreUsers
         public static Error CantConfirmEmail(IEnumerable<string> errors) => Error.Validation("User.CantConfirmEmail", $"Email confirmation failed with following identity errors: {errors}");
 
         public static Error IdentityErrors(string errors) => Error.Validation("UserValidation.IdentityError", $"{errors}");
+        
 
         public static Error WrongAccountActivationToken(string token) => Error.Validation("User.WrongAccountActivationToken", $"Token used during account activation via email activation link is wrong. Token value: {token}");
         public static readonly Error MissingHttpContext = Error.Server("User.MissingHttpContext", "Http context is missing");

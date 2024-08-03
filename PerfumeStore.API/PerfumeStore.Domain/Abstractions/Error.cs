@@ -1,6 +1,6 @@
 ﻿using PerfumeStore.Domain.Shared;
 
-namespace PerfumeStore.Application.Abstractions.Result.Shared
+namespace PerfumeStore.Domain.Abstractions
 {
     public sealed record Error
     {

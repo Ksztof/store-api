@@ -7,8 +7,10 @@ using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Services.Cookies;
+using PerfumeStore.Application.Shared.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PerfumeStore.Infrastructure.Services.Tokens
@@ -29,7 +31,7 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             _cookieService = coookiesService;
         }
 
-        public async Task<Result> IssueJwtToken(StoreUser user)
+        public async Task<Result<string>> IssueJwtToken(StoreUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
@@ -43,14 +45,50 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
-            string token = GenerateToken(authClaims);
+            string token = GenerateJwtToken(authClaims);
 
-            Result result = _cookieService.SetCookieWithToken(token);
+            Result result = _cookieService.SetCookieWithJwtToken(token);
+            if (result.IsFailure)
+            {
+                return Result<string>.Failure(result.Error);
+            }
 
-            return result;
+            return Result<string>.Success(token);
         }
 
-        private string GenerateToken(IEnumerable<Claim> claims)
+        public async Task<Result<string>> IssueRefreshToken(StoreUser user)
+        {
+            string refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours);
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                return Result<string>.Failure(UserErrors.FailedToUpdateUserWithRefreshToken);
+            }
+
+            Result result = _cookieService.SetCookieWithRefreshToken(refreshToken);
+
+            if (result.IsFailure)
+            {
+                return Result<string>.Failure(result.Error);
+            }
+
+            return Result<string>.Success(refreshToken);
+        }
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        private string GenerateJwtToken(IEnumerable<Claim> claims)
         {
             string securityKeyString = _jwtOptions.Value.SecurityKey;
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
@@ -59,7 +97,7 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             {
                 Issuer = _jwtOptions.Value.ValidIssuer,
                 Audience = _jwtOptions.Value.ValidAudience,
-                Expires = DateTime.UtcNow.AddHours(3),
+                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.JwtTokenExpirationInHours),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };
@@ -70,19 +108,17 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             return tokenHandler.WriteToken(token);
         }
 
-        public Result RemoveAuthCookie()
+        public Result RemoveAuthToken()
         {
-            var expiredCookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                Expires = DateTimeOffset.Now.AddDays(-1),
-                IsEssential = false,
-                SameSite = SameSiteMode.None,
-            };
+            Result result = _cookieService.SetExpiredCookie(CookieNames.AuthCookie);
 
-            Result result = _cookieService.SetExpiredAuthToken(expiredCookieOptions);
-            
+            return result;
+        }
+
+        public Result RemoveRefreshToken()
+        {
+            Result result = _cookieService.SetExpiredCookie(CookieNames.RefreshCookie);
+
             return result;
         }
     }

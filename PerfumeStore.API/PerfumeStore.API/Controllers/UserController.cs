@@ -93,9 +93,21 @@ namespace PerfumeStore.API.Controllers
         [HttpGet("logout")]
         public IActionResult Logout()
         {
-            Result result = _userService.RemoveAuthCookie();
+            Result authTokRemoveResult = _userService.RemoveAuthToken();
 
-            return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+            if (authTokRemoveResult.IsFailure)
+            {
+                return authTokRemoveResult.ToProblemDetails();
+            }
+
+            Result refrTokRemoveResult = _userService.RemoveRefreshToken();
+
+            if (refrTokRemoveResult.IsFailure)
+            {
+                return refrTokRemoveResult.ToProblemDetails();
+            }
+
+            return NoContent();
         }
 
         [HttpGet]

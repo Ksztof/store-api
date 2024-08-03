@@ -114,7 +114,10 @@ namespace PerfumeStore.Application.Payments
                     orderId = await _ordersRepository.GetNewestOrderIdByUserIdAsync(result.Value);
                 }
 
-                orderId = await _ordersRepository.GetOrderIdByCartIdAsync(receiveCartIdResult.Value);
+                if (receiveCartIdResult.IsSuccess)
+                {
+                    orderId = await _ordersRepository.GetOrderIdByCartIdAsync(receiveCartIdResult.Value);
+                }
 
                 if (orderId <= 0)
                 {

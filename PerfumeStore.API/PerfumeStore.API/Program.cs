@@ -29,12 +29,13 @@ using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Configuration;
+using PerfumeStore.Infrastructure.Middlewares;
 using PerfumeStore.Infrastructure.Persistence;
 using PerfumeStore.Infrastructure.Persistence.Repositories;
+using PerfumeStore.Infrastructure.Services.ContextHttp;
 using PerfumeStore.Infrastructure.Services.Cookies;
 using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
-using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.SignalR;
 using Stripe;
 using System.Text;
@@ -42,7 +43,9 @@ using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenServ
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Services.AddSignalR();
 builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
@@ -55,7 +58,7 @@ builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<ITokenService, JwtTokenService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -210,6 +213,7 @@ StripeConfiguration.ApiKey = stripeOptions.SecretKey;
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<JwtRefreshMiddleware>();
 
 app.UseHttpsRedirection();
 

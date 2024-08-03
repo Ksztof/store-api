@@ -72,11 +72,18 @@ namespace PerfumeStore.Application.Users
                 return UserResult.Failure(UserErrors.EmailNotConfirmed);
             }
 
-            Result issueResult = await _tokenService.IssueJwtToken(user);
+            Result tokenResult = await _tokenService.IssueJwtToken(user);
 
-            if (issueResult.IsFailure)
+            if (tokenResult.IsFailure)
             {
-                return UserResult.Failure(issueResult.Error);
+                return UserResult.Failure(tokenResult.Error);
+            }
+
+            Result refreshTokenResult = await _tokenService.IssueRefreshToken(user);
+
+            if (refreshTokenResult.IsFailure)
+            {
+                return UserResult.Failure(refreshTokenResult.Error);
             }
 
             Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
@@ -258,13 +265,19 @@ namespace PerfumeStore.Application.Users
             return UserResult.Success();
         }
 
-        public Result RemoveAuthCookie()
+        public Result RemoveAuthToken()
         {
-            Result result = _tokenService.RemoveAuthCookie();
+            Result result = _tokenService.RemoveAuthToken();
 
             return result;
         }
 
+        public Result RemoveRefreshToken()
+        {
+            Result result = _tokenService.RemoveRefreshToken();
+
+            return result;
+        }
 
         public UserResult RemoveGuestSessionId()
         {
