@@ -56,6 +56,26 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             return Result<string>.Success(token);
         }
 
+        private string GenerateJwtToken(IEnumerable<Claim> claims)
+        {
+            string securityKeyString = _jwtOptions.Value.SecurityKey;
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Issuer = _jwtOptions.Value.ValidIssuer,
+                Audience = _jwtOptions.Value.ValidAudience,
+                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.Value.JwtTokenExpirationInHours),//addhours
+                SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
+                Subject = new ClaimsIdentity(claims)
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+
         public async Task<Result<string>> IssueRefreshToken(StoreUser user)
         {
             string refreshToken = GenerateRefreshToken();
@@ -86,26 +106,6 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
-        }
-
-        private string GenerateJwtToken(IEnumerable<Claim> claims)
-        {
-            string securityKeyString = _jwtOptions.Value.SecurityKey;
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Issuer = _jwtOptions.Value.ValidIssuer,
-                Audience = _jwtOptions.Value.ValidAudience,
-                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.JwtTokenExpirationInHours),
-                SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
-                Subject = new ClaimsIdentity(claims)
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
         }
 
         public Result RemoveAuthToken()
