@@ -1,0 +1,120 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using PerfumeStore.Application.Contracts.JwtToken;
+using PerfumeStore.Application.Contracts.JwtToken.Models;
+using PerfumeStore.Application.Shared.Enums;
+using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+
+public class JwtRefreshMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly IOptions<JwtOptions> _jwtOptions;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<JwtRefreshMiddleware> _logger;
+
+    public JwtRefreshMiddleware(
+        RequestDelegate next,
+        IOptions<JwtOptions> jwtOptions,
+        IServiceProvider serviceProvider,
+        ILogger<JwtRefreshMiddleware> logger)
+    {
+        _next = next;
+        _jwtOptions = jwtOptions;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var jwtToken = context.Request.Cookies[CookieNames.AuthCookie.ToString()];
+        var refreshToken = context.Request.Cookies[CookieNames.RefreshCookie.ToString()];
+
+        if (!string.IsNullOrEmpty(jwtToken))
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var tokenHandler = scope.ServiceProvider.GetRequiredService<JwtSecurityTokenHandler>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<StoreUser>>();
+            var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.SecurityKey)),
+                ValidateIssuer = true,
+                ValidIssuer = _jwtOptions.Value.ValidIssuer,
+                ValidateAudience = true,
+                ValidAudience = _jwtOptions.Value.ValidAudience,
+                ValidateLifetime = false
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out var securityToken);
+                var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+                if (jwtSecurityToken != null && jwtSecurityToken.ValidTo < DateTime.UtcNow)
+                {
+                    var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    if (userId != null)
+                    {
+                        var user = await userManager.FindByIdAsync(userId);
+                        if (user != null && user.RefreshToken == refreshToken && user.RefreshTokenExpiryTime > DateTime.UtcNow)
+                        {
+                            Result<string> newJwtTokenResult = await tokenService.IssueJwtToken(user);
+                            Result<string> newRefreshTokenResult = await tokenService.IssueRefreshToken(user);
+
+                            if (newJwtTokenResult.IsSuccess && newRefreshTokenResult.IsSuccess)
+                            {
+                                var authCookieOptions = new CookieOptions
+                                {
+                                    HttpOnly = true,
+                                    Secure = true,
+                                    Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.Value.JwtTokenExpirationInHours * 60),
+                                    IsEssential = false,
+                                    SameSite = SameSiteMode.None
+                                };
+
+                                var refreshCookieOptions = new CookieOptions
+                                {
+                                    HttpOnly = true,
+                                    Secure = true,
+                                    Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),
+                                    IsEssential = false,
+                                    SameSite = SameSiteMode.None
+                                };
+
+                                context.Response.Cookies.Append(CookieNames.AuthCookie.ToString(), newJwtTokenResult.Value, authCookieOptions);
+                                context.Response.Cookies.Append(CookieNames.RefreshCookie.ToString(), newRefreshTokenResult.Value, refreshCookieOptions);
+
+                                var newPrincipal = tokenHandler.ValidateToken(newJwtTokenResult.Value, validationParameters, out _);
+                                context.User = newPrincipal;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    context.User = principal;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while processing JWT tokens: {ex.Message}");
+            }
+        }
+
+        await _next(context);
+    }
+}

@@ -29,25 +29,29 @@ using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Configuration;
+using PerfumeStore.Infrastructure.Middlewares;
 using PerfumeStore.Infrastructure.Persistence;
 using PerfumeStore.Infrastructure.Persistence.Repositories;
+using PerfumeStore.Infrastructure.Services.ContextHttp;
 using PerfumeStore.Infrastructure.Services.Cookies;
 using PerfumeStore.Infrastructure.Services.Email;
 using PerfumeStore.Infrastructure.Services.Guest;
-using PerfumeStore.Infrastructure.Services.HttpContext;
 using PerfumeStore.Infrastructure.Services.SignalR;
 using Stripe;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using JwtTokenService = PerfumeStore.Infrastructure.Services.Tokens.JwtTokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient();
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Services.AddSignalR();
 builder.Services.AddTransient<IPaymentsService, PaymentsService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IProductsService, ProductsService>();
-builder.Services.AddTransient<IHttpContextService, HttpContextService>();
+builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
 builder.Services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
 builder.Services.AddTransient<ICartsService, CartsService>();
@@ -55,7 +59,7 @@ builder.Services.AddTransient<ICartsRepository, CartsRepository>();
 builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
 builder.Services.AddTransient<IGuestSessionService, GuestSessionService>();
 builder.Services.AddTransient<IOrdersService, OrdersService>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<ITokenService, JwtTokenService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -64,6 +68,8 @@ builder.Services.AddTransient<ICartLinesRepository, CartLinesRepository>();
 builder.Services.AddAutoMapper(typeof(MappingProfileApplication), typeof(MappingProfileApi));
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<ICookieService, CookieService>();
+builder.Services.AddSingleton<JwtSecurityTokenHandler>();
+
 builder.Services.AddTransient<IUrlHelper>(x =>
 {
     var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
@@ -147,7 +153,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = true;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -209,7 +215,8 @@ StripeConfiguration.ApiKey = stripeOptions.SecretKey;
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+//app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<JwtRefreshMiddleware>();
 
 app.UseHttpsRedirection();
 

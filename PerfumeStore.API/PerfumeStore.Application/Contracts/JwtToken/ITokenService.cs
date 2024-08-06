@@ -5,7 +5,9 @@ namespace PerfumeStore.Application.Contracts.JwtToken
 {
     public interface ITokenService
     {
-        public Task<Result> IssueJwtToken(StoreUser user);
-        public Result RemoveAuthCookie();
+        public Task<Result<string>> IssueJwtToken(StoreUser user);
+        public Task<Result<string>> IssueRefreshToken(StoreUser user);
+        public Result RemoveAuthToken();
+        public Result RemoveRefreshToken();
     }
 }

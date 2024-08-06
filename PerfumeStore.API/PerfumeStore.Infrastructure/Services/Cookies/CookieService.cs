@@ -1,41 +1,85 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using PerfumeStore.Application.Contracts.ContextHttp;
+using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Domain.Abstractions;
+using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Application.Shared.Enums;
 
 namespace PerfumeStore.Infrastructure.Services.Cookies
 {
     public class CookieService : ICookieService
     {
         private readonly IHttpContextService _contextService;
+        private readonly IOptions<JwtOptions> _jwtOptions;
 
-        public CookieService(IHttpContextService contextService)
+        public CookieService(IHttpContextService contextService, IOptions<JwtOptions> jwtOptions)
         {
             _contextService = contextService;
+            _jwtOptions = jwtOptions;
         }
 
-        public Result SetCookieWithToken(string token)
+        public Result SetCookieWithJwtToken(string jwtToken)
         {
-            var time = DateTimeOffset.Now.AddDays(1);
 
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
-                Expires = DateTimeOffset.Now.AddDays(1),
+                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.JwtCookieExpirationInHours),
                 IsEssential = false,
                 SameSite = SameSiteMode.None,
             };
 
-            Result result = _contextService.SendCookieWithToken(token, cookieOptions);
-
-            return result;  
-        }
-
-        public Result SetExpiredAuthToken(CookieOptions options)
-        {
-            Result result = _contextService.SendCookieWithToken(string.Empty, options);
+            Result result = _contextService.SendCookieWithToken(jwtToken, cookieOptions, CookieNames.AuthCookie);
+            if (result.IsFailure)
+            {
+                return result;
+            }
 
             return result;
+        }
+
+        public Result SetCookieWithRefreshToken(string refreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),
+                IsEssential = false,
+                SameSite = SameSiteMode.None,
+            };
+
+            Result result = _contextService.SendCookieWithToken(refreshToken, cookieOptions, CookieNames.RefreshCookie);
+            if (result.IsFailure)
+            {
+                return result;
+            }
+
+            return Result.Success();
+        }
+
+        public Result SetExpiredCookie(CookieNames cookieName)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTime.UtcNow.AddDays(-1),
+                IsEssential = false,
+                SameSite = SameSiteMode.None,
+
+            };
+
+            Result result = _contextService.SendCookieWithToken(string.Empty, cookieOptions, cookieName);
+            if (result.IsFailure)
+            {
+                return result;
+            }
+
+            return result;
+
         }
     }
 }

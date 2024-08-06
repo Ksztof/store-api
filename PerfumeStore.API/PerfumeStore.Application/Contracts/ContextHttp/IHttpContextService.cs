@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PerfumeStore.Application.Shared.Enums;
 using PerfumeStore.Domain.Abstractions;
 
 namespace PerfumeStore.Application.Contracts.ContextHttp
@@ -11,6 +12,6 @@ namespace PerfumeStore.Application.Contracts.ContextHttp
 
         public Result<string> GetActualProtocol();
 
-        public Result SendCookieWithToken(string token, CookieOptions cookieOptions);
+        public Result SendCookieWithToken(string token, CookieOptions cookieOptions, CookieNames cookieName);
     }
 }

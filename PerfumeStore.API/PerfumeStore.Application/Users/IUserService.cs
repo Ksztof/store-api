@@ -20,7 +20,9 @@ namespace PerfumeStore.Application.Users
 
         public Task<UserResult> FindByIdAsync(string userId);
 
-        public Result RemoveAuthCookie();
+        public Result RemoveAuthToken();
+        public Result RemoveRefreshToken();
+
         public UserResult RemoveGuestSessionId();
     }
 }

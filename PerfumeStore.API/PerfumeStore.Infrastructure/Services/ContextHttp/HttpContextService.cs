@@ -2,9 +2,10 @@
 using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Domain.Abstractions;
 using PerfumeStore.Domain.StoreUsers;
+using PerfumeStore.Application.Shared.Enums;
 using System.Security.Claims;
 
-namespace PerfumeStore.Infrastructure.Services.HttpContext
+namespace PerfumeStore.Infrastructure.Services.ContextHttp
 {
     public class HttpContextService : IHttpContextService
     {
@@ -57,7 +58,7 @@ namespace PerfumeStore.Infrastructure.Services.HttpContext
             }
 
             string? protocol = _httpContextAccessor?.HttpContext?.Request.Scheme;
-            if(protocol == null)
+            if (protocol == null)
             {
                 return Result<string>.Failure(UserErrors.MissingHttpProtocol);
             }
@@ -65,18 +66,16 @@ namespace PerfumeStore.Infrastructure.Services.HttpContext
             return Result<string>.Success(protocol);
         }
 
-        public Result SendCookieWithToken(string token, CookieOptions cookieOptions)
+        public Result SendCookieWithToken(string token, CookieOptions cookieOptions, CookieNames cookieName)
         {
             if (_httpContextAccessor.HttpContext == null)
             {
                 return Result.Failure(UserErrors.MissingHttpContext);
             }
 
-            string cookieName = "AuthCookie";
+            _httpContextAccessor?.HttpContext?.Response.Cookies.Append(cookieName.ToString(), token, cookieOptions);
 
-            _httpContextAccessor?.HttpContext?.Response.Cookies.Append(cookieName, token, cookieOptions);
-
-            return Result.Success();    
+            return Result.Success();
         }
     }
 }
