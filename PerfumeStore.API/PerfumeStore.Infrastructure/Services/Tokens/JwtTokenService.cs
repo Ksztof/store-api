@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -12,23 +12,28 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using PerfumeStore.Application.Contracts.Azure.Options;
 
 namespace PerfumeStore.Infrastructure.Services.Tokens
 {
     public class JwtTokenService : ITokenService
     {
-        private readonly IOptions<JwtOptions> _jwtOptions;
+        private readonly JwtOptions _jwtOptions;
+        private readonly KeyVaultOptions _keyVaultOptions;
         private readonly UserManager<StoreUser> _userManager;
         private readonly ICookieService _cookieService;
 
         public JwtTokenService(
             UserManager<StoreUser> userManager,
             IOptions<JwtOptions> jwtOptions,
-            ICookieService coookiesService)
+            ICookieService coookiesService,
+            IOptions<KeyVaultOptions> keyVaultOptions
+)
         {
             _userManager = userManager;
-            _jwtOptions = jwtOptions;
+            _jwtOptions = jwtOptions.Value;
             _cookieService = coookiesService;
+            _keyVaultOptions = keyVaultOptions.Value;
         }
 
         public async Task<Result<string>> IssueJwtToken(StoreUser user)
@@ -58,14 +63,14 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
 
         private string GenerateJwtToken(IEnumerable<Claim> claims)
         {
-            string securityKeyString = _jwtOptions.Value.SecurityKey;
+            string securityKeyString = _keyVaultOptions.SecurityKey;
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKeyString));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _jwtOptions.Value.ValidIssuer,
-                Audience = _jwtOptions.Value.ValidAudience,
-                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.Value.JwtTokenExpirationInHours),//addhours
+                Issuer = _jwtOptions.ValidIssuer,
+                Audience = _jwtOptions.ValidAudience,
+                Expires = DateTime.UtcNow.AddHours(_jwtOptions.JwtTokenExpirationInHours),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };
@@ -81,7 +86,7 @@ namespace PerfumeStore.Infrastructure.Services.Tokens
             string refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationInHours);
             var updateResult = await _userManager.UpdateAsync(user);
 
             if (!updateResult.Succeeded)

@@ -27,4 +27,8 @@
     <ProjectReference Include="..\PerfumeStore.Domain\PerfumeStore.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Stripe\Payments\" />
+  </ItemGroup>
+
 </Project>

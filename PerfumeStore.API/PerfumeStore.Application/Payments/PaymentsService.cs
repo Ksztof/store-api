@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using PerfumeStore.Application.Contracts.Azure.Options;
 using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Guest;
-using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Shared.DTO.Request;
 using PerfumeStore.Application.SignalR;
 using PerfumeStore.Domain.Abstractions;
@@ -19,31 +19,28 @@ namespace PerfumeStore.Application.Payments
     {
         private readonly PaymentIntentService _paymentIntentService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly StripeOptions _stripeOptions;
-        private readonly ICartsRepository _cartsRepository;
         private readonly IGuestSessionService _guestSessionService;
         private readonly IHttpContextService _contextService;
         public readonly IOrdersRepository _ordersRepository;
         private readonly INotificationService _notificationService;
+        private readonly KeyVaultOptions _keyVaultOptions;
 
         public PaymentsService(
             PaymentIntentService paymentIntentService,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<StripeOptions> stripeOptions,
-            ICartsRepository cartsRepository,
             IGuestSessionService guestSessionService,
             IHttpContextService contextService,
             IOrdersRepository ordersRepository,
-            INotificationService notificationService)
+            INotificationService notificationService, 
+            IOptions<KeyVaultOptions> keyVaultOptions)
         {
             _paymentIntentService = paymentIntentService;
             _httpContextAccessor = httpContextAccessor;
-            _stripeOptions = stripeOptions.Value;
-            _cartsRepository = cartsRepository;
             _guestSessionService = guestSessionService;
             _contextService = contextService;
             _ordersRepository = ordersRepository;
             _notificationService = notificationService;
+            _keyVaultOptions = keyVaultOptions.Value;
         }
 
         public async Task<Result<string>> GetClientSecretAsync(GetClientSecretDtoApp form)
@@ -219,7 +216,7 @@ namespace PerfumeStore.Application.Payments
                 stripeEvent = EventUtility.ConstructEvent(
                     json,
                     _httpContextAccessor.HttpContext.Request.Headers["Stripe-Signature"],
-                    _stripeOptions.WebhookSecret
+                    _keyVaultOptions.StripeWebhookSecret
                 );
             }
             catch (StripeException e)

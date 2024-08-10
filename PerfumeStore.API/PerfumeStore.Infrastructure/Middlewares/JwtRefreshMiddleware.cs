@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PerfumeStore.Application.Contracts.Azure.Options;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
 using PerfumeStore.Application.Shared.Enums;
@@ -19,7 +20,8 @@ using System.Threading.Tasks;
 public class JwtRefreshMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptions<JwtOptions> _jwtOptions;
+    private readonly JwtOptions _jwtOptions;
+    private readonly KeyVaultOptions _keyVaultOptions;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<JwtRefreshMiddleware> _logger;
 
@@ -27,12 +29,15 @@ public class JwtRefreshMiddleware
         RequestDelegate next,
         IOptions<JwtOptions> jwtOptions,
         IServiceProvider serviceProvider,
-        ILogger<JwtRefreshMiddleware> logger)
+        ILogger<JwtRefreshMiddleware> logger,
+        IOptions<KeyVaultOptions> keyVaultOptions
+        )
     {
         _next = next;
-        _jwtOptions = jwtOptions;
+        _jwtOptions = jwtOptions.Value;
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _keyVaultOptions = keyVaultOptions.Value;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -50,12 +55,12 @@ public class JwtRefreshMiddleware
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.SecurityKey)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_keyVaultOptions.SecurityKey)),
                 ValidateIssuer = true,
-                ValidIssuer = _jwtOptions.Value.ValidIssuer,
+                ValidIssuer = _jwtOptions.ValidIssuer,
                 ValidateAudience = true,
-                ValidAudience = _jwtOptions.Value.ValidAudience,
-                ValidateLifetime = false
+                ValidAudience = _jwtOptions.ValidAudience,
+                ValidateLifetime = false,
             };
 
             try
@@ -81,8 +86,8 @@ public class JwtRefreshMiddleware
                                 {
                                     HttpOnly = true,
                                     Secure = true,
-                                    Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.Value.JwtTokenExpirationInHours * 60),
-                                    IsEssential = false,
+                                    Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.JwtTokenExpirationInHours),
+                                    IsEssential = true,
                                     SameSite = SameSiteMode.None
                                 };
 
@@ -90,8 +95,8 @@ public class JwtRefreshMiddleware
                                 {
                                     HttpOnly = true,
                                     Secure = true,
-                                    Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),
-                                    IsEssential = false,
+                                    Expires = DateTime.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationInHours),
+                                    IsEssential = true,
                                     SameSite = SameSiteMode.None
                                 };
 
@@ -100,6 +105,8 @@ public class JwtRefreshMiddleware
 
                                 var newPrincipal = tokenHandler.ValidateToken(newJwtTokenResult.Value, validationParameters, out _);
                                 context.User = newPrincipal;
+
+                                context.Items["NewAuthToken"] = newJwtTokenResult.Value;
                             }
                         }
                     }
