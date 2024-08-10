@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Azure.Identity;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,12 @@ using Microsoft.OpenApi.Models;
 using PerfumeStore.API.Shared.Mapper;
 using PerfumeStore.API.Validators;
 using PerfumeStore.Application.Carts;
+using PerfumeStore.Application.Contracts.Azure.Options;
 using PerfumeStore.Application.Contracts.ContextHttp;
 using PerfumeStore.Application.Contracts.Email;
 using PerfumeStore.Application.Contracts.Guest;
 using PerfumeStore.Application.Contracts.JwtToken;
 using PerfumeStore.Application.Contracts.JwtToken.Models;
-using PerfumeStore.Application.Contracts.Stripe.Payments;
 using PerfumeStore.Application.Orders;
 using PerfumeStore.Application.Payments;
 using PerfumeStore.Application.Products;
@@ -29,7 +30,6 @@ using PerfumeStore.Domain.ProductCategories;
 using PerfumeStore.Domain.Products;
 using PerfumeStore.Domain.StoreUsers;
 using PerfumeStore.Infrastructure.Configuration;
-using PerfumeStore.Infrastructure.Middlewares;
 using PerfumeStore.Infrastructure.Persistence;
 using PerfumeStore.Infrastructure.Persistence.Repositories;
 using PerfumeStore.Infrastructure.Services.ContextHttp;
@@ -83,7 +83,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddTransient<IValidationService, ValidationService>();
 
 builder.Services.ConfigureOptions<JwtOptionsSetup>();
-builder.Services.ConfigureOptions<StripeOptionsSetup>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -94,11 +93,23 @@ builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddSingleton<PaymentIntentService>();
 builder.Services.AddScoped<IPaymentsService, PaymentsService>();
 
+var keyVaultOptions = builder.Configuration.GetSection("keyVaultOptions").Get<KeyVaultOptions>();
+builder.Services.ConfigureOptions<KeyVaultOptionsSetup>();
+
 
 var configuration = builder.Configuration;
-var connectionString = configuration.GetConnectionString("DefaultConnection");
+var connectionString = keyVaultOptions.ConnectionString;
 
 var assembly = typeof(ShopDbContext).Assembly.GetName().Name;
+
+var keyVaultUri = builder.Configuration["KeyVault:Uri"];
+if (!string.IsNullOrEmpty(keyVaultUri))
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+}
+
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
   options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
@@ -144,7 +155,8 @@ builder.Services.AddIdentity<StoreUser, IdentityRole>(options =>
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 var jwtOptions = builder.Configuration.GetSection("JwtOptions").Get<JwtOptions>();
-var key = Encoding.ASCII.GetBytes(jwtOptions.SecurityKey);
+
+var key = Encoding.ASCII.GetBytes(keyVaultOptions.SecurityKey);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -170,7 +182,11 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            if (context.Request.Cookies.ContainsKey("AuthCookie"))
+            if (context.HttpContext.Items.ContainsKey("NewAuthToken"))
+            {
+                context.Token = context.HttpContext.Items["NewAuthToken"].ToString();
+            }
+            else if (context.Request.Cookies.ContainsKey("AuthCookie"))
             {
                 context.Token = context.Request.Cookies["AuthCookie"];
             }
@@ -209,13 +225,11 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.Configure<StripeOptions>(builder.Configuration.GetSection("StripeOptions"));
-var stripeOptions = builder.Configuration.GetSection("StripeOptions").Get<StripeOptions>();
-StripeConfiguration.ApiKey = stripeOptions.SecretKey;
+StripeConfiguration.ApiKey = keyVaultOptions.StripeSecretKey;
 
 var app = builder.Build();
 
-//app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<JwtRefreshMiddleware>();
 
 app.UseHttpsRedirection();

@@ -26,7 +26,7 @@ namespace PerfumeStore.Infrastructure.Services.Cookies
             {
                 HttpOnly = true,
                 Secure = true,
-                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.JwtCookieExpirationInHours),
+                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),//must be equal to SetCookieWithRefreshToken
                 IsEssential = false,
                 SameSite = SameSiteMode.None,
             };
