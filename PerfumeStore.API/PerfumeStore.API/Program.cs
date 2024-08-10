@@ -1,4 +1,4 @@
-﻿using Azure.Identity;
+using Azure.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
