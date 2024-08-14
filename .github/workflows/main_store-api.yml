@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - store-api
 
 on:
@@ -25,16 +22,16 @@ jobs:
         run: dotnet build --configuration Release Store/Store.API/Store.API.csproj
 
       - name: dotnet publish
-        run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ./myapp
+        run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ${{ github.workspace }}/myapp
       
       - name: List published files
-        run: ls -R ./myapp
+        run: ls -R ${{ github.workspace }}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ./myapp
+          path: ${{ github.workspace }}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -64,4 +61,4 @@ jobs:
         with:
           app-name: 'store-api'
           slot-name: 'Production'
-          package: ./myapp
+          package: ${{ github.workspace }}/myapp
