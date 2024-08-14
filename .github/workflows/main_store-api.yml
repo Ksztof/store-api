@@ -26,6 +26,9 @@ jobs:
 
       - name: dotnet publish
         run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ./myapp
+      
+      - name: List published files
+        run: ls -R ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
