@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{github.workspace}}/myapp
+          path: ./myapp
 
   deploy:
     runs-on: windows-latest
@@ -61,4 +61,4 @@ jobs:
         with:
           app-name: 'store-api'
           slot-name: 'Production'
-          package: ${{github.workspace}}/myapp
+          package: ./myapp
