@@ -25,13 +25,13 @@ jobs:
         run: dotnet build --configuration Release Store/Store.API/Store.API.csproj
 
       - name: dotnet publish
-        run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{github.workspace}}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -61,5 +61,4 @@ jobs:
         with:
           app-name: 'store-api'
           slot-name: 'Production'
-          package: .
-          
+          package: ${{github.workspace}}/myapp
