@@ -5,8 +5,6 @@ VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F0292408-F75A-49AE-979C-EFF67AFF72D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfumeStore.API.UnitTests", "PerfumeStore.API.UnitTests\PerfumeStore.API.UnitTests.csproj", "{5FBBD676-E2A9-4D15-90C6-676F7464F933}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35B6528B-F974-4C74-AD7C-54EE250B7CF7}"
 	ProjectSection(SolutionItems) = preProject
 		MigrationGuide.txt = MigrationGuide.txt
@@ -28,10 +26,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5FBBD676-E2A9-4D15-90C6-676F7464F933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FBBD676-E2A9-4D15-90C6-676F7464F933}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FBBD676-E2A9-4D15-90C6-676F7464F933}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FBBD676-E2A9-4D15-90C6-676F7464F933}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02051FE7-C9D6-4298-A825-50ED035A6F77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{02051FE7-C9D6-4298-A825-50ED035A6F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02051FE7-C9D6-4298-A825-50ED035A6F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,7 +51,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5FBBD676-E2A9-4D15-90C6-676F7464F933} = {F0292408-F75A-49AE-979C-EFF67AFF72D3}
+		{69259F0B-121E-42BB-9234-DA8D2743B5AA} = {F0292408-F75A-49AE-979C-EFF67AFF72D3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6351C119-EDA1-4A96-A6E8-024744FC56B3}
