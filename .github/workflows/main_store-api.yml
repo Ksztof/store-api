@@ -26,8 +26,8 @@ jobs:
       
       - name: Zip published files
         run: |
-          cd ${{ github.workspace }}/myapp
-          zip -r ../myapp.zip .
+          Compress-Archive -Path ${{ github.workspace }}/myapp/* -DestinationPath ${{ github.workspace }}/myapp.zip
+        shell: pwsh
           
       - name: List published files
         run: ls -R ${{ github.workspace }}/myapp
