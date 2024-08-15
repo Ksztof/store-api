@@ -71,7 +71,7 @@ jobs:
           
       - name: Apply EF Core Migrations
         run: |
-          dotnet ef database update --no-build --project Store/Store.API/Store.API.csproj
+          dotnet ef database update --project Store/Store.API/Store.API.csproj
         env:
           ASPNETCORE_ENVIRONMENT: Production
           ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTIONSTRING }}
