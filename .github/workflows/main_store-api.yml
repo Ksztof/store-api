@@ -57,6 +57,9 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: List files in Store.Infrastructure
+        run: ls -R Store/Store.Infrastructure/
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
