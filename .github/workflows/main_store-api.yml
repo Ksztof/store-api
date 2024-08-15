@@ -65,3 +65,10 @@ jobs:
           app-name: 'store-api'
           slot-name: 'Production'
           package: ${{ github.workspace }}/myapp.zip
+
+      - name: Apply EF Core Migrations
+        run: |
+          dotnet ef database update --no-build --project Store/Store.API/Store.API.csproj
+        env:
+          ASPNETCORE_ENVIRONMENT: Production
+          ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTIONSTRING }}
