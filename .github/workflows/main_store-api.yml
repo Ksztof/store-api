@@ -66,6 +66,9 @@ jobs:
           slot-name: 'Production'
           package: ${{ github.workspace }}/myapp.zip
 
+      - name: Install EF Core CLI tools
+        run: dotnet tool install --global dotnet-ef
+          
       - name: Apply EF Core Migrations
         run: |
           dotnet ef database update --no-build --project Store/Store.API/Store.API.csproj
