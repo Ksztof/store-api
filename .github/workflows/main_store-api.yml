@@ -26,12 +26,16 @@ jobs:
 
       - name: dotnet publish
         run: dotnet publish Store/Store.API/Store.API.csproj -c Release -o ${{ github.workspace }}/myapp
-      
-      - name: List all files in the repository
-        run: ls -R    
-      - name: List files in Store.Infrastructure
-        run: ls -R Store/Store.Infrastructure/
 
+      - name: Install EF Core CLI tools
+        run: dotnet tool install --global dotnet-ef
+          
+      - name: Apply EF Core Migrations
+        run: |
+          dotnet ef database update --project Store/Store.Infrastructure/Store.Infrastructure.csproj --startup-project Store/Store.API/Store.API.csproj --context ShopDbContext --verbose
+        env:
+          ASPNETCORE_ENVIRONMENT: Production
+          ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTIONSTRING }}
 
       - name: Zip published files
         run: |
@@ -66,7 +70,6 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -75,13 +78,3 @@ jobs:
           app-name: 'store-api'
           slot-name: 'Production'
           package: ${{ github.workspace }}/myapp.zip
-
-      - name: Install EF Core CLI tools
-        run: dotnet tool install --global dotnet-ef
-          
-      - name: Apply EF Core Migrations
-        run: |
-          dotnet ef database update --project Store/Store.Infrastructure/Store.Infrastructure.csproj --startup-project Store/Store.API/Store.API.csproj --context ShopDbContext --verbose
-        env:
-          ASPNETCORE_ENVIRONMENT: Production
-          ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTIONSTRING }}
