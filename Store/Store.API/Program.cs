@@ -1,4 +1,4 @@
-using Azure.Identity;
+﻿using Azure.Identity;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -128,8 +128,14 @@ if (string.IsNullOrEmpty(keyVaultOptions.ConnectionString))
 var assembly = typeof(ShopDbContext).Assembly.GetName().Name;
 
 builder.Services.AddDbContext<ShopDbContext>(options =>
-    options.UseSqlServer(keyVaultOptions.ConnectionString, b => b.MigrationsAssembly(assembly)));
-
+    options.UseSqlServer(keyVaultOptions.ConnectionString, sqlServerOptions =>
+    {
+        sqlServerOptions.MigrationsAssembly(assembly);
+        sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null);
+    }));
 // Configure Stripe
 StripeConfiguration.ApiKey = keyVaultOptions.StripeSecretKey;
 
