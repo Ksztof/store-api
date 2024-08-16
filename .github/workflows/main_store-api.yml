@@ -29,7 +29,12 @@ jobs:
 
       - name: Install EF Core CLI tools
         run: dotnet tool install --global dotnet-ef
-          
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Apply EF Core Migrations
         run: |
           dotnet ef database update --project Store/Store.Infrastructure/Store.Infrastructure.csproj --startup-project Store/Store.API/Store.API.csproj --context ShopDbContext --verbose
@@ -66,11 +71,6 @@ jobs:
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
