@@ -199,7 +199,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5445",
                 "http://localhost:5002",
                 "https://dashboard.stripe.com",
-                "https://hooks.stripe.com")
+                "https://hooks.stripe.com",
+                "https://zealous-dune-0258ef303.5.azurestaticapps.net")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
