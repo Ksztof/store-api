@@ -19,6 +19,7 @@ namespace Store.Infrastructure.Configuration
             options.StripeSecretKey = _configuration["StripeSecretKey"];
             options.StripeWebhookSecret = _configuration["StripeWebhookSecret"];
             options.ConnectionString = _configuration["ConnectionString"];
+            options.SendgridKey = _configuration["SendgridKey"];
         }
     }
 }

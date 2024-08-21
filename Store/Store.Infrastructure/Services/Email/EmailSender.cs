@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Store.Application.Contracts.Azure.Options;
 using Store.Application.Contracts.Email;
 
 namespace Store.Infrastructure.Services.Email
@@ -9,23 +10,23 @@ namespace Store.Infrastructure.Services.Email
     public class EmailSender : IEmailSender
     {
         private readonly ILogger _logger;
+        private readonly KeyVaultOptions _keyVaultOptions;
 
-        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor,
+        public EmailSender(IOptions<KeyVaultOptions> keyVaultOptions,
           ILogger<EmailSender> logger)
         {
-            Options = optionsAccessor.Value;
+            _keyVaultOptions = keyVaultOptions.Value;
             _logger = logger;
         }
 
-        public AuthMessageSenderOptions Options { get; } //Set with Secret Manager.
-
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
-            if (string.IsNullOrEmpty(Options.SendGridKey))
+            if (string.IsNullOrEmpty(_keyVaultOptions.SendgridKey))
             {
                 throw new Exception("Null SendGridKey");
             }
-            await Execute(Options.SendGridKey, subject, message, toEmail);
+
+            await Execute(_keyVaultOptions.SendgridKey, subject, message, toEmail);
         }
 
         public async Task Execute(string apiKey, string subject, string message, string toEmail)
@@ -40,8 +41,6 @@ namespace Store.Infrastructure.Services.Email
             };
             msg.AddTo(new EmailAddress(toEmail));
 
-            // Disable click tracking.
-            // See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
             msg.SetClickTracking(false, false);
             var response = await client.SendEmailAsync(msg);
             _logger.LogInformation(response.IsSuccessStatusCode
