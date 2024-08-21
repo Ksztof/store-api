@@ -46,7 +46,6 @@ namespace Store.Infrastructure.Services.Email
             string message = $@"
               <h2>Hello {userDetails.UserName},</h2>
               <p>We invite you to start using our service.</p>
-                 Thank you for shopping
               <a href='{confirmationLink}' style='display: inline-block; padding: 10px 20px; background-color: #3498db; color:
                 white; text-decoration: none; border-radius: 5px; margin-top: 20px;'>Activate Account</a>
               <p style='margin-top: 20px;'>Instead, you can copy/paste this link into your browser:</p>

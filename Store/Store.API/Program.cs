@@ -95,7 +95,6 @@ builder.Services.ConfigureOptions<KeyVaultOptionsSetup>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddSingleton<PaymentIntentService>();
 builder.Services.AddScoped<IPaymentsService, PaymentsService>();
 
