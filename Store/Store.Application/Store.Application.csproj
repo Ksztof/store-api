@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Contracts\Stripe\**" />
     <Compile Remove="RequestForms\**" />
+    <EmbeddedResource Remove="Contracts\Stripe\**" />
     <EmbeddedResource Remove="RequestForms\**" />
+    <None Remove="Contracts\Stripe\**" />
     <None Remove="RequestForms\**" />
   </ItemGroup>
 
@@ -25,10 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Store.Domain\Store.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Contracts\Stripe\Payments\" />
   </ItemGroup>
 
 </Project>
