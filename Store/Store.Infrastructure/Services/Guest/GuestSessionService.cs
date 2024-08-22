@@ -43,7 +43,14 @@ namespace Store.Infrastructure.Services.Guest
             string stringCartId = cartId.ToString();
             if (_httpContextAccessor.HttpContext != null)
             {
-                _httpContextAccessor?.HttpContext?.Response.Cookies.Append("GuestSessionId", stringCartId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
+                _httpContextAccessor?.HttpContext?.Response.Cookies
+                    .Append("GuestSessionId", stringCartId,
+                    new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow.AddMonths(1),
+                        SameSite = SameSiteMode.None,
+                        Secure = true,
+                    });
                 return UserResult.Success();
             }
 
