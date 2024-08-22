@@ -66,7 +66,9 @@ namespace Store.Infrastructure.Services.Guest
                     "",
                     new CookieOptions
                     {
-                        Expires = DateTimeOffset.UtcNow.AddDays(-1)
+                        Expires = DateTimeOffset.UtcNow.AddDays(-1),
+                        SameSite = SameSiteMode.None,
+                        Secure = true,
                     }
                 );
 
