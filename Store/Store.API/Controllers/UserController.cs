@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.Extensions;
-using Store.Application.Shared.DTO.Request;
 using Store.Application.Users;
 using Store.Domain.Abstractions;
-using Store.API.Validators;
 using FluentValidation.Results;
 using Store.API.Shared.DTO.Request.StoreUser;
 using Store.Domain.StoreUsers;
+using Store.API.Validation;
+using Store.Application.Users.Dto.Request;
 
 namespace Store.API.Controllers
 {

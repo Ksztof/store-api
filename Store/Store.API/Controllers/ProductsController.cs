@@ -2,10 +2,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.DTO.Request.Product;
 using Store.API.Shared.Extensions;
-using Store.API.Validators;
+using Store.API.Validation;
 using Store.Application.Products;
-using Store.Application.Shared.DTO.Request;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Products.Dto.Request;
+using Store.Application.Products.Dto.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.Products;
 

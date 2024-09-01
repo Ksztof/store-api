@@ -1,4 +1,4 @@
-﻿using Store.Application.Shared.DTO.Request;
+﻿using Store.Application.Users.Dto.Request;
 using Store.Domain.Abstractions;
 using Store.Domain.StoreUsers;
 

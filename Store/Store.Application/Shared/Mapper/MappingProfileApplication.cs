@@ -1,5 +1,8 @@
 using AutoMapper;
-using Store.Application.Shared.DTO.Request;
+using Store.Application.Carts.Dto.Request;
+using Store.Application.Orders.Dto.Request;
+using Store.Application.Orders.Dto.Response;
+using Store.Application.Products.Dto.Request;
 using Store.Application.Shared.DTO.Response;
 using Store.Domain.CarLines;
 using Store.Domain.Orders;

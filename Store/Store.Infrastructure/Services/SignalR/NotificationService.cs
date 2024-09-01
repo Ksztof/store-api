@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Store.Application.SignalR;
+using Store.Application.Payments.SignalR;
 using Store.Domain.Abstractions;
 
 namespace Store.Infrastructure.Services.SignalR

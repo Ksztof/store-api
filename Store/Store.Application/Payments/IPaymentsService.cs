@@ -1,4 +1,4 @@
-using Store.Application.Shared.DTO.Request;
+using Store.Application.Payments.Dto.Request;
 using Store.Domain.Abstractions;
 
 namespace Store.Application.Payments

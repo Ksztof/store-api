@@ -1,5 +1,5 @@
-using Store.Application.Shared.DTO.Request;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Products.Dto.Request;
+using Store.Application.Products.Dto.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.Products;
 

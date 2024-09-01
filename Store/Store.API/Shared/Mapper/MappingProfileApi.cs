@@ -5,7 +5,11 @@ using Store.API.Shared.DTO.Request.Order;
 using Store.API.Shared.DTO.Request.Payments;
 using Store.API.Shared.DTO.Request.Product;
 using Store.API.Shared.DTO.Request.StoreUser;
-using Store.Application.Shared.DTO.Request;
+using Store.Application.Carts.Dto.Request;
+using Store.Application.Orders.Dto.Request;
+using Store.Application.Payments.Dto.Request;
+using Store.Application.Products.Dto.Request;
+using Store.Application.Users.Dto.Request;
 using Store.Domain.StoreUsers;
 
 namespace Store.API.Shared.Mapper

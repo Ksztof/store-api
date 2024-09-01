@@ -1,4 +1,4 @@
-using Store.Application.Shared.DTO.Request;
+using Store.Application.Carts.Dto.Request;
 using Store.Application.Shared.DTO.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.Shared.DTO.Response.Cart;
