@@ -1,4 +1,4 @@
-﻿using Store.Application.Shared.DTO.Response;
+﻿using Store.Application.Carts.Dto.Response;
 
 namespace Store.Application.Orders.Dto.Response
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Store.Application.Contracts.ContextHttp;
-using Store.Application.Shared.Enums;
+using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
-using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Errors;
 using System.Security.Claims;
 
 namespace Store.Infrastructure.Services.ContextHttp

@@ -14,7 +14,7 @@ namespace Store.Application.Users
 
         public Task<UserResult> RequestDeletion();
 
-        public Task<UserResult> SubmitDeletion(string Id);
+        public Task<UserResult> SubmitDeletion(string userId);
 
         public Task<string> GenerateEncodedEmailConfirmationTokenAsync(StoreUser user);
 

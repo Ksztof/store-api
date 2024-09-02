@@ -1,13 +1,14 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.DTO.Request.Cart;
-using Store.API.Shared.Extensions;
+using Store.API.Shared.Extensions.Models;
+using Store.API.Shared.Extensions.Results;
 using Store.API.Validation;
 using Store.Application.Carts;
 using Store.Application.Carts.Dto.Request;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Carts.Dto.Response;
 using Store.Domain.Abstractions;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Carts.Dto.Response;
 using System.ComponentModel.DataAnnotations;
 
 namespace Store.API.Controllers

@@ -1,4 +1,4 @@
-﻿using Store.Domain.Shared;
+﻿using Store.Domain.Shared.Enums;
 
 namespace Store.Infrastructure.Middlewares
 {

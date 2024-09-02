@@ -8,14 +8,14 @@ namespace Store.Domain.Carts
 
         public Task<Cart> UpdateAsync(Cart item);
 
-        public Task<Cart?> GetByIdAsync(int cartId);
+        public Task<EntityResult<Cart>> GetByIdAsync(int cartId);
 
-        public Task<Cart> GetByUserIdAsync(string userEmail);
+        public Task<EntityResult<Cart>> GetByUserIdAsync(string userId);
 
         public Task<Cart> GetByUserEmailAsync(string email);
         public Task DeleteAsync(Cart cart);
         public Task<Result<DateTime>> GetCartDateByIdAsync(int cartId);
 
-        public Task<int> GetCartIdByUserIdAsync(string userId);
+        public Task<Result<int>> GetCartIdByUserIdAsync(string userId);
     }
 }

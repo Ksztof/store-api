@@ -1,5 +1,5 @@
-﻿using Store.Application.Shared.DTO;
-using Store.Application.Shared.DTO.Response;
+﻿using Store.Application.Orders.Dto.Response;
+using Store.Application.Users.Dto;
 using Store.Domain.Abstractions;
 
 namespace Store.Application.Contracts.Email

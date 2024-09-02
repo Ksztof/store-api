@@ -5,7 +5,7 @@ using Store.Application.Products.Dto.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.ProductCategories;
 using Store.Domain.Products;
-using Store.Domain.Shared.DTO.Request.Product;
+using Store.Domain.Products.Dto.Request;
 using Store.Domain.Shared.Errors;
 
 namespace Store.Application.Products

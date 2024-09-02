@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using Store.Domain.Shared;
 using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Roles;
 
 namespace Store.Application.Users
 {
@@ -17,7 +17,7 @@ namespace Store.Application.Users
 
         public async Task AssignVisitorRoleAsync(StoreUser storeUser)
         {
-            string visitorRole = Roles.Visitor;
+            string visitorRole = UserRoles.Visitor;
 
             if (!await _roleManager.RoleExistsAsync(visitorRole))
                 await _roleManager.CreateAsync(new IdentityRole(visitorRole));
@@ -28,7 +28,7 @@ namespace Store.Application.Users
 
         public async Task AssignAdminRoleAsync(StoreUser storeUser)
         {
-            string adminRole = Roles.Administrator;
+            string adminRole = UserRoles.Administrator;
 
             if (!await _roleManager.RoleExistsAsync(adminRole))
                 await _roleManager.CreateAsync(new IdentityRole(adminRole));

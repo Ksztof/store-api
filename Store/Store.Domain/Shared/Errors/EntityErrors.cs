@@ -19,6 +19,9 @@ namespace Store.Domain.Shared.Errors
         public static Error NotFoundByUserId(string userId) => Error.NotFound(
            $"{typeof(T).Name}.NotFoundByUserId", $"For user with Id = {userId} the entity is missing");
 
+        public static Error EntityIdNotFoundByUserId(string userId) => Error.NotFound(
+           $"{typeof(T).Name}.EntityIdNotFoundByUserId", $"For user with Id = {userId} cannot find entity id");
+
         public static Error NotFoundEntitiesByIds(IEnumerable<TId> entityIds) => Error.NotFound(
             $"{typeof(T).Name}.NotFoundEntitiesByIds", $"Entities with IDs: {string.Join(", ", entityIds)} are missing");
 

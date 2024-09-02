@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Contracts.Email;
-using Store.Application.Shared.DTO;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Orders.Dto.Response;
+using Store.Application.Users.Dto;
 using Store.Domain.Abstractions;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Carts.Dto.Response;
 using System.Text;
 
 namespace Store.Infrastructure.Services.Email

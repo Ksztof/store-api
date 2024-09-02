@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Store.Domain.Abstractions;
@@ -31,7 +32,7 @@ namespace Store.Infrastructure.Persistence.Repositories
             return cartEntry.Entity;
         }
 
-        public async Task<Cart?> GetByIdAsync(int cartId)
+        public async Task<EntityResult<Cart>> GetByIdAsync(int cartId)
         {
             Cart? cart = await _shopDbContext.Carts
                 .AsSingleQuery()
@@ -39,10 +40,16 @@ namespace Store.Infrastructure.Persistence.Repositories
                 .ThenInclude(x => x.Product)
                 .SingleOrDefaultAsync(c => c.Id == cartId);
 
-            return cart;
+            if (cart is null)
+            {
+                Error error = EntityErrors<Cart, int>.NotFoundByCartId(cartId);
+                return EntityResult<Cart>.Failure(error);
+            }
+
+            return EntityResult<Cart>.Success(cart);
         }
 
-        public async Task<Cart> GetByUserIdAsync(string userId)
+        public async Task<EntityResult<Cart>> GetByUserIdAsync(string userId)
         {
             Cart? cart = await _shopDbContext.Carts
                 .AsSingleQuery()
@@ -50,7 +57,13 @@ namespace Store.Infrastructure.Persistence.Repositories
                 .ThenInclude(p => p.Product)
                 .SingleOrDefaultAsync(x => x.StoreUserId == userId);
 
-            return cart;
+            if (cart is null)
+            {
+                Error error = EntityErrors<Cart, int>.NotFoundByUserId(userId);
+                return EntityResult<Cart>.Failure(error);
+            }
+
+            return EntityResult<Cart>.Success(cart);
         }
 
         public async Task<Cart> GetByUserEmailAsync(string email)
@@ -73,26 +86,31 @@ namespace Store.Infrastructure.Persistence.Repositories
 
         public async Task<Result<DateTime>> GetCartDateByIdAsync(int cartId)
         {
-            Cart? cart = await GetByIdAsync(cartId);
-            if (cart == null)
+            EntityResult<Cart> getCart = await GetByIdAsync(cartId);
+            if (getCart.IsFailure)
             {
-                Error error = EntityErrors<Cart, int>.NotFoundByCartId(cartId);
-                return Result<DateTime>.Failure(error);
+                return Result<DateTime>.Failure(getCart.Error);
             }
 
-            DateTime createdAt = cart.CreatedAt;
+            DateTime createdAt = getCart.Entity.CreatedAt;
 
             return Result<DateTime>.Success(createdAt);
         }
 
-        public async Task<int> GetCartIdByUserIdAsync(string userId)
+        public async Task<Result<int>> GetCartIdByUserIdAsync(string userId)
         {
             int cartId = await _shopDbContext.Carts
                 .Where(c => c.StoreUser.Id == userId)
                 .Select(c => c.Id)
                 .FirstOrDefaultAsync();
 
-            return cartId;
+            if (cartId == 0)
+            {
+                Error error = EntityErrors<Cart, int>.EntityIdNotFoundByUserId(userId);
+                return Result<int>.Failure(error);
+            }
+
+            return Result<int>.Success(cartId);
         }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Contracts.JwtToken.Models;
-using Store.Application.Shared.Enums;
+using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
 
 namespace Store.Infrastructure.Services.Cookies

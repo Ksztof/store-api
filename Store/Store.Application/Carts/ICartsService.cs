@@ -1,7 +1,7 @@
 using Store.Application.Carts.Dto.Request;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Carts.Dto.Response;
 using Store.Domain.Abstractions;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Carts.Dto.Response;
 
 namespace Store.Application.Carts
 {

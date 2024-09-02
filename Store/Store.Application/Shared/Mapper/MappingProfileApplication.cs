@@ -1,14 +1,13 @@
 using AutoMapper;
 using Store.Application.Carts.Dto.Request;
+using Store.Application.Carts.Dto.Response;
 using Store.Application.Orders.Dto.Request;
 using Store.Application.Orders.Dto.Response;
 using Store.Application.Products.Dto.Request;
-using Store.Application.Shared.DTO.Response;
 using Store.Domain.CarLines;
 using Store.Domain.Orders;
-using Store.Domain.Shared.DTO.models;
-using Store.Domain.Shared.DTO.Request.Order;
-using Store.Domain.Shared.DTO.Request.Product;
+using Store.Domain.Orders.Dto.Request;
+using Store.Domain.Products.Dto.Request;
 
 
 namespace Store.Application.Shared.Mapper

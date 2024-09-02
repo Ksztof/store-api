@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Store.Application.Contracts.Azure.Options;
 using Store.Application.Contracts.JwtToken;
 using Store.Application.Contracts.JwtToken.Models;
-using Store.Application.Shared.Enums;
+using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
 using Store.Domain.StoreUsers;
 using System.IdentityModel.Tokens.Jwt;

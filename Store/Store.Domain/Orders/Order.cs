@@ -1,6 +1,6 @@
 ﻿using Store.Domain.Abstractions;
 using Store.Domain.Carts;
-using Store.Domain.Shared.Enums;
+using Store.Domain.Orders.Enums;
 using Store.Domain.StoreUsers;
 
 namespace Store.Domain.Orders
