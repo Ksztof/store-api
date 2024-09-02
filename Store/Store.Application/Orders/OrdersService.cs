@@ -1,17 +1,17 @@
 using AutoMapper;
+using Store.Application.Carts.Dto.Response;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Contracts.Email;
 using Store.Application.Contracts.Guest;
 using Store.Application.Orders.Dto.Request;
 using Store.Application.Orders.Dto.Response;
-using Store.Application.Shared.DTO.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.Carts;
+using Store.Domain.Carts.Dto.Response;
 using Store.Domain.Orders;
-using Store.Domain.Shared.DTO.Request.Order;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Orders.Dto.Request;
 using Store.Domain.Shared.Errors;
-using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Errors;
 
 namespace Store.Application.Orders
 {
@@ -71,13 +71,13 @@ namespace Store.Application.Orders
 
                 string userId = result.Value;
 
-                Cart? userCart = await _cartsRepository.GetByUserIdAsync(userId);
-                if (userCart == null)
+                EntityResult<Cart> getUserCart = await _cartsRepository.GetByUserIdAsync(userId);
+                if (getUserCart.IsFailure)
                 {
-                    Error error = EntityErrors<Cart, int>.NotFoundByUserId(userId);
-
-                    return EntityResult<OrderResponse>.Failure(error);
+                    return EntityResult<OrderResponse>.Failure(getUserCart.Error);
                 }
+
+                Cart userCart = getUserCart.Entity;
 
                 Order? userOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
 
@@ -114,14 +114,13 @@ namespace Store.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            Cart? guestCart = await _cartsRepository.GetByIdAsync(guestCartId);
-
-            if (guestCart == null)
+            EntityResult<Cart> getGuestCart = await _cartsRepository.GetByIdAsync(guestCartId);
+            if (getGuestCart.IsFailure)
             {
-                var error = EntityErrors<Cart, int>.NotFound(guestCartId);
-
-                return EntityResult<OrderResponse>.Failure(error);
+                return EntityResult<OrderResponse>.Failure(getGuestCart.Error);
             }
+
+            Cart guestCart = getGuestCart.Entity;
 
             order.CreateOrder(guestCart.Id, shippingDetail);
             order = await _ordersRepository.CreateOrderAsync(order);

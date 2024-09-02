@@ -1,7 +1,7 @@
 using Store.Domain.Abstractions;
 using Store.Domain.ProductCategories;
 using Store.Domain.ProductProductCategories;
-using Store.Domain.Shared.DTO.Request.Product;
+using Store.Domain.Products.Dto.Request;
 
 namespace Store.Domain.Products
 {

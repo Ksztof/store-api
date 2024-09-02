@@ -1,7 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.DTO.Request.Product;
-using Store.API.Shared.Extensions;
+using Store.API.Shared.Extensions.Models;
+using Store.API.Shared.Extensions.Results;
 using Store.API.Validation;
 using Store.Application.Products;
 using Store.Application.Products.Dto.Request;

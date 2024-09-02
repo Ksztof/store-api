@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Store.Application.Carts;
+using Store.Application.Carts.Dto.Response;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Contracts.Email;
 using Store.Application.Contracts.Guest;
 using Store.Application.Contracts.JwtToken;
-using Store.Application.Shared.DTO;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Users.Dto;
 using Store.Application.Users.Dto.Request;
 using Store.Domain.Abstractions;
 using Store.Domain.Carts;
 using Store.Domain.Orders;
 using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Errors;
 using System.Data;
 using System.Text;
 using String = System.String;
@@ -231,27 +232,27 @@ namespace Store.Application.Users
             return UserResult.Success();
         }
 
-        public async Task<UserResult> SubmitDeletion(string Id)
+        public async Task<UserResult> SubmitDeletion(string userId)
         {
-            StoreUser user = await _userManager.FindByIdAsync(Id);
-
-            if (user is null)
-                return UserResult.Failure(UserErrors.UserDoesntExist);
-
-            Cart? cart = await _cartsRepository.GetByUserIdAsync(Id);
-
-            if (cart != null)
-                await _cartsRepository.DeleteAsync(cart);
-
-            IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(Id);
-
-            if (orders.Any())
-                await _ordersRepository.DeleteOrdersAsync(orders);
+            StoreUser user = await _userManager.FindByIdAsync(userId);
 
             if (user.IsDeleteRequested is not true)
                 return UserResult.Failure(UserErrors.NotRequestedForAccountDeletion);
 
-            var deleteResult = await _userManager.DeleteAsync(user);
+            if (user is null)
+                return UserResult.Failure(UserErrors.UserDoesntExist);
+
+            EntityResult<Cart> getCart = await _cartsRepository.GetByUserIdAsync(userId);
+
+            if (getCart.IsSuccess)
+                await _cartsRepository.DeleteAsync(getCart.Entity);
+
+            IEnumerable<Order> orders = await _ordersRepository.GetByUserIdAsync(userId);
+
+            if (orders.Any())
+                await _ordersRepository.DeleteOrdersAsync(orders);
+
+            IdentityResult deleteResult = await _userManager.DeleteAsync(user);
 
             if (!deleteResult.Succeeded)
             {

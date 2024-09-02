@@ -1,4 +1,4 @@
-﻿using Store.Application.Shared.Enums;
+﻿using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
 
 namespace Store.Infrastructure.Services.Cookies

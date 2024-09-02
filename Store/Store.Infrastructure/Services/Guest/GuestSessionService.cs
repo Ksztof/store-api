@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Store.Application.Contracts.Guest;
 using Store.Domain.Abstractions;
-using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Errors;
 
 namespace Store.Infrastructure.Services.Guest
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Store.Application.Shared.Enums;
+using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
 
 namespace Store.Application.Contracts.ContextHttp

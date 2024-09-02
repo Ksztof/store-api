@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.DTO.Request.Order;
-using Store.API.Shared.Extensions;
+using Store.API.Shared.Extensions.Models;
+using Store.API.Shared.Extensions.Results;
 using Store.API.Validation;
 using Store.Application.Orders;
 using Store.Application.Orders.Dto.Request;
 using Store.Application.Orders.Dto.Response;
-using Store.Application.Shared.DTO.Response;
 using Store.Domain.Abstractions;
 
 namespace Store.API.Controllers

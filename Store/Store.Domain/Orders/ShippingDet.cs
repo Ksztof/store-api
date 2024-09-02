@@ -1,5 +1,5 @@
 ﻿using Store.Domain.Abstractions;
-using Store.Domain.Shared.DTO.Request.Order;
+using Store.Domain.Orders.Dto.Request;
 
 namespace Store.Domain.Orders
 {

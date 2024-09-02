@@ -1,6 +1,5 @@
 ﻿using Store.Application.Orders.Dto.Request;
 using Store.Application.Orders.Dto.Response;
-using Store.Application.Shared.DTO.Response;
 using Store.Domain.Abstractions;
 
 namespace Store.Application.Orders

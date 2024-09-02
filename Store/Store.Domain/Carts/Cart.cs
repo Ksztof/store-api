@@ -1,8 +1,8 @@
 ﻿using Store.Domain.Abstractions;
 using Store.Domain.CarLines;
+using Store.Domain.Carts.Dto.Response;
 using Store.Domain.Orders;
-using Store.Domain.Shared.DTO.Request.Product;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Products.Dto.Request;
 using Store.Domain.StoreUsers;
 
 namespace Store.Domain.Carts

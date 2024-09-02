@@ -7,9 +7,9 @@ using Store.Application.Payments.Dto.Request;
 using Store.Application.Payments.SignalR;
 using Store.Domain.Abstractions;
 using Store.Domain.Orders;
-using Store.Domain.Shared.Enums;
+using Store.Domain.Orders.Enums;
 using Store.Domain.Shared.Errors;
-using Store.Domain.StoreUsers;
+using Store.Domain.StoreUsers.Errors;
 using Stripe;
 
 namespace Store.Application.Payments

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Store.API.Shared.Extensions;
 using Store.Application.Users;
 using Store.Domain.Abstractions;
 using FluentValidation.Results;
@@ -9,6 +8,8 @@ using Store.API.Shared.DTO.Request.StoreUser;
 using Store.Domain.StoreUsers;
 using Store.API.Validation;
 using Store.Application.Users.Dto.Request;
+using Store.API.Shared.Extensions.Results;
+using Store.API.Shared.Extensions.Models;
 
 namespace Store.API.Controllers
 {
