@@ -107,9 +107,9 @@ namespace Store.Application.Users
         {
             StoreUser storeUser = userForRegistration.StoreUser;
 
-            var userExists = await _userManager.FindByEmailAsync(storeUser.Email);
+            var user = await _userManager.FindByEmailAsync(storeUser.Email);
 
-            if (userExists != null)
+            if (user != null)
             {
                 return UserResult.Failure(UserErrors.EmailAlreadyTaken);
             }
@@ -118,7 +118,7 @@ namespace Store.Application.Users
 
             if (!result.Succeeded)
             {
-                //Errors can be chacked like this: == nameof(IdentityErrorDescriber.DefaultError);
+                //Authentication errors can be chacked like this: == nameof(IdentityErrorDescriber.DefaultError);
                 IEnumerable<string> errors = result.Errors.Select(e => e.Description);
                 string errorMessage = String.Join(", ", errors);
 
@@ -164,7 +164,9 @@ namespace Store.Application.Users
         public async Task<UserResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
                 return UserResult.Failure(UserErrors.WrongAccountActivationToken(token));
+            }
 
             string decodedToken = _emailService.DecodeBaseUrlToken(token);
 

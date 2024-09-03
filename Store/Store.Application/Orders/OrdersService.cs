@@ -79,11 +79,10 @@ namespace Store.Application.Orders
 
                 Cart userCart = getUserCart.Entity;
 
-                Order? userOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
-
-                if (userOrder != null)
+                EntityResult<Order> getUserOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
+                if (getUserOrder.IsSuccess)
                 {
-                    Error error = EntityErrors<Order, int>.EntityInUse(userOrder.Id, userCart.Id);
+                    Error error = EntityErrors<Order, int>.EntityInUse(getUserOrder.Entity.Id, userCart.Id);
 
                     return EntityResult<OrderResponse>.Failure(error);
                 }
@@ -105,11 +104,11 @@ namespace Store.Application.Orders
 
             int guestCartId = receiveCartIdResult.Value;
 
-            Order? guestOrder = await _ordersRepository.GetByCartIdAsync(guestCartId);
+            EntityResult<Order> getGuestOrder = await _ordersRepository.GetByCartIdAsync(guestCartId);
 
-            if (guestOrder != null)
+            if (getGuestOrder.IsSuccess)
             {
-                Error error = EntityErrors<Order, int>.EntityInUse(guestOrder.Id, guestCartId);
+                Error error = EntityErrors<Order, int>.EntityInUse(getGuestOrder.Entity.Id, guestCartId);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
@@ -144,15 +143,17 @@ namespace Store.Application.Orders
         public async Task<EntityResult<OrderResponse>> GetByIdAsync(int orderId)
         {
             if (orderId <= 0)
-                return EntityResult<OrderResponse>.Failure(EntityErrors<Order, int>.WrongEntityId(orderId));
-
-            Order? order = await _ordersRepository.GetByIdAsync(orderId);
-            if (order == null)
             {
-                var error = EntityErrors<Order, int>.NotFound(orderId);
-
-                return EntityResult<OrderResponse>.Failure(error);
+                return EntityResult<OrderResponse>.Failure(EntityErrors<Order, int>.WrongEntityId(orderId));
             }
+
+            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+            if (getOrder.IsFailure)
+            {
+                return EntityResult<OrderResponse>.Failure(getOrder.Error);
+            }
+
+            Order order = getOrder.Entity;
 
             AboutCartDomRes cartContent = order.Cart.CheckCart();
             ShippingDetailResponse shippingDetails = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
@@ -164,18 +165,18 @@ namespace Store.Application.Orders
         public async Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId)
         {
             if (orderId <= 0)
-                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
-
-            Order? order = await _ordersRepository.GetByIdAsync(orderId);
-
-            if (order == null)
             {
-                var error = EntityErrors<Order, int>.NotFound(orderId);
-
-                return EntityResult<OrderResponse>.Failure(error);
+                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
             }
 
-            await _ordersRepository.DeleteOrderAsync(order);
+            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+
+            if (getOrder.IsFailure)
+            {
+                return EntityResult<OrderResponse>.Failure(getOrder.Error);
+            }
+
+            await _ordersRepository.DeleteOrderAsync(getOrder.Entity);
 
             return EntityResult<OrderResponse>.Success();
         }
@@ -183,7 +184,9 @@ namespace Store.Application.Orders
         public async Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId)
         {
             if (orderId <= 0)
+            {
                 return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+            }
 
             Result isUserAuthenticated = _contextService.IsUserAuthenticated();
             Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
@@ -195,14 +198,14 @@ namespace Store.Application.Orders
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            Order? order = await _ordersRepository.GetByIdAsync(orderId);
+            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
 
-            if (order == null)
+            if (getOrder.IsFailure)
             {
-                var error = EntityErrors<Order, int>.NotFound(orderId);
-
-                return EntityResult<OrderResponse>.Failure(error);
+                return EntityResult<OrderResponse>.Failure(getOrder.Error);
             }
+
+            Order order = getOrder.Entity;
 
             if (isUserAuthenticated.IsSuccess)
             {

@@ -20,10 +20,14 @@ namespace Store.Application.Users
             string visitorRole = UserRoles.Visitor;
 
             if (!await _roleManager.RoleExistsAsync(visitorRole))
+            {
                 await _roleManager.CreateAsync(new IdentityRole(visitorRole));
+            }
 
             if (await _roleManager.RoleExistsAsync(visitorRole))
+            {
                 await _userManager.AddToRoleAsync(storeUser, visitorRole);
+            }
         }
 
         public async Task AssignAdminRoleAsync(StoreUser storeUser)
@@ -31,10 +35,14 @@ namespace Store.Application.Users
             string adminRole = UserRoles.Administrator;
 
             if (!await _roleManager.RoleExistsAsync(adminRole))
+            {
                 await _roleManager.CreateAsync(new IdentityRole(adminRole));
+            }
 
             if (await _roleManager.RoleExistsAsync(adminRole))
+            {
                 await _userManager.AddToRoleAsync(storeUser, adminRole);
+            }
         }
     }
 }

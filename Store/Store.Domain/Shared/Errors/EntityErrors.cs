@@ -7,6 +7,9 @@ namespace Store.Domain.Shared.Errors
         public static Error NotFound(TId entityId) => Error.NotFound(
             $"{typeof(T).Name}.NotFound", $"Entity with ID: {entityId} is missing");
 
+        public static Error NotFoundByName(string entityName) => Error.NotFound(
+           $"{typeof(T).Name}.NotFoundByName", $"Entity of name: {entityName} is missing");
+
         public static Error NotFoundByProductId(int productId) => Error.NotFound(
             $"{typeof(T).Name}.NotFoundByProductId", $"Entity with product ID: {productId} is missing");
 

@@ -29,7 +29,7 @@ namespace Store.Infrastructure.Configuration
                     EmailConfirmed = true,
                 };
 
-                string adminPswd = "Haslo1234!"; //TODO: mvoe pswd to az secrets
+                string adminPswd = "Haslo1234!"; //TODO: mvoe pswd to az secrets!!!!!!!!!!!!!!
 
                 var result = await _userManager.CreateAsync(adminUser, adminPswd);
 
