@@ -248,13 +248,14 @@ namespace Store.Application.Payments
                 return;
             }
 
-            Order? order = await _ordersRepository.GetByIdAsync(orderId);
-            if (order == null)
+            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+            if (getOrder.IsFailure)
             {
-                Error error = EntityErrors<Order, int>.NotFoundByOrderId(orderId);
-                await _notificationService.SendPaymentStatusAsync(orderId.ToString(), "failed", error);
+                await _notificationService.SendPaymentStatusAsync(orderId.ToString(), "failed", getOrder.Error);
                 return;
             }
+
+            Order order = getOrder.Entity;
 
             if (stripeEvent.Type == Events.PaymentIntentSucceeded)
             {

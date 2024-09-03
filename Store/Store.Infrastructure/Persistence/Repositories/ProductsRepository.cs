@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Store.Domain.Abstractions;
 using Store.Domain.Products;
+using Store.Domain.Shared.Errors;
 
 namespace Store.Infrastructure.Persistence.Repositories
 {
@@ -21,10 +24,15 @@ namespace Store.Infrastructure.Persistence.Repositories
             return productEntry.Entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int productId)
         {
-            Product? product = await GetByIdAsync(id);
-            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(product);
+            EntityResult<Product> getProduct = await GetByIdAsync(productId);
+            if (getProduct.IsFailure)
+            {
+                throw new KeyNotFoundException($"Product Not found by id, product id: {productId}");
+            }
+
+            EntityEntry<Product> deleteResult = _shopDbContext.Products.Remove(getProduct.Entity);
             await _shopDbContext.SaveChangesAsync();
         }
 
@@ -35,13 +43,20 @@ namespace Store.Infrastructure.Persistence.Repositories
             return productsList;
         }
 
-        public async Task<Product?> GetByIdAsync(int id)
+        public async Task<EntityResult<Product>> GetByIdAsync(int productId)
         {
             Product? product = await _shopDbContext.Products
                 .AsSingleQuery()
                 .Include(x => x.ProductProductCategories)
-                .SingleOrDefaultAsync(x => x.Id == id);
-            return product;
+                .SingleOrDefaultAsync(x => x.Id == productId);
+
+            if(product is null)
+            {
+                Error error = EntityErrors<Product, int>.NotFoundByProductId(productId);
+                return EntityResult<Product>.Failure(error);
+            }
+
+            return EntityResult<Product>.Success(product);
         }
 
         public async Task<IEnumerable<Product>> GetByIdsAsync(int[] ids)
@@ -55,12 +70,18 @@ namespace Store.Infrastructure.Persistence.Repositories
             return product;
         }
 
-        public async Task<Product?> GetByName(string productName)
+        public async Task<EntityResult<Product>> GetByName(string productName)
         {
             Product? product = await _shopDbContext.Products
                 .FirstOrDefaultAsync(x => x.Name == productName);
 
-            return product;
+            if(product is null) 
+            {
+                Error error = EntityErrors<Product, int>.NotFoundByName(productName);
+                return EntityResult<Product>.Failure(error);
+            }
+
+            return EntityResult<Product>.Success(product);
         }
 
         public async Task<Product> UpdateAsync(Product item)

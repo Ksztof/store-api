@@ -14,28 +14,25 @@ namespace Store.Application.Products
     {
         private readonly IProductsRepository _productsRepository;
         private readonly IProductCategoriesRepository _productCategoriesRepository;
-        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
         public ProductsService(
             IProductsRepository productsRepository,
             IProductCategoriesRepository productCategoriesRepository,
-            ITokenService tokenService,
             IMapper mapper)
         {
             _productsRepository = productsRepository;
             _productCategoriesRepository = productCategoriesRepository;
-            _tokenService = tokenService;
             _mapper = mapper;
         }
 
         public async Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductDtoApp createProductForm)
         {
-            Product? productExists = await _productsRepository.GetByName(createProductForm.ProductName);
+            EntityResult<Product> getProduct = await _productsRepository.GetByName(createProductForm.ProductName);
 
-            if (productExists != null)
+            if (getProduct.IsSuccess)
             {
-                Error error = EntityErrors<Product, int>.ProductAlreadyExists(productExists.Id, createProductForm.ProductName);
+                Error error = EntityErrors<Product, int>.ProductAlreadyExists(getProduct.Entity.Id, createProductForm.ProductName);
 
                 return EntityResult<ProductResponse>.Failure(error);
             }
@@ -67,13 +64,11 @@ namespace Store.Application.Products
             if (productId <= 0)
                 return EntityResult<Product>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
 
-            Product? product = await _productsRepository.GetByIdAsync(productId);
+            EntityResult<Product> getProduct = await _productsRepository.GetByIdAsync(productId);
 
-            if (product == null)
+            if (getProduct.IsFailure)
             {
-                var error = EntityErrors<Product, int>.NotFound(productId);
-
-                return EntityResult<Product>.Failure(error);
+                return EntityResult<Product>.Failure(getProduct.Error);
             }
 
             await _productsRepository.DeleteAsync(productId);
@@ -86,15 +81,14 @@ namespace Store.Application.Products
             if (productId <= 0)
                 return EntityResult<ProductResponse>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
 
-            Product? product = await _productsRepository.GetByIdAsync(productId);
+            EntityResult<Product> getProduct = await _productsRepository.GetByIdAsync(productId);
 
-            if (product is null)
+            if (getProduct.IsFailure)
             {
-                var productError = EntityErrors<Product, int>.NotFound(productId);
-                return EntityResult<ProductResponse>.Failure(productError);
+                return EntityResult<ProductResponse>.Failure(getProduct.Error);
             }
 
-            ProductResponse productDetails = MapProductResponse(product);
+            ProductResponse productDetails = MapProductResponse(getProduct.Entity);
 
             return EntityResult<ProductResponse>.Success(productDetails);
         }
@@ -110,14 +104,14 @@ namespace Store.Application.Products
 
         public async Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductDtoApp updateForm)
         {
-            Product? product = await _productsRepository.GetByIdAsync(updateForm.productId);
+            EntityResult<Product> getProduct = await _productsRepository.GetByIdAsync(updateForm.productId);
 
-            if (product is null)
+            if (getProduct.IsFailure)
             {
-                var error = EntityErrors<Product, int>.NotFound(updateForm.productId);
-
-                return EntityResult<ProductResponse>.Failure(error);
+                return EntityResult<ProductResponse>.Failure(getProduct.Error);
             }
+
+            Product product = getProduct.Entity;
 
             ICollection<ProductCategory> newProductCategories = await _productCategoriesRepository.GetByIdsAsync(updateForm.ProductCategoriesIds);
 

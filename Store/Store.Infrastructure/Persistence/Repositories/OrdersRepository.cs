@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Store.Domain.Abstractions;
 using Store.Domain.Orders;
+using Store.Domain.Shared.Errors;
 
 namespace Store.Infrastructure.Persistence.Repositories
 {
@@ -35,7 +38,7 @@ namespace Store.Infrastructure.Persistence.Repositories
             await _shopDbContext.SaveChangesAsync();
         }
 
-        public async Task<Order?> GetByIdAsync(int orderId)
+        public async Task<EntityResult<Order>> GetByIdAsync(int orderId)
         {
             Order? order = await _shopDbContext.Orders
                 .AsSingleQuery()
@@ -45,7 +48,13 @@ namespace Store.Infrastructure.Persistence.Repositories
                 .Include(sd => sd.ShippingDetail)
                 .FirstOrDefaultAsync(X => X.Id == orderId);
 
-            return order;
+            if(order is null)
+            {
+                Error error = EntityErrors<Order, int>.NotFoundByOrderId(orderId);
+                return EntityResult<Order>.Failure(error);
+            }
+
+            return EntityResult<Order>.Success(order);
         }
 
         public async Task<ShippingDet> GetShippingDetailsByUserIdAsync(string userId)
@@ -68,15 +77,6 @@ namespace Store.Infrastructure.Persistence.Repositories
 
             return shippingDetails;
         }
-
-        /*public async Task<IEnumerable<Order>> GetByCartIdAsync(int cartId)
-        {
-            IEnumerable<Order> orders = await _shopDbContext.Orders
-                .Include(x => x.ShippingDetail)
-                .Where(x => x.CartId == cartId).ToListAsync();
-
-            return orders;
-        }*/
 
         public async Task<IEnumerable<Order>> GetByUserIdAsync(string userId)
         {
@@ -104,14 +104,17 @@ namespace Store.Infrastructure.Persistence.Repositories
             return null;
         }
 
-        public async Task<Order?> GetByCartIdAsync(int cartId)
+        public async Task<EntityResult<Order>> GetByCartIdAsync(int cartId)
         {
             Order? order = await _shopDbContext.Orders.FirstOrDefaultAsync(o => o.CartId == cartId);
 
-            if (order != null)
-                return order;
+            if (order is null)
+            {
+                Error error = EntityErrors<Order, int>.NotFoundByCartId(cartId);
+                return EntityResult<Order>.Failure(error);
+            }
 
-            return null;
+            return EntityResult<Order>.Success(order);
         }
 
         public async Task<int> GetNewestOrderIdByUserIdAsync(string userId)
