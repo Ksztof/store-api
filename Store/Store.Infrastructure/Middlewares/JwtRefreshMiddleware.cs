@@ -83,7 +83,7 @@ public class JwtRefreshMiddleware
                                 {
                                     HttpOnly = true,
                                     Secure = true,
-                                    Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.JwtTokenExpirationInHours),
+                                    Expires = DateTime.UtcNow.AddSeconds(_jwtOptions.JwtTokenExpirationInHours),
                                     IsEssential = true,
                                     SameSite = SameSiteMode.None
                                 };

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Shared.DTO.Request.Cart;
 using Store.API.Shared.Extensions.Models;
@@ -9,7 +10,7 @@ using Store.Application.Carts.Dto.Request;
 using Store.Application.Carts.Dto.Response;
 using Store.Domain.Abstractions;
 using Store.Domain.Carts.Dto.Response;
-using System.ComponentModel.DataAnnotations;
+using Store.Domain.StoreUsers.Roles;
 
 namespace Store.API.Controllers
 {
@@ -32,13 +33,13 @@ namespace Store.API.Controllers
         }
 
         [HttpPost("products")]
+        [Authorize(Roles = UserRoles.Administrator)]
         public async Task<IActionResult> AddProductsToCartAsync([FromBody] NewProductsDtoApi request)
         {
             var validationResult = await _validationService.ValidateAsync(request);
 
             if (!validationResult.IsValid)
                 return validationResult.ToValidationProblemDetails();
-
 
             NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
