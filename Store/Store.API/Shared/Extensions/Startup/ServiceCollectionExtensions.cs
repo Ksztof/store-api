@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Store.API.Shared.Mapper;
 using Store.API.Validation;
