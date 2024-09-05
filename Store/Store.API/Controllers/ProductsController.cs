@@ -28,7 +28,7 @@ namespace Store.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = Roles.Administrator)]
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDtoApi createProductForm)
         {
             var validationResult = await _validationService.ValidateAsync(createProductForm);

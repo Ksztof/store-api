@@ -25,7 +25,7 @@ namespace Store.Infrastructure.Services.Cookies
             {
                 HttpOnly = true,
                 Secure = true,
-                Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),//must be equal to SetCookieWithRefreshToken
+                Expires = DateTime.UtcNow.AddSeconds(_jwtOptions.Value.RefreshTokenExpirationInHours),
                 IsEssential = false,
                 SameSite = SameSiteMode.None,
             };

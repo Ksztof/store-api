@@ -70,7 +70,7 @@ namespace Store.Infrastructure.Services.Tokens
             {
                 Issuer = _jwtOptions.ValidIssuer,
                 Audience = _jwtOptions.ValidAudience,
-                Expires = DateTime.UtcNow.AddHours(_jwtOptions.JwtTokenExpirationInHours),
+                Expires = DateTime.UtcNow.AddSeconds(_jwtOptions.JwtTokenExpirationInHours),
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };

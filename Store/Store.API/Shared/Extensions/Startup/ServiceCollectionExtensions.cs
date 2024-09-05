@@ -48,33 +48,33 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         //Application services registration
-        services.AddTransient<IPaymentsService, PaymentsService>();
+        services.AddScoped<IPaymentsService, PaymentsService>();
 
-        services.AddTransient<IProductsService, ProductsService>();
+        services.AddScoped<IProductsService, ProductsService>();
 
-        services.AddTransient<ICartsService, CartsService>();
+        services.AddScoped<ICartsService, CartsService>();
 
-        services.AddTransient<IOrdersService, OrdersService>();
+        services.AddScoped<IOrdersService, OrdersService>();
 
         services.AddScoped<IUserService, UserService>();
 
         //repositories registration
-        services.AddTransient<IOrdersRepository, OrdersRepository>();
+        services.AddScoped<IOrdersRepository, OrdersRepository>();
 
-        services.AddTransient<ICartsRepository, CartsRepository>();
+        services.AddScoped<ICartsRepository, CartsRepository>();
 
-        services.AddTransient<IProductsRepository, ProductsRepository>();
+        services.AddScoped<IProductsRepository, ProductsRepository>();
 
-        services.AddTransient<IProductCategoriesRepository, ProductCategoriesRepository>();
+        services.AddScoped<IProductCategoriesRepository, ProductCategoriesRepository>();
 
-        services.AddTransient<ICartLinesRepository, CartLinesRepository>();
+        services.AddScoped<ICartLinesRepository, CartLinesRepository>();
 
         //Infra services registration
         services.AddTransient<INotificationService, NotificationService>();
 
         services.AddScoped<IHttpContextService, HttpContextService>();
 
-        services.AddTransient<IGuestSessionService, GuestSessionService>();
+        services.AddScoped<IGuestSessionService, GuestSessionService>();
 
         services.AddTransient<ITokenService, JwtTokenService>();
 
@@ -121,9 +121,9 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddUrlHelper(this IServiceCollection services)
     {
-        services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
-        services.AddTransient<IUrlHelper>(x =>
+        services.AddScoped<IUrlHelper>(x =>
         {
             var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
             var factory = x.GetRequiredService<IUrlHelperFactory>();
