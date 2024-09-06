@@ -1,11 +1,9 @@
 ﻿using Store.Domain.StoreUsers;
 
-namespace Store.Application.Users
-{
-    public interface IPermissionService
-    {
-        public Task AssignVisitorRoleAsync(StoreUser storeUser);
+namespace Store.Application.Users;
 
-        public Task AssignAdminRoleAsync(StoreUser storeUser);
-    }
+public interface IPermissionService
+{
+    public Task AssignVisitorRoleAsync(StoreUser storeUser);
+    public Task AssignAdminRoleAsync(StoreUser storeUser);
 }

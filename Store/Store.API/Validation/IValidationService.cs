@@ -1,10 +1,8 @@
-﻿
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 
-namespace Store.API.Validation
+namespace Store.API.Validation;
+
+public interface IValidationService
 {
-    public interface IValidationService
-    {
-        public Task<ValidationResult> ValidateAsync<T>(T instance);
-    }
+    public Task<ValidationResult> ValidateAsync<T>(T instance);
 }

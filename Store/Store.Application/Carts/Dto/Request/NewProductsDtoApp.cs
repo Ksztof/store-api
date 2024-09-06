@@ -1,7 +1,6 @@
-﻿namespace Store.Application.Carts.Dto.Request
+﻿namespace Store.Application.Carts.Dto.Request;
+
+public class NewProductsDtoApp
 {
-    public class NewProductsDtoApp
-    {
-        public ProductInCartApp[] Products { get; set; }
-    }
+    public ProductInCartApp[] Products { get; set; }
 }

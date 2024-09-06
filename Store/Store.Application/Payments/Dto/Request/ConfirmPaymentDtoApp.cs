@@ -1,8 +1,7 @@
-﻿namespace Store.Application.Payments.Dto.Request
+﻿namespace Store.Application.Payments.Dto.Request;
+
+public class ConfirmPaymentDtoApp
 {
-    public class ConfirmPaymentDtoApp
-    {
-        public string PaymentIntentId { get; set; }
-        public string PaymentMethodId { get; set; }
-    }
+    public string PaymentIntentId { get; set; }
+    public string PaymentMethodId { get; set; }
 }

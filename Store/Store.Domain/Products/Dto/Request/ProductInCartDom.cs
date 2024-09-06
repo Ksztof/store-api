@@ -1,8 +1,7 @@
-﻿namespace Store.Domain.Products.Dto.Request
+﻿namespace Store.Domain.Products.Dto.Request;
+
+public class ProductInCartDom
 {
-    public class ProductInCartDom
-    {
-        public int ProductId { get; set; }
-        public decimal Quantity { get; set; }
-    }
+    public int ProductId { get; set; }
+    public decimal Quantity { get; set; }
 }

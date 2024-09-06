@@ -4,9 +4,9 @@ using Store.Domain.Shared.Enums;
 
 namespace Store.API.Shared.Extensions.Results;
 
-public static class ResultExtensions
+internal static class ResultExtensions
 {
-    public static IActionResult ToProblemDetails(this Result result)
+    internal static IActionResult ToProblemDetails(this Result result)
     {
         if (result.IsSuccess)
         {
@@ -16,7 +16,7 @@ public static class ResultExtensions
         return CreateProblemDetailsResult(result.Error);
     }
 
-    public static IActionResult ToProblemDetails(this UserResult result)
+    internal static IActionResult ToProblemDetails(this UserResult result)
     {
         if (result.IsSuccess)
         {
@@ -26,7 +26,7 @@ public static class ResultExtensions
         return CreateProblemDetailsResult(result.Error);
     }
 
-    public static IActionResult ToProblemDetails<TEntity>(this EntityResult<TEntity> result)
+    internal static IActionResult ToProblemDetails<TEntity>(this EntityResult<TEntity> result)
     {
         if (result.IsSuccess)
         {
@@ -35,6 +35,7 @@ public static class ResultExtensions
 
         return CreateProblemDetailsResult(result.Error);
     }
+
     private static IActionResult CreateProblemDetailsResult(Error error)
     {
         var problemDetails = new ProblemDetails
@@ -51,7 +52,7 @@ public static class ResultExtensions
         };
     }
 
-    static int GetStatusCode(ErrorType errorType) =>
+    internal static int GetStatusCode(ErrorType errorType) =>
         errorType switch
         {
             ErrorType.Validation => StatusCodes.Status400BadRequest,
@@ -63,7 +64,7 @@ public static class ResultExtensions
             _ => StatusCodes.Status500InternalServerError
         };
 
-    static string GetTitle(ErrorType errorType) =>
+    internal static string GetTitle(ErrorType errorType) =>
         errorType switch
         {
             ErrorType.Validation => "Bad Request",
@@ -75,7 +76,7 @@ public static class ResultExtensions
             _ => "Server Failure"
         };
 
-    static string GetType(ErrorType statusCode) =>
+    internal static string GetType(ErrorType statusCode) =>
         statusCode switch
         {
             ErrorType.Validation => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
@@ -86,6 +87,5 @@ public static class ResultExtensions
             ErrorType.Server => "https://tools.ietf.org/html/rfc7231#section-6.6.1",
             _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
         };
-
 }
 

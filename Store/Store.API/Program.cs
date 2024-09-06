@@ -1,18 +1,6 @@
-﻿using Azure.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Options;
 using Store.API.Shared.Extensions.Startup;
 using Store.Application.Contracts.Azure.Options;
-using Store.Application.Contracts.JwtToken.Models;
-using Store.Domain.StoreUsers;
-using Store.Infrastructure.Configuration;
-using Store.Infrastructure.Persistence;
-using Store.Infrastructure.Services.SignalR;
-using Stripe;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

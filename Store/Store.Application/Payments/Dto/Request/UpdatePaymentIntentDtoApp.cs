@@ -1,7 +1,6 @@
-﻿namespace Store.Application.Payments.Dto.Request
+﻿namespace Store.Application.Payments.Dto.Request;
+
+public class UpdatePaymentIntentDtoApp
 {
-    public class UpdatePaymentIntentDtoApp
-    {
-        public string clientSecret { get; set; }
-    }
+    public string clientSecret { get; set; }
 }

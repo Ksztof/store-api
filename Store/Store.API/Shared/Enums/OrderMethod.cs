@@ -1,7 +1,6 @@
-﻿namespace Store.API.Shared.Enums
+﻿namespace Store.API.Shared.Enums;
+
+internal enum OrderMethod
 {
-    public enum OrderMethod
-    {
-        UponDelivery = 0,
-    }
+    UponDelivery = 0,
 }

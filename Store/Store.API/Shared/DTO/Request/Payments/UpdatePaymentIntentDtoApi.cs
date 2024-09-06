@@ -1,7 +1,5 @@
-﻿namespace Store.API.Shared.DTO.Request.Payments
+﻿namespace Store.API.Shared.DTO.Request.Payments;
+public class UpdatePaymentIntentDtoApi
 {
-    public class UpdatePaymentIntentDtoApi
-    {
-        public string clientSecret { get; set; }
-    }
+    public string clientSecret { get; set; }
 }

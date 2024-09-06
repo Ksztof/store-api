@@ -1,7 +1,6 @@
-﻿namespace Store.Domain.Products.Dto.Request
+﻿namespace Store.Domain.Products.Dto.Request;
+
+public class NewProductsDtoDom
 {
-    public class NewProductsDtoDom
-    {
-        public ProductInCartDom[] Products { get; set; }
-    }
+    public ProductInCartDom[] Products { get; set; }
 }

@@ -12,39 +12,38 @@ using Store.Application.Products.Dto.Request;
 using Store.Application.Users.Dto.Request;
 using Store.Domain.StoreUsers;
 
-namespace Store.API.Shared.Mapper
+namespace Store.API.Shared.Mapper;
+
+internal class MappingProfileApi : Profile
 {
-    public class MappingProfileApi : Profile
+    internal MappingProfileApi()
     {
-        public MappingProfileApi()
-        {
-            CreateMap<NewProductsDtoApi, NewProductsDtoApp>();
-            CreateMap<ProductInCartApi, ProductInCartApp>();
+        CreateMap<NewProductsDtoApi, NewProductsDtoApp>();
+        CreateMap<ProductInCartApi, ProductInCartApp>();
 
-            CreateMap<ModifyProductDtoApi, ModifyProductDtoApp>();
-            CreateMap<ProductModificationApi, ProductModificationApp>();
+        CreateMap<ModifyProductDtoApi, ModifyProductDtoApp>();
+        CreateMap<ProductModificationApi, ProductModificationApp>();
 
-            CreateMap<AuthenticateUserDtoApi, AuthenticateUserDtoApp>();
+        CreateMap<AuthenticateUserDtoApi, AuthenticateUserDtoApp>();
 
-            CreateMap<RegisterUserDtoApi, RegisterUserDtoApp>();
+        CreateMap<RegisterUserDtoApi, RegisterUserDtoApp>();
 
-            CreateMap<CreateProductDtoApi, CreateProductDtoApp>();
+        CreateMap<CreateProductDtoApi, CreateProductDtoApp>();
 
-            CreateMap<UpdateProductDtoApi, UpdateProductDtoApp>();
+        CreateMap<UpdateProductDtoApi, UpdateProductDtoApp>();
 
-            CreateMap<RegisterUserDtoApi, StoreUser>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Login));
+        CreateMap<RegisterUserDtoApi, StoreUser>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Login));
 
-            CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
+        CreateMap<CrateOrderDtoApi, CreateOrderDtoApp>();
 
-            CreateMap<CheckCurrentCartDtoApi, CheckCurrentCartDtoApp>();
+        CreateMap<CheckCurrentCartDtoApi, CheckCurrentCartDtoApp>();
 
-            CreateMap<GetClientSecretDtoApi, GetClientSecretDtoApp>();
+        CreateMap<GetClientSecretDtoApi, GetClientSecretDtoApp>();
 
-            CreateMap<ConfirmPaymentDtoApi, ConfirmPaymentDtoApp>();
+        CreateMap<ConfirmPaymentDtoApi, ConfirmPaymentDtoApp>();
 
-            CreateMap<UpdatePaymentIntentDtoApi, UpdatePaymentIntentDtoApp>();
+        CreateMap<UpdatePaymentIntentDtoApi, UpdatePaymentIntentDtoApp>();
 
-        }
     }
 }

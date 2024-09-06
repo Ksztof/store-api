@@ -2,47 +2,48 @@ using Microsoft.AspNetCore.Identity;
 using Store.Domain.StoreUsers;
 using Store.Domain.StoreUsers.Roles;
 
-namespace Store.Application.Users
+namespace Store.Application.Users;
+
+public class PermissionService : IPermissionService
 {
-    public class PermissionService : IPermissionService
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<StoreUser> _userManager;
+
+    public PermissionService(
+        RoleManager<IdentityRole> roleManager,
+        UserManager<StoreUser> userManager)
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<StoreUser> _userManager;
+        _roleManager = roleManager;
+        _userManager = userManager;
+    }
 
-        public PermissionService(RoleManager<IdentityRole> roleManager, UserManager<StoreUser> userManager)
+    public async Task AssignVisitorRoleAsync(StoreUser storeUser)
+    {
+        string visitorRole = UserRoles.Visitor;
+
+        if (!await _roleManager.RoleExistsAsync(visitorRole))
         {
-            _roleManager = roleManager;
-            _userManager = userManager;
+            await _roleManager.CreateAsync(new IdentityRole(visitorRole));
         }
 
-        public async Task AssignVisitorRoleAsync(StoreUser storeUser)
+        if (await _roleManager.RoleExistsAsync(visitorRole))
         {
-            string visitorRole = UserRoles.Visitor;
+            await _userManager.AddToRoleAsync(storeUser, visitorRole);
+        }
+    }
 
-            if (!await _roleManager.RoleExistsAsync(visitorRole))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(visitorRole));
-            }
+    public async Task AssignAdminRoleAsync(StoreUser storeUser)
+    {
+        string adminRole = UserRoles.Administrator;
 
-            if (await _roleManager.RoleExistsAsync(visitorRole))
-            {
-                await _userManager.AddToRoleAsync(storeUser, visitorRole);
-            }
+        if (!await _roleManager.RoleExistsAsync(adminRole))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(adminRole));
         }
 
-        public async Task AssignAdminRoleAsync(StoreUser storeUser)
+        if (await _roleManager.RoleExistsAsync(adminRole))
         {
-            string adminRole = UserRoles.Administrator;
-
-            if (!await _roleManager.RoleExistsAsync(adminRole))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(adminRole));
-            }
-
-            if (await _roleManager.RoleExistsAsync(adminRole))
-            {
-                await _userManager.AddToRoleAsync(storeUser, adminRole);
-            }
+            await _userManager.AddToRoleAsync(storeUser, adminRole);
         }
     }
 }

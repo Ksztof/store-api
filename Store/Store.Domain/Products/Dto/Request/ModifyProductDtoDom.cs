@@ -1,7 +1,6 @@
-﻿namespace Store.Domain.Products.Dto.Request
+﻿namespace Store.Domain.Products.Dto.Request;
+
+public class ModifyProductDtoDom
 {
-    public class ModifyProductDtoDom
-    {
-        public ProductModificationDom Product { get; set; }
-    }
+    public ProductModificationDom Product { get; set; }
 }

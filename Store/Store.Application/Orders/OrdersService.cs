@@ -13,265 +13,272 @@ using Store.Domain.Orders.Dto.Request;
 using Store.Domain.Shared.Errors;
 using Store.Domain.StoreUsers.Errors;
 
-namespace Store.Application.Orders
-{
-    public class OrdersService : IOrdersService
-    {
-        public readonly IOrdersRepository _ordersRepository;
-        private readonly ICartsRepository _cartsRepository;
-        private readonly IHttpContextService _contextService;
-        private readonly IMapper _mapper;
-        private readonly IGuestSessionService _guestSessionService;
-        private readonly IEmailService _emailService;
+namespace Store.Application.Orders;
 
-        public OrdersService(
-            IOrdersRepository ordersRepository,
-            IGuestSessionService cookiesService,
-            ICartsRepository cartsRepository,
-            IHttpContextService httpContextService,
-            IMapper mapper,
-            IGuestSessionService guestSessionService,
-            IEmailService emailService)
+public class OrdersService : IOrdersService
+{
+    public readonly IOrdersRepository _ordersRepository;
+    private readonly ICartsRepository _cartsRepository;
+    private readonly IHttpContextService _contextService;
+    private readonly IMapper _mapper;
+    private readonly IGuestSessionService _guestSessionService;
+    private readonly IEmailService _emailService;
+
+    public OrdersService(
+        IOrdersRepository ordersRepository,
+        IGuestSessionService cookiesService,
+        ICartsRepository cartsRepository,
+        IHttpContextService httpContextService,
+        IMapper mapper,
+        IGuestSessionService guestSessionService,
+        IEmailService emailService)
+    {
+        _ordersRepository = ordersRepository;
+        _cartsRepository = cartsRepository;
+        _contextService = httpContextService;
+        _mapper = mapper;
+        _guestSessionService = guestSessionService;
+        _emailService = emailService;
+    }
+
+    public async Task<EntityResult<OrderResponse>> SubmitOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp)
+    {
+        Result isUserAuthenticated = _contextService.IsUserAuthenticated();
+
+        Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
+
+        if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
         {
-            _ordersRepository = ordersRepository;
-            _cartsRepository = cartsRepository;
-            _contextService = httpContextService;
-            _mapper = mapper;
-            _guestSessionService = guestSessionService;
-            _emailService = emailService;
+            Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
+
+            return EntityResult<OrderResponse>.Failure(error);
         }
 
-        public async Task<EntityResult<OrderResponse>> CreateOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp)
+        ShippingDet shippingDetail = new ShippingDet();
+
+        CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
+        shippingDetail.CreateShippingDetail(createOrderDtoDom);
+
+        ShippingDetailResponse shippingDetailsRes = _mapper.Map<ShippingDetailResponse>(shippingDetail);
+
+        Order order = new Order();
+
+        if (isUserAuthenticated.IsSuccess)
         {
-            Result isUserAuthenticated = _contextService.IsUserAuthenticated();
+            Result<string> result = _contextService.GetUserId();
 
-            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
-
-            if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
+            if (result.IsFailure)
             {
-                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
+                return EntityResult<OrderResponse>.Failure(result.Error);
+            }
+
+            string userId = result.Value;
+
+            EntityResult<Cart> getUserCart = await _cartsRepository.GetByUserIdAsync(userId);
+
+            if (getUserCart.IsFailure)
+            {
+                return EntityResult<OrderResponse>.Failure(getUserCart.Error);
+            }
+
+            Cart userCart = getUserCart.Entity;
+
+            EntityResult<Order> getUserOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
+
+            if (getUserOrder.IsSuccess)
+            {
+                Error error = EntityErrors<Order, int>.EntityInUse(getUserOrder.Entity.Id, userCart.Id);
 
                 return EntityResult<OrderResponse>.Failure(error);
             }
 
-            ShippingDet shippingDetail = new ShippingDet();
-            CreateOrderDtoDom createOrderDtoDom = _mapper.Map<CreateOrderDtoDom>(createOrderDtoApp);
-            shippingDetail.CreateShippingDetail(createOrderDtoDom);
-            ShippingDetailResponse shippingDetailsRes = _mapper.Map<ShippingDetailResponse>(shippingDetail);
-
-            Order order = new Order();
-
-            if (isUserAuthenticated.IsSuccess)
-            {
-                Result<string> result = _contextService.GetUserId();
-                if (result.IsFailure)
-                {
-                    return EntityResult<OrderResponse>.Failure(result.Error);
-                }
-
-                string userId = result.Value;
-
-                EntityResult<Cart> getUserCart = await _cartsRepository.GetByUserIdAsync(userId);
-                if (getUserCart.IsFailure)
-                {
-                    return EntityResult<OrderResponse>.Failure(getUserCart.Error);
-                }
-
-                Cart userCart = getUserCart.Entity;
-
-                EntityResult<Order> getUserOrder = await _ordersRepository.GetByCartIdAsync(userCart.Id);
-                if (getUserOrder.IsSuccess)
-                {
-                    Error error = EntityErrors<Order, int>.EntityInUse(getUserOrder.Entity.Id, userCart.Id);
-
-                    return EntityResult<OrderResponse>.Failure(error);
-                }
-
-                order.CreateOrder(userCart.Id, userId, shippingDetail);
-                order = await _ordersRepository.CreateOrderAsync(order);
-
-                userCart.StoreUserId = null;
-                userCart.CartStatus = CartStatus.Archive;
-                await _cartsRepository.UpdateAsync(userCart);
-
-                AboutCartDomRes userCartContent = userCart.CheckCart();
-                OrderResponse userOrderContent = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
-
-                await _emailService.SendOrderSummary(userOrderContent);
-
-                return EntityResult<OrderResponse>.Success(userOrderContent);
-            }
-
-            int guestCartId = receiveCartIdResult.Value;
-
-            EntityResult<Order> getGuestOrder = await _ordersRepository.GetByCartIdAsync(guestCartId);
-
-            if (getGuestOrder.IsSuccess)
-            {
-                Error error = EntityErrors<Order, int>.EntityInUse(getGuestOrder.Entity.Id, guestCartId);
-
-                return EntityResult<OrderResponse>.Failure(error);
-            }
-
-            EntityResult<Cart> getGuestCart = await _cartsRepository.GetByIdAsync(guestCartId);
-            if (getGuestCart.IsFailure)
-            {
-                return EntityResult<OrderResponse>.Failure(getGuestCart.Error);
-            }
-
-            Cart guestCart = getGuestCart.Entity;
-
-            order.CreateOrder(guestCart.Id, shippingDetail);
+            order.CreateOrder(userCart.Id, userId, shippingDetail);
             order = await _ordersRepository.CreateOrderAsync(order);
 
-            guestCart.CartStatus = CartStatus.Archive;
-            await _cartsRepository.UpdateAsync(guestCart);
+            userCart.StoreUserId = null;
+            userCart.CartStatus = CartStatus.Archive;
 
-            AboutCartDomRes guestCartContent = guestCart.CheckCart();
-            OrderResponse guestOrderContents = MapAboutCartToOrderRes(order, guestCartContent, shippingDetailsRes);
+            await _cartsRepository.UpdateAsync(userCart);
 
-            await _emailService.SendOrderSummary(guestOrderContents);
+            AboutCartDomRes userCartContent = userCart.CheckCart();
+            OrderResponse userOrderContent = MapAboutCartToOrderRes(order, userCartContent, shippingDetailsRes);
 
-            if (!string.IsNullOrWhiteSpace(method))
-            {
-                _guestSessionService.SetCartIdCookieAsExpired();
-            }
+            await _emailService.SendOrderSummary(userOrderContent);
 
-            return EntityResult<OrderResponse>.Success(guestOrderContents);
+            return EntityResult<OrderResponse>.Success(userOrderContent);
         }
 
-        public async Task<EntityResult<OrderResponse>> GetByIdAsync(int orderId)
+        int guestCartId = receiveCartIdResult.Value;
+
+        EntityResult<Order> getGuestOrder = await _ordersRepository.GetByCartIdAsync(guestCartId);
+
+        if (getGuestOrder.IsSuccess)
         {
-            if (orderId <= 0)
-            {
-                return EntityResult<OrderResponse>.Failure(EntityErrors<Order, int>.WrongEntityId(orderId));
-            }
+            Error error = EntityErrors<Order, int>.EntityInUse(getGuestOrder.Entity.Id, guestCartId);
 
-            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
-            if (getOrder.IsFailure)
-            {
-                return EntityResult<OrderResponse>.Failure(getOrder.Error);
-            }
-
-            Order order = getOrder.Entity;
-
-            AboutCartDomRes cartContent = order.Cart.CheckCart();
-            ShippingDetailResponse shippingDetails = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
-            OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetails);
-
-            return EntityResult<OrderResponse>.Success(orderResponse);
+            return EntityResult<OrderResponse>.Failure(error);
         }
 
-        public async Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId)
+        EntityResult<Cart> getGuestCart = await _cartsRepository.GetByIdAsync(guestCartId);
+
+        if (getGuestCart.IsFailure)
         {
-            if (orderId <= 0)
-            {
-                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
-            }
-
-            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
-
-            if (getOrder.IsFailure)
-            {
-                return EntityResult<OrderResponse>.Failure(getOrder.Error);
-            }
-
-            await _ordersRepository.DeleteOrderAsync(getOrder.Entity);
-
-            return EntityResult<OrderResponse>.Success();
+            return EntityResult<OrderResponse>.Failure(getGuestCart.Error);
         }
 
-        public async Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId)
+        Cart guestCart = getGuestCart.Entity;
+
+        order.CreateOrder(guestCart.Id, shippingDetail);
+        order = await _ordersRepository.CreateOrderAsync(order);
+
+        guestCart.CartStatus = CartStatus.Archive;
+        await _cartsRepository.UpdateAsync(guestCart);
+
+        AboutCartDomRes guestCartContent = guestCart.CheckCart();
+        OrderResponse guestOrderContents = MapAboutCartToOrderRes(order, guestCartContent, shippingDetailsRes);
+
+        await _emailService.SendOrderSummary(guestOrderContents);
+
+        if (!string.IsNullOrWhiteSpace(method))
         {
-            if (orderId <= 0)
+            _guestSessionService.SetCartIdCookieAsExpired();
+        }
+
+        return EntityResult<OrderResponse>.Success(guestOrderContents);
+    }
+
+    public async Task<EntityResult<OrderResponse>> GetOrderByIdAsync(int orderId)
+    {
+        if (orderId <= 0)
+        {
+            return EntityResult<OrderResponse>.Failure(EntityErrors<Order, int>.WrongEntityId(orderId));
+        }
+
+        EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+
+        if (getOrder.IsFailure)
+        {
+            return EntityResult<OrderResponse>.Failure(getOrder.Error);
+        }
+
+        Order order = getOrder.Entity;
+        AboutCartDomRes cartContent = order.Cart.CheckCart();
+        ShippingDetailResponse shippingDetails = _mapper.Map<ShippingDetailResponse>(order.ShippingDetail);
+
+        OrderResponse orderResponse = MapAboutCartToOrderRes(order, cartContent, shippingDetails);
+
+        return EntityResult<OrderResponse>.Success(orderResponse);
+    }
+
+    public async Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId)
+    {
+        if (orderId <= 0)
+        {
+            return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+        }
+
+        EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+
+        if (getOrder.IsFailure)
+        {
+            return EntityResult<OrderResponse>.Failure(getOrder.Error);
+        }
+
+        await _ordersRepository.DeleteOrderAsync(getOrder.Entity);
+
+        return EntityResult<OrderResponse>.Success();
+    }
+
+    public async Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId)
+    {
+        if (orderId <= 0)
+        {
+            return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+        }
+
+        Result isUserAuthenticated = _contextService.IsUserAuthenticated();
+        Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
+
+        if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
+        {
+            Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
+
+            return EntityResult<OrderResponse>.Failure(error);
+        }
+
+        EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
+
+        if (getOrder.IsFailure)
+        {
+            return EntityResult<OrderResponse>.Failure(getOrder.Error);
+        }
+
+        Order order = getOrder.Entity;
+
+        if (isUserAuthenticated.IsSuccess)
+        {
+            Result<string> result = _contextService.GetUserId();
+
+            if (result.IsFailure)
             {
-                return EntityResult<OrderResponse>.Failure(EntityErrors<Cart, int>.WrongEntityId(orderId));
+                return EntityResult<OrderResponse>.Failure(result.Error);
             }
 
-            Result isUserAuthenticated = _contextService.IsUserAuthenticated();
-            Result<int> receiveCartIdResult = _guestSessionService.GetCartId();
-
-            if (receiveCartIdResult.IsFailure && isUserAuthenticated.IsFailure)
-            {
-                Error error = UserErrors.CantAuthenticateByCartIdOrUserCookie;
-
-                return EntityResult<OrderResponse>.Failure(error);
-            }
-
-            EntityResult<Order> getOrder = await _ordersRepository.GetByIdAsync(orderId);
-
-            if (getOrder.IsFailure)
-            {
-                return EntityResult<OrderResponse>.Failure(getOrder.Error);
-            }
-
-            Order order = getOrder.Entity;
-
-            if (isUserAuthenticated.IsSuccess)
-            {
-                Result<string> result = _contextService.GetUserId();
-                if (result.IsFailure)
-                {
-                    return EntityResult<OrderResponse>.Failure(result.Error);
-                }
-
-                if (order?.Cart?.StoreUser?.Id == result.Value)
-                {
-                    order.MarkAsDeleted();
-
-                    await _ordersRepository.UpdateAsync(order);
-
-                    return EntityResult<OrderResponse>.Success();
-                }
-            }
-
-            if (order.Cart.Id == receiveCartIdResult.Value)
+            if (order?.Cart?.StoreUser?.Id == result.Value)
             {
                 order.MarkAsDeleted();
-
                 await _ordersRepository.UpdateAsync(order);
 
                 return EntityResult<OrderResponse>.Success();
             }
-
-            var missingOrderOwnerError = EntityErrors<Order, int>.EntityDoesntBelongToYou(orderId);
-
-            return EntityResult<OrderResponse>.Failure(missingOrderOwnerError);
         }
 
-        public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
+        if (order.Cart.Id == receiveCartIdResult.Value)
         {
-            Result<string> result = _contextService.GetUserId();
-            if (result.IsFailure)
-            {
-                return EntityResult<IEnumerable<OrdersResDto>>.Failure(result.Error);
-            }
+            order.MarkAsDeleted();
+            await _ordersRepository.UpdateAsync(order);
 
-            IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(result.Value);
-            IEnumerable<OrdersResDto> userOrdersRes = GetOrdersDetails(userOrders);
-
-            return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes);
+            return EntityResult<OrderResponse>.Success();
         }
 
-        private IEnumerable<OrdersResDto> GetOrdersDetails(IEnumerable<Order> userOrders)
+        var missingOrderOwnerError = EntityErrors<Order, int>.EntityDoesntBelongToYou(orderId);
+
+        return EntityResult<OrderResponse>.Failure(missingOrderOwnerError);
+    }
+
+    public async Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync()
+    {
+        Result<string> result = _contextService.GetUserId();
+
+        if (result.IsFailure)
         {
-            return userOrders.Select(o => new OrdersResDto
-            {
-                Status = o.Status.ToString(),
-                CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(o.Cart.CartLines),
-                ShippingInfo = _mapper.Map<ShippingInfo>(o.ShippingDetail)
-            });
+            return EntityResult<IEnumerable<OrdersResDto>>.Failure(result.Error);
         }
 
-        private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartDomRes checkCart, ShippingDetailResponse shippingDetailsRes)
+        IEnumerable<Order> userOrders = await _ordersRepository.GetByUserIdAsync(result.Value);
+        IEnumerable<OrdersResDto> userOrdersRes = GetOrdersDetails(userOrders);
+
+        return EntityResult<IEnumerable<OrdersResDto>>.Success(userOrdersRes);
+    }
+
+    private IEnumerable<OrdersResDto> GetOrdersDetails(IEnumerable<Order> userOrders)
+    {
+        return userOrders.Select(o => new OrdersResDto
         {
-            return new OrderResponse
-            {
-                Id = order.Id,
-                AboutProductsInCart = checkCart.AboutProductsInCart,
-                TotalCartValue = checkCart.TotalCartValue,
-                ShippingDetil = shippingDetailsRes,
-            };
-        }
+            Status = o.Status.ToString(),
+            CartLineResponse = _mapper.Map<IEnumerable<CartLineResponse>>(o.Cart.CartLines),
+            ShippingInfo = _mapper.Map<ShippingInfo>(o.ShippingDetail)
+        });
+    }
+
+    private static OrderResponse MapAboutCartToOrderRes(Order order, AboutCartDomRes checkCart, ShippingDetailResponse shippingDetailsRes)
+    {
+        return new OrderResponse
+        {
+            Id = order.Id,
+            AboutProductsInCart = checkCart.AboutProductsInCart,
+            TotalCartValue = checkCart.TotalCartValue,
+            ShippingDetil = shippingDetailsRes,
+        };
     }
 }

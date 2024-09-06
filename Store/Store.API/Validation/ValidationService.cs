@@ -1,30 +1,29 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 
-namespace Store.API.Validation
+namespace Store.API.Validation;
+
+internal class ValidationService : IValidationService
 {
-    public class ValidationService : IValidationService
+    private readonly IServiceProvider _serviceProvider;
+
+    internal ValidationService(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        public ValidationService(IServiceProvider serviceProvider)
+    public async Task<ValidationResult> ValidateAsync<T>(T instance)
+    {
+        var validator = (IValidator<T>)_serviceProvider.GetService(typeof(IValidator<T>));
+
+        if (validator != null)
         {
-            _serviceProvider = serviceProvider;
+            var context = new ValidationContext<T>(instance);
+            return await validator.ValidateAsync(context);
         }
-
-        public async Task<ValidationResult> ValidateAsync<T>(T instance)
+        else
         {
-            var validator = (IValidator<T>)_serviceProvider.GetService(typeof(IValidator<T>));
-
-            if (validator != null)
-            {
-                var context = new ValidationContext<T>(instance);
-                return await validator.ValidateAsync(context);
-            }
-            else
-            {
-                return new ValidationResult();
-            }
+            return new ValidationResult();
         }
     }
 }

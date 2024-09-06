@@ -1,8 +1,7 @@
-﻿namespace Store.API.Shared.DTO.Models
+﻿namespace Store.API.Shared.DTO.Models;
+
+public class ProductInCartApi
 {
-    public class ProductInCartApi
-    {
-        public int ProductId { get; set; }
-        public decimal Quantity { get; set; }
-    }
+    public int ProductId { get; set; }
+    public decimal Quantity { get; set; }
 }

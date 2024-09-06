@@ -2,25 +2,25 @@
 using Store.Application.Payments.SignalR;
 using Store.Domain.Abstractions;
 
-namespace Store.Infrastructure.Services.SignalR
+namespace Store.Infrastructure.Services.SignalR;
+
+public class NotificationService : INotificationService
 {
-    public class NotificationService : INotificationService
+    private readonly IHubContext<PaymentHub> _hubContext;
+
+    public NotificationService(IHubContext<PaymentHub> hubContext)
     {
-        private readonly IHubContext<PaymentHub> _hubContext;
+        _hubContext = hubContext;
+    }
 
-        public NotificationService(IHubContext<PaymentHub> hubContext)
+    public async Task SendPaymentStatusAsync(string orderId, string status, Error? error)
+    {
+        var response = new
         {
-            _hubContext = hubContext;
-        }
+            Status = status,
+            Error = error
+        };
 
-        public async Task SendPaymentStatusAsync(string orderId, string status, Error? error)
-        {
-            var response = new
-            {
-                Status = status,
-                Error = error
-            };
-            await _hubContext.Clients.Group(orderId).SendAsync("ReceivePaymentStatus", response);
-        }
+        await _hubContext.Clients.Group(orderId).SendAsync("ReceivePaymentStatus", response);
     }
 }

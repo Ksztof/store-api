@@ -1,8 +1,7 @@
-﻿namespace Store.Application.Users.Enums
+﻿namespace Store.Application.Users.Enums;
+
+public enum CookieNames
 {
-    public enum CookieNames
-    {
-        AuthCookie,
-        RefreshCookie,
-    }
+    AuthCookie,
+    RefreshCookie,
 }
