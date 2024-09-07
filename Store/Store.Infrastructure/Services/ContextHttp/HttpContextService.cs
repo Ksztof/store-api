@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Http;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;

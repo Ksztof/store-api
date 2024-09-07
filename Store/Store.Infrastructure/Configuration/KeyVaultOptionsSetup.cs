@@ -20,5 +20,7 @@ public class KeyVaultOptionsSetup : IConfigureOptions<KeyVaultOptions>
         options.StripeWebhookSecret = _configuration["StripeWebhookSecret"];
         options.ConnectionString = _configuration["ConnectionString"];
         options.SendgridKey = _configuration["SendgridKey"];
+        options.AdminMail = _configuration["AdminMail"];
+        options.AdminPswd = _configuration["AdminPswd"];
     }
 }

@@ -9,7 +9,6 @@ using Store.Domain.Orders;
 using Store.Domain.Orders.Dto.Request;
 using Store.Domain.Products.Dto.Request;
 
-
 namespace Store.Application.Shared.Mapper;
 
 public class MappingProfileApplication : Profile

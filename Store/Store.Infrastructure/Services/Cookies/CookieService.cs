@@ -10,14 +10,14 @@ namespace Store.Infrastructure.Services.Cookies;
 public class CookieService : ICookieService
 {
     private readonly IHttpContextService _contextService;
-    private readonly IOptions<JwtOptions> _jwtOptions;
+    private readonly JwtOptions _jwtOptions;
 
     public CookieService(
         IHttpContextService contextService,
         IOptions<JwtOptions> jwtOptions)
     {
         _contextService = contextService;
-        _jwtOptions = jwtOptions;
+        _jwtOptions = jwtOptions.Value;
     }
 
     public Result SetCookieWithJwtToken(string jwtToken)
@@ -27,7 +27,7 @@ public class CookieService : ICookieService
         {
             HttpOnly = true,
             Secure = true,
-            Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),
+            Expires = DateTime.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationInHours),
             IsEssential = false,
             SameSite = SameSiteMode.None,
         };
@@ -48,7 +48,7 @@ public class CookieService : ICookieService
         {
             HttpOnly = true,
             Secure = true,
-            Expires = DateTime.UtcNow.AddHours(_jwtOptions.Value.RefreshTokenExpirationInHours),
+            Expires = DateTime.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationInHours),
             IsEssential = false,
             SameSite = SameSiteMode.None,
         };

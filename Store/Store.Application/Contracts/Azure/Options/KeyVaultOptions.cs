@@ -7,4 +7,6 @@ public class KeyVaultOptions
     public string StripeWebhookSecret { get; set; } = string.Empty;
     public string ConnectionString { get; set; } = string.Empty;
     public string SendgridKey { get; set; } = string.Empty;
+    public string AdminMail { get; set; } = string.Empty;
+    public string AdminPswd { get; set; } = string.Empty;
 }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Store.Application.Contracts.Azure.Options;
 using Store.Application.Users;
 using Store.Domain.StoreUsers;
 
@@ -8,13 +10,16 @@ public class DataSeeder
 {
     private readonly UserManager<StoreUser> _userManager;
     private readonly IPermissionService _permissionService;
+    private readonly KeyVaultOptions _keyVaultOptions;
 
     public DataSeeder(
         UserManager<StoreUser> userManager,
-        IPermissionService permissionService)
+        IPermissionService permissionService,
+        IOptions<KeyVaultOptions> keyVaultOptions)
     {
         _userManager = userManager;
         _permissionService = permissionService;
+        _keyVaultOptions = keyVaultOptions.Value;
     }
 
     public async Task SeedDataAsync()
@@ -25,11 +30,11 @@ public class DataSeeder
             StoreUser adminUser = new StoreUser
             {
                 UserName = "Admin",
-                Email = "kontoktoregoniktniema@gmail.com",
+                Email = _keyVaultOptions.AdminMail,
                 EmailConfirmed = true,
             };
 
-            string adminPswd = "Haslo1234!"; //TODO: mvoe pswd to az secrets!!!!!!!!!!!!!!
+            string adminPswd = _keyVaultOptions.AdminPswd;
 
             var result = await _userManager.CreateAsync(adminUser, adminPswd);
 

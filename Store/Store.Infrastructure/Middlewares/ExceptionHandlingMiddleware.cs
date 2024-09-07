@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Store.Domain.Shared.Enums;
-using Store.Infrastructure.Middlewares;
 using System.Text.Json;
 
 namespace Store.Infrastructure.Middlewares;
