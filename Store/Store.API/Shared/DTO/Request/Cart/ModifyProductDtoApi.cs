@@ -1,9 +1,8 @@
 ﻿using Store.API.Shared.DTO.Models;
 
-namespace Store.API.Shared.DTO.Request.Cart
+namespace Store.API.Shared.DTO.Request.Cart;
+
+public class ModifyProductDtoApi
 {
-    public class ModifyProductDtoApi
-    {
-        public ProductModificationApi Product { get; set; }
-    }
+    public ProductModificationApi Product { get; set; }
 }

@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Store.Domain.Shared;
-using Store.Infrastructure.Middlewares;
+using Store.Domain.Shared.Enums;
 using System.Text.Json;
+
+namespace Store.Infrastructure.Middlewares;
 
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -31,14 +34,14 @@ public class ExceptionHandlingMiddleware
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var error = new GlobalExceptionError(
+        GlobalExceptionError error = new GlobalExceptionError(
             code: "UnexpectedError.Status500InternalServerError",
             description: "Unexpected server error has occurred, please contact application owner",
             errorType: ErrorType.Server
         );
 
-        var problemDetailsResult = CreateProblemDetailsResult(error);
-        var problemDetails = problemDetailsResult.Value as ProblemDetails;
+        ObjectResult problemDetailsResult = CreateProblemDetailsResult(error);
+        ProblemDetails? problemDetails = problemDetailsResult.Value as ProblemDetails;
 
         if (problemDetails == null)
         {
@@ -49,7 +52,7 @@ public class ExceptionHandlingMiddleware
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
             };
 
-            var conversionError = new GlobalExceptionError(
+            GlobalExceptionError conversionError = new GlobalExceptionError(
                         code: "ProblemDetails.ConversionError",
                         description: "Unexpected server error has occurred, durring ObjectResult conversion",
                         errorType: ErrorType.Server
@@ -58,7 +61,7 @@ public class ExceptionHandlingMiddleware
 
         }
 
-        var json = JsonSerializer.Serialize(problemDetails);
+        string json = JsonSerializer.Serialize(problemDetails);
 
         context.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/problem+json";
@@ -68,12 +71,13 @@ public class ExceptionHandlingMiddleware
 
     private static ObjectResult CreateProblemDetailsResult(GlobalExceptionError error)
     {
-        var problemDetails = new ProblemDetails
+        ProblemDetails problemDetails = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
             Title = "Critical Server Failure",
             Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
         };
+
         problemDetails.Extensions.Add("errors", new[] { error });
 
         return new ObjectResult(problemDetails)

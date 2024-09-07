@@ -1,40 +1,44 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Store.Application.Contracts.Azure.Options;
 using Store.Application.Users;
 using Store.Domain.StoreUsers;
 
-namespace Store.Infrastructure.Configuration
+namespace Store.Infrastructure.Configuration;
+
+public class DataSeeder
 {
-    public class DataSeeder
+    private readonly UserManager<StoreUser> _userManager;
+    private readonly IPermissionService _permissionService;
+    private readonly KeyVaultOptions _keyVaultOptions;
+
+    public DataSeeder(
+        UserManager<StoreUser> userManager,
+        IPermissionService permissionService,
+        IOptions<KeyVaultOptions> keyVaultOptions)
     {
-        private readonly UserManager<StoreUser> _userManager;
-        private readonly IPermissionService _permissionService;
+        _userManager = userManager;
+        _permissionService = permissionService;
+        _keyVaultOptions = keyVaultOptions.Value;
+    }
 
-        public DataSeeder(
-            UserManager<StoreUser> userManager,
-            IPermissionService permissionService)
+    public async Task SeedDataAsync()
+    {
+        StoreUser? admin = await _userManager.FindByEmailAsync("kontoktoregoniktniema@gmail.com");
+        if (admin == null)
         {
-            _userManager = userManager;
-            _permissionService = permissionService;
-        }
-
-        public async Task SeedDataAsync()
-        {
-            StoreUser? admin = await _userManager.FindByEmailAsync("kontoktoregoniktniema@gmail.com");
-            if (admin == null)
+            StoreUser adminUser = new StoreUser
             {
-                StoreUser adminUser = new StoreUser
-                {
-                    UserName = "Admin",
-                    Email = "kontoktoregoniktniema@gmail.com",
-                    EmailConfirmed = true,
-                };
+                UserName = "Admin",
+                Email = _keyVaultOptions.AdminMail,
+                EmailConfirmed = true,
+            };
 
-                string adminPswd = "Haslo1234!"; //TODO: mvoe pswd to az secrets
+            string adminPswd = _keyVaultOptions.AdminPswd;
 
-                var result = await _userManager.CreateAsync(adminUser, adminPswd);
+            var result = await _userManager.CreateAsync(adminUser, adminPswd);
 
-                await _permissionService.AssignAdminRoleAsync(adminUser);
-            }
+            await _permissionService.AssignAdminRoleAsync(adminUser);
         }
     }
 }

@@ -2,48 +2,48 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Store.Application.Contracts.ContextHttp;
 using Store.Application.Contracts.Email;
-using Store.Application.Shared.DTO;
-using Store.Application.Shared.DTO.Response;
+using Store.Application.Orders.Dto.Response;
+using Store.Application.Users.Dto;
 using Store.Domain.Abstractions;
-using Store.Domain.Shared.DTO.Response.Cart;
+using Store.Domain.Carts.Dto.Response;
 using System.Text;
 
-namespace Store.Infrastructure.Services.Email
-{
-    public class EmailService : IEmailService
-    {
-        private readonly IEmailSender _emailSender;
-        private readonly IUrlHelper _urlHelper;
-        private readonly IHttpContextService _httpContextService;
+namespace Store.Infrastructure.Services.Email;
 
-        public EmailService(
-            IEmailSender emailSender,
-            IUrlHelper urlHelper,
-            IHttpContextService httpContextService
-            )
+public class EmailService : IEmailService
+{
+    private readonly IEmailSender _emailSender;
+    private readonly IUrlHelper _urlHelper;
+    private readonly IHttpContextService _httpContextService;
+
+    public EmailService(
+        IEmailSender emailSender,
+        IUrlHelper urlHelper,
+        IHttpContextService httpContextService)
+    {
+        _emailSender = emailSender;
+        _urlHelper = urlHelper;
+        _httpContextService = httpContextService;
+    }
+
+    public async Task<Result> SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken)
+    {
+        string subject = "Activate you account";
+
+        Result<string> result = _httpContextService.GetActualProtocol();
+
+        if (result.IsFailure)
         {
-            _emailSender = emailSender;
-            _urlHelper = urlHelper;
-            _httpContextService = httpContextService;
+            return Result.Failure(result.Error);
         }
 
-        public async Task<Result> SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken)
-        {
-            string subject = "Activate you account";
+        string? confirmationLink = _urlHelper.Action(
+          action: "ConfirmEmail",
+          controller: "User",
+          values: new { userId = userDetails.UserId, token = encodedToken },
+          protocol: result.Value);
 
-            Result<string> result = _httpContextService.GetActualProtocol();
-            if (result.IsFailure)
-            {
-                return Result.Failure(result.Error);
-            }
-
-            var confirmationLink = _urlHelper.Action(
-              action: "ConfirmEmail",
-              controller: "User",
-              values: new { userId = userDetails.UserId, token = encodedToken },
-              protocol: result.Value);
-
-            string message = $@"
+        string message = $@"
               <h2>Hello {userDetails.UserName},</h2>
               <p>We invite you to start using our service.</p>
               <a href='{confirmationLink}' style='display: inline-block; padding: 10px 20px; background-color: #3498db; color:
@@ -52,16 +52,18 @@ namespace Store.Infrastructure.Services.Email
               <div style='background-color: #f3f3f3; padding: 10px; border-radius: 5px;'>
                   <a href='{confirmationLink}' style='color: #3498db; text-decoration: none;'>{confirmationLink}</a>
               </div>";
-            await _emailSender.SendEmailAsync(userDetails.UserEmail, subject, message);
 
-            return Result.Success();
-        }
+        await _emailSender.SendEmailAsync(userDetails.UserEmail, subject, message);
 
-        public async Task SendOrderSummary(OrderResponse orderResponse)
-        {
-            string subject = "Order Summary";
-            int rowIndex = 0;
-            string message = $@"
+        return Result.Success();
+    }
+
+    public async Task SendOrderSummary(OrderResponse orderResponse)
+    {
+        string subject = "Order Summary";
+        int rowIndex = 0;
+
+        string message = $@"
                 <html>
                     <body style='font-family: Arial, sans-serif; font-size: 16px; background-color: #f4f4f4; margin: 0; padding: 20px;'>
                         <div style='text-align: center; margin-bottom: 20px;'>
@@ -78,19 +80,20 @@ namespace Store.Infrastructure.Services.Email
                                     </tr>
                                 </thead>
                                 <tbody>";
-            foreach (CheckCartDomRes product in orderResponse.AboutProductsInCart)
-            {
-                string backgroundColor = rowIndex % 2 == 0 ? "#ffffff" : "#f2f2f2";
-                message += $@"
+        foreach (CheckCartDomRes product in orderResponse.AboutProductsInCart)
+        {
+            string backgroundColor = rowIndex % 2 == 0 ? "#ffffff" : "#f2f2f2";
+
+            message += $@"
                                     <tr style='background-color: {backgroundColor};'>
                                         <td style='padding: 10px; text-align: center;'>{product.ProductName}</td>
                                         <td style='padding: 10px; text-align: center;'>{product.ProductUnitPrice:C}</td>
                                         <td style='padding: 10px; text-align: center;'>{product.Quantity}</td>
                                         <td style='padding: 10px; text-align: center;'>{product.ProductUnitPrice:C} X {product.Quantity} szt. = {product.ProductTotalPrice:C}</td>
                                     </tr>";
-                rowIndex++;
-            }
-            message += $@"
+            rowIndex++;
+        }
+        message += $@"
                                 </tbody>
                             </table>
                         </div>
@@ -105,15 +108,14 @@ namespace Store.Infrastructure.Services.Email
                     </ body >
                 </ html > ";
 
-            await _emailSender.SendEmailAsync(orderResponse.ShippingDetil.Email, subject, message);
-        }
+        await _emailSender.SendEmailAsync(orderResponse.ShippingDetil.Email, subject, message);
+    }
 
-        public string DecodeBaseUrlToken(string encodedEmailToken)
-        {
-            var decodedTokenBytes = WebEncoders.Base64UrlDecode(encodedEmailToken);
-            var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+    public string DecodeBaseUrlToken(string encodedEmailToken)
+    {
+        byte[] decodedTokenBytes = WebEncoders.Base64UrlDecode(encodedEmailToken);
+        string decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
 
-            return decodedToken;
-        }
+        return decodedToken;
     }
 }

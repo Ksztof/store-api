@@ -7,12 +7,14 @@ using Microsoft.IdentityModel.Tokens;
 using Store.Application.Contracts.Azure.Options;
 using Store.Application.Contracts.JwtToken;
 using Store.Application.Contracts.JwtToken.Models;
-using Store.Application.Shared.Enums;
+using Store.Application.Users.Enums;
 using Store.Domain.Abstractions;
 using Store.Domain.StoreUsers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
+namespace Store.Infrastructure.Middlewares;
 
 public class JwtRefreshMiddleware
 {
@@ -27,8 +29,7 @@ public class JwtRefreshMiddleware
         IOptions<JwtOptions> jwtOptions,
         IServiceProvider serviceProvider,
         ILogger<JwtRefreshMiddleware> logger,
-        IOptions<KeyVaultOptions> keyVaultOptions
-        )
+        IOptions<KeyVaultOptions> keyVaultOptions)
     {
         _next = next;
         _jwtOptions = jwtOptions.Value;
@@ -39,15 +40,16 @@ public class JwtRefreshMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var jwtToken = context.Request.Cookies[CookieNames.AuthCookie.ToString()];
-        var refreshToken = context.Request.Cookies[CookieNames.RefreshCookie.ToString()];
+        string? jwtToken = context.Request.Cookies[CookieNames.AuthCookie.ToString()];
+        string? refreshToken = context.Request.Cookies[CookieNames.RefreshCookie.ToString()];
 
         if (!string.IsNullOrEmpty(jwtToken))
         {
-            using var scope = _serviceProvider.CreateScope();
-            var tokenHandler = scope.ServiceProvider.GetRequiredService<JwtSecurityTokenHandler>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<StoreUser>>();
-            var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+            using IServiceScope scope = _serviceProvider.CreateScope();
+
+            JwtSecurityTokenHandler tokenHandler = scope.ServiceProvider.GetRequiredService<JwtSecurityTokenHandler>();
+            UserManager<StoreUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<StoreUser>>();
+            ITokenService tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
 
             var validationParameters = new TokenValidationParameters
             {
@@ -62,8 +64,8 @@ public class JwtRefreshMiddleware
 
             try
             {
-                var principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out var securityToken);
-                var jwtSecurityToken = securityToken as JwtSecurityToken;
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(jwtToken, validationParameters, out var securityToken);
+                JwtSecurityToken? jwtSecurityToken = securityToken as JwtSecurityToken;
 
                 if (jwtSecurityToken != null && jwtSecurityToken.ValidTo < DateTime.UtcNow)
                 {
@@ -71,7 +73,8 @@ public class JwtRefreshMiddleware
 
                     if (userId != null)
                     {
-                        var user = await userManager.FindByIdAsync(userId);
+                        StoreUser user = await userManager.FindByIdAsync(userId);
+
                         if (user != null && user.RefreshToken == refreshToken && user.RefreshTokenExpiryTime > DateTime.UtcNow)
                         {
                             Result<string> newJwtTokenResult = await tokenService.IssueJwtToken(user);
@@ -83,7 +86,7 @@ public class JwtRefreshMiddleware
                                 {
                                     HttpOnly = true,
                                     Secure = true,
-                                    Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.JwtTokenExpirationInHours),
+                                    Expires = DateTime.UtcNow.AddSeconds(_jwtOptions.JwtTokenExpirationInHours),
                                     IsEssential = true,
                                     SameSite = SameSiteMode.None
                                 };
@@ -100,7 +103,7 @@ public class JwtRefreshMiddleware
                                 context.Response.Cookies.Append(CookieNames.AuthCookie.ToString(), newJwtTokenResult.Value, authCookieOptions);
                                 context.Response.Cookies.Append(CookieNames.RefreshCookie.ToString(), newRefreshTokenResult.Value, refreshCookieOptions);
 
-                                var newPrincipal = tokenHandler.ValidateToken(newJwtTokenResult.Value, validationParameters, out _);
+                                ClaimsPrincipal newPrincipal = tokenHandler.ValidateToken(newJwtTokenResult.Value, validationParameters, out _);
                                 context.User = newPrincipal;
 
                                 context.Items["NewAuthToken"] = newJwtTokenResult.Value;

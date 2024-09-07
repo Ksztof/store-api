@@ -1,8 +1,7 @@
-﻿namespace Store.Domain.Carts
+﻿namespace Store.Domain.Carts;
+
+public enum CartStatus
 {
-    public enum CartStatus
-    {
-        Active,
-        Archive
-    }
+    Active,
+    Archive
 }
