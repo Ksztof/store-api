@@ -3,11 +3,11 @@ using FluentValidation.Results;
 
 namespace Store.API.Validation;
 
-internal class ValidationService : IValidationService
+public class ValidationService : IValidationService
 {
     private readonly IServiceProvider _serviceProvider;
 
-    internal ValidationService(IServiceProvider serviceProvider)
+    public ValidationService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
