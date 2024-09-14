@@ -14,9 +14,9 @@ using Store.Domain.StoreUsers;
 
 namespace Store.API.Shared.Mapper;
 
-internal class MappingProfileApi : Profile
+public class MappingProfileApi : Profile
 {
-    internal MappingProfileApi()
+    public MappingProfileApi()
     {
         CreateMap<NewProductsDtoApi, NewProductsDtoApp>();
         CreateMap<ProductInCartApi, ProductInCartApp>();
