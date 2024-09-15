@@ -80,7 +80,7 @@ public class UserController : ControllerBase
     {
         UserResult result = await _userService.ConfirmEmailAsync(userId, token);
 
-        return result.IsSuccess ? Ok() : result.ToProblemDetails();
+        return result.IsSuccess ? Ok("Your account has been activated!") : result.ToProblemDetails();
     }
 
     [HttpPatch("request-deletion")]
