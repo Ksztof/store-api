@@ -13,7 +13,7 @@ Used as the primary relational database management system for storing and managi
 Used for securely managing secrets, keys, and certificates, and enabling secure access through Azure Active Directory, without hardcoding credentials in the application.
 ### [AutoMapper](https://automapper.org/)
 Used for automating the mapping between different object models, such as mapping data transfer objects (DTOs)
-### [FluentValidation]
+### [FluentValidation](https://docs.fluentvalidation.net/en/latest/)
 Used for validating data inputs through a fluent API, ensuring that incoming data meets defined rules.
 ### [Swagger](https://swagger.io/)
 Used for generating interactive API documentation that imitates the frontend of the site. 
