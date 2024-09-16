@@ -2,7 +2,6 @@
 store-api is a REST API for an online store that serves as the backend for the frontend application store-front. The API handles operations related to data management, business logic, authentication, authorization, and communication with the database. It is the central component of the system, which, together with the store-front application, forms a comprehensive e-commerce solution. By clearly separating the frontend and backend, the API enables scalability, security, and easier maintenance of the application, allowing for independent development and updates of both parts of the system.
 
 # Tech Stack
-
 ### [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet)
 Used as the main framework for building the API (handling HTTP requests, managing routing, implementing middleware for request processing, and facilitating authentication and authorization processes).
 ### [Entity Framework Core](https://learn.microsoft.com/en-us/ef/)
@@ -24,4 +23,30 @@ Used for sending emails within the application (register link, order summary etc
 ### [Stripe](https://stripe.com/en-pl/payments?gad_source=1&gclid=Cj0KCQjwrp-3BhDgARIsAEWJ6SzEJY3t2l_U8Hdfr-6kuBQf6xmxxmZKtARm5GSB6Zrquclw8qkIKSYaAgS1EALw_wcB)
 Used for processing payments and handling transactions.
 ### [JwtBearer](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.jwtbearer?view=aspnetcore-8.0)
-Used for implementing JSON Web Token (JWT) authentication, which is used in the process of user authorization. 
+Used for implementing JSON Web Token (JWT) authentication, which is used in the process of user authorization.
+
+# Architecture
+### Clean Architecture
+### Domain-driven design (DDD)
+### Layers
+### Design patterns
+### DTO 
+### Communication between layers 
+(komunikacja zgodna z zasadami Clean architect,  zależności odwrotne, intefejsy, ależności idą w kierunku wewnętrznej domeny.)
+### Authentication, Authorization, and Configuration:
+konfiguracja: Łańcuchy połączeń do baz danych (np. SQL Server)., Tajności i klucze, key vault, options pattern 
+### Error Handling
+Result pattern + throwing exceptions
+### Security
+CORRS cookies https only itd
+### Refresh Token Middleware
+### Global Error Handling Middleware 
+### Extensions
+### Form Validation + Domain layer validatiron 
+### Mapper
+### Organization of Program.cs
+
+
+# Database 
+### ERD Diagram
+### Entities
