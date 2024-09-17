@@ -70,7 +70,7 @@ Each layer of the application has its own DTOs, which promotes complete separati
 ### Communication between layers 
 Communication follows the principles of Clean Architecture, with dependencies inverted and directed towards the inner domain, using interfaces to ensure that each layer adheres to the proper separation of concerns.
 ### Authentication, Authorization, and Configuration:
-konfiguracja: Łańcuchy połączeń do baz danych (np. SQL Server)., Tajności i klucze, key vault, options pattern 
+In the Api configuration values such as connection strings, secrets, and keys are securely stored in `Azure Key Vault`, and accessed using the `Options Pattern` to ensure type-safe and manageable configuration handling. Authentication is implemented using `JWT Bearer` tokens, providing secure access control based on roles defined within the application, such as `Visitor` and `Administrator`. Authorization is enforced at the controller and method level, using attributes like `[Authorize(Roles = UserRoles.Administrator)]` for administrators, `[Authorize(Roles = UserRoles.Visitor)]` for standard users, and `[AllowAnonymous]` for actions that are accessible to unauthenticated guests.
 ### Error Handling
 Result pattern + throwing exceptions
 ### Security
