@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		MigrationGuide.txt = MigrationGuide.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.API", "Store.API\Store.API.csproj", "{02051FE7-C9D6-4298-A825-50ED035A6F77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Api", "Store.API\Store.Api.csproj", "{02051FE7-C9D6-4298-A825-50ED035A6F77}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store.Domain", "Store.Domain\Store.Domain.csproj", "{4222F24B-3F0B-4CD1-8E8B-AAEB13619390}"
 EndProject
