@@ -77,10 +77,16 @@ Errors that occur throughout the application's operation are returned to the con
 The `Error` class, which is a field of the Result class, includes properties like `Code` — indicating the error code that makes it easy to understand why the error was returned, `Description` — providing a full error description, and `Type` — representing the type of error, such as `Failure`, `Validation`, `NotFound`, `Conflict`, etc. The `Error` class also has its own static methods that set the appropriate error type assigned to the Type field, for example, `public static Error NotFound(string code, string description) => new(code, description, ErrorType.NotFound);` and public `static Error Validation(string code, string description) => new(code, description, ErrorType.Validation);`. To standardize errors and facilitate their quick creation, static methods stored in static Errors classes are used, which return instances of the `Error` class e.g. `public static Error NotFoundByProductId(int productId) => Error.NotFound(
     $"{typeof(T).Name}.NotFoundByProductId", $"Entity with product ID: {productId} is missing");`, `public static readonly Error NotRequestedForAccountDeletion = Error.Validation("User.NotRequestedForAccountDeletion", "the user has not requested to delete the account");` .
 ### Security
-CORRS cookies https only itd
+application adheres to strict security standards, ensuring that all cookies and tokens are issued in a secure manner. Cookies are set with `HttpOnly` and `Secure` flags, and tokens are managed via secure practices, including the use of `CORS` policies and `HTTPS`. The application leverages `Azure Key Vault` to securely store sensitive configuration data, and `JWT Bearer tokens` are used for authentication and authorization.
 ### Refresh Token Middleware
-### Global Error Handling Middleware 
+In the infrastructure layer, there is a middleware called `JwtRefreshMiddleware`, which handles token refresh operations. With each request to the Api, it retrieves cookies containing the `refresh token` and `authentication token` from the request context. It then validates the authentication token's validity, if the authentication token has expired but the refresh token is still valid, a new authentication token is issued and returned to the user. If a new token is issued, the request is processed based on the new token without requiring the client to make another request to the API after the new authentication token is returned to the browser.
+### Global Error Handling Middleware
+The API also implements `ExceptionHandlingMiddleware`, which captures all unhandled exceptions thrown throughout the application's execution. This middleware automatically wraps the thrown exception in a `ProblemDetails` object (`Microsoft.AspNetCore.Http.Extensions`), which is then returned to the user’s browser in the standard error format used by the API.
+
+![image](https://github.com/user-attachments/assets/8e55b8b2-a244-4d56-8bfe-256808dc05d2)
+
 ### Extensions
+
 ### Form Validation + Domain layer validatiron 
 ### Mapper
 ### Organization of Program.cs
