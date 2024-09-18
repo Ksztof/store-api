@@ -196,7 +196,7 @@ internal static class ServiceCollectionExtensions
                         context.Token = context.HttpContext.Items["NewAuthToken"].ToString();
                     }
 
-                    if (context.Request.Cookies.ContainsKey("AuthCookie"))
+                    else if (context.Request.Cookies.ContainsKey("AuthCookie"))
                     {
                         context.Token = context.Request.Cookies["AuthCookie"];
                     }

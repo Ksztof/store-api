@@ -45,7 +45,7 @@ public class CartsController : ControllerBase
 
         NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
-        EntityResult<CartResponse> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
+        EntityResult<CartResponseDto> result = await _cartsService.AddProductsToCartAsync(addProductToCartDto);
 
         CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = result.Entity?.CartId }, result.Entity);
 
@@ -56,7 +56,7 @@ public class CartsController : ControllerBase
     [Authorize(Roles = UserRoles.Administrator)]
     public async Task<IActionResult> DeleteProductFromCartAsync(int productId)
     {
-        EntityResult<CartResponse> result = await _cartsService.DeleteProductFromCartAsync(productId);
+        EntityResult<CartResponseDto> result = await _cartsService.DeleteProductFromCartAsync(productId);
 
         CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = result.Entity?.CartId }, result.Entity);
 
@@ -76,7 +76,7 @@ public class CartsController : ControllerBase
 
         ModifyProductDtoApp modifyProductDto = _mapper.Map<ModifyProductDtoApp>(modifiedProduct);
 
-        EntityResult<CartResponse> result = await _cartsService.ModifyProductAsync(modifyProductDto);
+        EntityResult<CartResponseDto> result = await _cartsService.ModifyProductAsync(modifyProductDto);
 
         CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetCartByIdAsync), new { cartId = result.Entity?.CartId }, result.Entity);
 
@@ -115,14 +115,14 @@ public class CartsController : ControllerBase
     [Authorize(Roles = UserRoles.Administrator)]
     public async Task<IActionResult> GetCartByIdAsync(int cartId)
     {
-        EntityResult<CartResponse> result = await _cartsService.GetCartByIdAsync(cartId);
+        EntityResult<CartResponseDto> result = await _cartsService.GetCartByIdAsync(cartId);
 
         return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
     }
 
     [HttpPut]
     [AllowAnonymous]
-    public async Task<IActionResult> ReplaceCartContentAsync(NewProductsDtoApi request)
+    public async Task<IActionResult> ReplaceCartContentAsync([FromBody] NewProductsDtoApi request)
     {
         var validationResult = await _validationService.ValidateAsync(request);
 
