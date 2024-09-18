@@ -36,7 +36,7 @@ public class ExceptionHandlingMiddleware
     {
         GlobalExceptionError error = new GlobalExceptionError(
             code: "UnexpectedError.Status500InternalServerError",
-            description: $"Unexpected server error has occurred with message: {exception.Message}, please contact application owner",
+            description: $"Unexpected server error has occurred with message: {exception.Message}. please contact application owner",
             errorType: ErrorType.Server
         );
 

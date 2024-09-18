@@ -45,7 +45,7 @@ public class ProductsController : ControllerBase
 
         CreateProductDtoApp createProductDtoApp = _mapper.Map<CreateProductDtoApp>(createProductForm);
 
-        EntityResult<ProductResponse> result = await _productService.CreateProductAsync(createProductDtoApp);
+        EntityResult<ProductResponseDto> result = await _productService.CreateProductAsync(createProductDtoApp);
 
         CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetAllProductsAsync), new { productId = result.Entity?.Id }, result.Entity);
 
@@ -65,7 +65,7 @@ public class ProductsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetProductByIdAsync(int productId)
     {
-        EntityResult<ProductResponse> result = await _productService.GetProductByIdAsync(productId);
+        EntityResult<ProductResponseDto> result = await _productService.GetProductByIdAsync(productId);
 
         return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
     }
@@ -74,7 +74,7 @@ public class ProductsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetAllProductsAsync()
     {
-        IEnumerable<ProductResponse> result = await _productService.GetAllProductsAsync();
+        IEnumerable<ProductResponseDto> result = await _productService.GetAllProductsAsync();
 
         return Ok(result);
     }
@@ -92,7 +92,7 @@ public class ProductsController : ControllerBase
 
         UpdateProductDtoApp updateProductDtoApp = _mapper.Map<UpdateProductDtoApp>(updateProductForm);
 
-        EntityResult<ProductResponse> result = await _productService.UpdateProductAsync(updateProductDtoApp);
+        EntityResult<ProductResponseDto> result = await _productService.UpdateProductAsync(updateProductDtoApp);
 
         CreatedAtActionResult creationResult = CreatedAtAction(nameof(GetProductByIdAsync), new { productId = result.Entity?.Id }, result.Entity);
 

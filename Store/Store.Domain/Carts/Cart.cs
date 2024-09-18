@@ -81,7 +81,7 @@ public class Cart : Entity
         CartLines?.Clear();
     }
 
-    public AboutCartDomRes CheckCart()
+    public AboutCartDomResDto CheckCart()
     {
         decimal totalCartValue = CartLines.Sum(cl => cl.Product.Price * cl.Quantity);
 
@@ -89,7 +89,7 @@ public class Cart : Entity
 
         CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc);
 
-        AboutCartDomRes aboutCart = new AboutCartDomRes
+        AboutCartDomResDto aboutCart = new AboutCartDomResDto
         {
             AboutProductsInCart = aboutProducts,
             TotalCartValue = totalCartValue,
