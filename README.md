@@ -655,7 +655,82 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
+## Users Controller
+### LoginAsync
+  - HTTP Path: `POST /api/users/login`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to login user and **get cookie with JWT token**
+  - Input Type: `FromBody`
+  - Input model: `AuthenticateUserDtoApi`
+```json
+{
+  "Email": "string",
+  "Password": "string"
+}
 
+```
+- Output: `Code 204 NoContent`
+
+### RegisterUserAsync
+  - HTTP Path: `POST /api/users`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to register new account
+  - Input Type: `FromBody`
+  - Input model: `RegisterUserDtoApi`
+```json
+{
+  "Login": "string",
+  "Email": "string",
+  "Password": "string",
+  "ConfirmPassword": "string"
+}
+```
+- Output: `Code 204 NoContent`
+
+### ConfirmEmailAsync
+  - HTTP Path: `GET /api/users/confirm/{userId}/{token}`
+  - Request Type: `GET`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to confirm account registration via activation link from email
+  - Input Type: `Parameter`
+  - Input arguments: `"userId":"string"`, `"token":"string"`
+  - Output: `Code 200 Ok(string)`
+
+### RequestDeletionAsync
+  - HTTP Path: `PATCH /api/users/request-deletion`
+  - Request Type: `PATCH`
+  - Authorization: `Visitor`, `Administrator`
+  - Description: This endpoint is used to request account deletion, account becomes not visible for users 
+  - Input Type: `-`
+  - Output: `Code 204 NoContent`
+
+### SubmitDeletionAsync
+  - HTTP Path: `GET /api/users/{id}`
+  - Request Type: `GET`
+  - Authorization: `Administrator`
+  - Description: This endpoint is used to submit account deletion by user `Id` 
+  - Input Type: `parameter`
+  - Input arguments: `"id":"string"`
+  - Output: `Code 204 NoContent`
+
+  - ### RemoveRefreshToken
+  - HTTP Path: `GET /api/users/logout`
+  - Request Type: `GET`
+  - Authorization: `Visitor`, `Administrator`
+  - Description: This endpoint is used to remove cookie with authentication token from user's browser  
+  - Input Type: `-`
+  - Output: `Code 204 NoContent`
+
+  - ### RemoveGuestSessionId
+  - HTTP Path: `GET /api/users`
+  - Request Type: `GET`
+  - Authorization: `AllowAnonymous`
+  - Description: This endpoint is used to remove cookie guest session Id from user's browser  
+  - Input Type: `-`
+  - Output: `Code 204 NoContent`
+    
 # Database 
 ### ERD Diagram
 ### Entities
