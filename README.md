@@ -168,7 +168,7 @@ Test preparation is the next stage of development (in preparation...)
   ]
 }
 ```
- 
+<br></br> 
 ### DeleteProductFromCartAsync
   - HTTP Path: `DELETE /api/carts/products/{productId}`
   - Request Type: `DELETE`
@@ -191,6 +191,7 @@ Test preparation is the next stage of development (in preparation...)
   ]
 }
 ```
+<br></br>
 ### ModifyProductAsync
   - HTTP Path: `PATCH /api/carts/products`
   - Request Type: `PATCH`
@@ -222,7 +223,7 @@ Test preparation is the next stage of development (in preparation...)
   ]
 }
 ```
-
+<br></br>
 ### CheckCartAsync
   - HTTP Path: `GET /api/carts`
   - Request Type: `GET`
@@ -248,7 +249,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
-
+<br></br>
 ### ClearCartAsync
   - HTTP Path: `DELETE /api/carts`
   - Request Type: `DELETE`
@@ -257,7 +258,7 @@ Test preparation is the next stage of development (in preparation...)
   - Description: This endpoint is used to delete cart content
   - Output: `Code 204 NoContent`
 
-    
+<br></br>    
 ### GetCartByIdAsync
   - HTTP Path: `GET /api/carts/{cartId}`
   - Request Type: `GET`
@@ -280,7 +281,7 @@ Test preparation is the next stage of development (in preparation...)
   ]
 }
 ```
-    
+<br></br>
 ### ReplaceCartContentAsync
   - HTTP Path: `PUT /api/carts`
   - Request Type: `PUT`
@@ -318,7 +319,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
-
+<br></br>
 ### CheckCurrentCartAsync
   - HTTP Path: `POST /api/carts/check-current-cart`
   - Request Type: `POST`
@@ -349,6 +350,7 @@ Test preparation is the next stage of development (in preparation...)
   "CreatedAt": "DateTime"
 }
 ```
+<br></br>
 ## Orders Controller
 ### SubmitOrderAsync
   - HTTP Path: `POST /api/orders/{method?}`
@@ -401,7 +403,7 @@ Test preparation is the next stage of development (in preparation...)
   }
 }
 ```
-
+<br></br>
 ### GetOrderByIdAsync
   - HTTP Path: `GET /api/orders/{orderId}`
   - Request Type: `GET`
@@ -438,7 +440,7 @@ Test preparation is the next stage of development (in preparation...)
   }
 }
 ```
-
+<br></br>
 ### DeleteOrderAsync
   - HTTP Path: `DELETE /api/orders/{orderId}`
   - Request Type: `DELETE`
@@ -447,7 +449,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `Parameter`
   - Argumets: `"orderId": "int"`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### MarkOrderAsDeletedAsync
   - HTTP Path: `PATCH /api/orders/{orderId}//mark-as-deleted`
   - Request Type: `PATCH`
@@ -456,7 +458,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `Parameter`
   - Argumets: `"orderId": "int"`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### GetOrdersAsync
   - HTTP Path: `GET /api/orders`
   - Request Type: `GET`
@@ -492,6 +494,7 @@ Test preparation is the next stage of development (in preparation...)
 ]
 
 ```
+<br></br>
 ## Payments Controller
 ### GetClientSecretAsync
   - HTTP Path: `POST /api/payments`
@@ -507,7 +510,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 ```
 - Output: `Code 200 Ok(string)`
-
+<br></br>
 ### UpdatePaymentIntentAsync
   - HTTP Path: `POST /api/payments/update-payment-intent`
   - Request Type: `POST`
@@ -522,7 +525,7 @@ Test preparation is the next stage of development (in preparation...)
 
 ```
 - Output: `Code 204 NoContent`
-
+<br></br>
 ### ConfirmPaymentAsync
   - HTTP Path: `POST /api/payments/confirm-payment`
   - Request Type: `POST`
@@ -537,13 +540,13 @@ Test preparation is the next stage of development (in preparation...)
 }
 ```
 - Output: `Code 204 NoContent`
-
+<br></br>
 ### ConfirmPaymentAsync
   - HTTP Path: `POST /api/payments/webhook`
   - Request Type: `POST`
   - Authorization: `AllowAnonymous `
   - Description: This is a webhook triggered by the Stripe API to retrieve the payment status, which is returned to the frontend using SignalR
-
+<br></br>
 ## Products Controller
 ### CreateProductAsync
   - HTTP Path: `POST /api/products`
@@ -575,7 +578,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
-
+<br></br>
 ### DeleteProductAsync
   - HTTP Path: `DELETE /api/products/{productId}`
   - Request Type: `DELETE`
@@ -584,7 +587,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `Parameter`
   - Argumets: `"productId": "int"`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### GetProductByIdAsync
   - HTTP Path: `GET /api/products/{productId}`
   - Request Type: `GET`
@@ -604,7 +607,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
-
+<br></br>
 ### GetAllProductsAsync
   - HTTP Path: `GET /api/products`
   - Request Type: `GET`
@@ -623,7 +626,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
-
+<br></br>
 ### UpdateProductAsync
   - HTTP Path: `PUT /api/products`
   - Request Type: `PUT`
@@ -655,6 +658,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 
 ```
+<br></br>
 ## Users Controller
 ### LoginAsync
   - HTTP Path: `POST /api/users/login`
@@ -671,7 +675,7 @@ Test preparation is the next stage of development (in preparation...)
 
 ```
 - Output: `Code 204 NoContent`
-
+<br></br>
 ### RegisterUserAsync
   - HTTP Path: `POST /api/users`
   - Request Type: `POST`
@@ -688,7 +692,7 @@ Test preparation is the next stage of development (in preparation...)
 }
 ```
 - Output: `Code 204 NoContent`
-
+<br></br>
 ### ConfirmEmailAsync
   - HTTP Path: `GET /api/users/confirm/{userId}/{token}`
   - Request Type: `GET`
@@ -697,7 +701,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `Parameter`
   - Input arguments: `"userId":"string"`, `"token":"string"`
   - Output: `Code 200 Ok(string)`
-
+<br></br>
 ### RequestDeletionAsync
   - HTTP Path: `PATCH /api/users/request-deletion`
   - Request Type: `PATCH`
@@ -705,7 +709,7 @@ Test preparation is the next stage of development (in preparation...)
   - Description: This endpoint is used to request account deletion, account becomes not visible for users 
   - Input Type: `-`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### SubmitDeletionAsync
   - HTTP Path: `GET /api/users/{id}`
   - Request Type: `GET`
@@ -714,7 +718,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `parameter`
   - Input arguments: `"id":"string"`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### RemoveRefreshToken
   - HTTP Path: `GET /api/users/logout`
   - Request Type: `GET`
@@ -722,7 +726,7 @@ Test preparation is the next stage of development (in preparation...)
   - Description: This endpoint is used to remove cookie with authentication token from user's browser  
   - Input Type: `-`
   - Output: `Code 204 NoContent`
-
+<br></br>
 ### RemoveGuestSessionId
   - HTTP Path: `GET /api/users`
   - Request Type: `GET`
@@ -730,7 +734,7 @@ Test preparation is the next stage of development (in preparation...)
   - Description: This endpoint is used to remove cookie guest session Id from user's browser  
   - Input Type: `-`
   - Output: `Code 204 NoContent`
-    
+    <br></br>
 # Database 
 ### ERD Diagram
 ### Entities
