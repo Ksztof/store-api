@@ -134,6 +134,29 @@ AutoMapper library was used for mapping, and the mapping configurations were def
 ### Tests
 Test preparation is the next stage of development (in preparation...)
 
+# Endpoints
+## Carts Controller
+### AddProductsToCartAsync
+  - HTTP Path: `/api/carts/products`
+  - Request Type: `POST`
+  - Authorization: `Administrator `
+  - Input Type: `FromBody`
+  - Input:
+```json
+{
+  "products": [
+    {
+      "productId": "int",
+      "quantity": "decimal"
+    }
+  ]
+}
+```
+  - Description: This endpoint is used to add a single product to the cart.
+ 
+
+
+
 # Database 
 ### ERD Diagram
 ### Entities
