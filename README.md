@@ -86,11 +86,15 @@ The API also implements `ExceptionHandlingMiddleware`, which captures all unhand
 ![image](https://github.com/user-attachments/assets/8e55b8b2-a244-4d56-8bfe-256808dc05d2)
 
 ### Extensions
-
+The Api provides extension classes `ValidationResultExtensions` and `ResultExtensions`, which are used to wrap form validation errors and business logic errors in a `ProblemDetails` object, offering a more detailed description of the issue. Additionally, two other extension classes, `ServiceCollectionExtensions` and `ApplicationBuilderExtensions`, help organize the `startup configuration`. These classes are responsible for registering services, configurations, and dependencies such as JWT authentication, database, CORS, and Azure Key Vault, as well as configuring the middleware pipeline, including custom middleware, authentication, and API endpoints setup.
+<div style="display: flex; gap: 10px; justify-content: flex-start;">
+  <img src="https://github.com/user-attachments/assets/e88465f3-411e-4fe1-9148-da87e877c7ff" alt="ResultExtensions 1" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/32097767-7221-4512-a67a-e7cc63e56617" alt="ResultExtensions 1" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/ac80c3ab-d933-49ba-bba6-6728a47453c7)" alt="ResultExtensions 2" width="33%" align="top">
+</div>
 ### Form Validation + Domain layer validatiron 
 ### Mapper
 ### Organization of Program.cs
-
 
 # Database 
 ### ERD Diagram
