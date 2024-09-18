@@ -2,7 +2,7 @@
 Store-API is a REST API for an online store that serves as the backend for the frontend application, store-front. The API handles operations related to data management, business logic, authentication, authorization, and communication with the database. It acts as the central component of the system, forming a comprehensive e-commerce solution together with the store-front application. It allows guests to make purchases using a temporary ID that matches their temporary cart ID, and logged-in users to make purchases using JWT tokens. By clearly separating the frontend and backend, the API enhances scalability, security, and maintainability, enabling independent development and updates of both parts of the system.
 
 # Tech Stack
-### [ASP.NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet)
+## [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-6.0) ([.NET 6](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-6) + [C# 10](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-10))
 Used as the main framework for building the API (handling HTTP requests, managing routing, implementing middleware for request processing, and facilitating authentication and authorization processes).
 ### [Entity Framework Core](https://learn.microsoft.com/en-us/ef/)
 Used as the Object-Relational Mapper (ORM) to facilitate data access and management within the application. This technology simplifies interactions with the SQL Server database and handles database migrations, data modeling, and CRUD operations.
