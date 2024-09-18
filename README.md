@@ -131,6 +131,9 @@ AutoMapper library was used for mapping, and the mapping configurations were def
     <img src="https://github.com/user-attachments/assets/b4f6d92f-d309-46fa-acf6-eb434d85cef9" alt="Mapper" width="33%" align="top">
 </div>
 
+### Tests
+Test preparation is the next stage of development (in preparation...)
+
 # Database 
 ### ERD Diagram
 ### Entities
