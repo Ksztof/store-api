@@ -83,18 +83,31 @@ In the infrastructure layer, there is a middleware called `JwtRefreshMiddleware`
 ### Global Error Handling Middleware
 The API also implements `ExceptionHandlingMiddleware`, which captures all unhandled exceptions thrown throughout the application's execution. This middleware automatically wraps the thrown exception in a `ProblemDetails` object (`Microsoft.AspNetCore.Http.Extensions`), which is then returned to the user’s browser in the standard error format used by the API.
 
-![image](https://github.com/user-attachments/assets/8e55b8b2-a244-4d56-8bfe-256808dc05d2)
+![image](https://github.com/user-attachments/assets/0d45d769-21e3-4ac8-ade4-b68eb29d2c10)
+
 
 ### Extensions
 The Api provides extension classes `ValidationResultExtensions` and `ResultExtensions`, which are used to wrap form validation errors and business logic errors in a `ProblemDetails` object, offering a more detailed description of the issue. Additionally, two other extension classes, `ServiceCollectionExtensions` and `ApplicationBuilderExtensions`, help organize the `startup configuration`. These classes are responsible for registering services, configurations, and dependencies such as JWT authentication, database, CORS, and Azure Key Vault, as well as configuring the middleware pipeline, including custom middleware, authentication, and API endpoints setup.
 <div style="display: flex; gap: 10px; justify-content: flex-start;">
   <img src="https://github.com/user-attachments/assets/e88465f3-411e-4fe1-9148-da87e877c7ff" alt="ResultExtensions 1" width="33%" align="top">
-  <img src="https://github.com/user-attachments/assets/32097767-7221-4512-a67a-e7cc63e56617" alt="ResultExtensions 1" width="33%" align="top">
-  <img src="https://github.com/user-attachments/assets/ac80c3ab-d933-49ba-bba6-6728a47453c7)" alt="ResultExtensions 2" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/32097767-7221-4512-a67a-e7cc63e56617" alt="ResultExtensions 2" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/ac80c3ab-d933-49ba-bba6-6728a47453c7" alt="ResultExtensions 3" width="33%" align="top">
 </div>
+<br></br>
+
+*`ValidationResultExtensions` and `ResultExtensions`*
+
+<br></br>
+<div style="display: flex; gap: 10px; justify-content: flex-start;">
+  <img src="https://github.com/user-attachments/assets/a799bbbb-db64-41cd-911e-87d77e4ab753" alt="startup 1" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/2eb63e16-a21a-4e61-a182-fded7dc44ea9" alt="startup 2" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/8e529cc1-385b-4aea-87e3-d102e30d925c" alt="startup 3" width="33%" align="top">
+</div>
+
+*`ServiceCollectionExtensions` and `ApplicationBuilderExtensions`*
+
 ### Form Validation + Domain layer validatiron 
 ### Mapper
-### Organization of Program.cs
 
 # Database 
 ### ERD Diagram
