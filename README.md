@@ -492,6 +492,58 @@ Test preparation is the next stage of development (in preparation...)
 ]
 
 ```
+## Payments Controller
+### GetClientSecretAsync
+  - HTTP Path: `POST /api/payments`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to get stripe secret for user
+  - Input Type: `FromBody`
+  - Input model: `GetClientSecretDtoApi`
+```json
+{
+  "Amount": "int",
+  "Currency": "string"
+}
+```
+- Output: `Code 200 Ok(string)`
+
+### UpdatePaymentIntentAsync
+  - HTTP Path: `POST /api/payments/update-payment-intent`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to update payment intent metadata with order id
+  - Input Type: `FromBody`
+  - Input model: `UpdatePaymentIntentDtoApi`
+```json
+{
+  "clientSecret": "string"
+}
+
+```
+- Output: `Code 204 NoContent`
+
+### ConfirmPaymentAsync
+  - HTTP Path: `POST /api/payments/confirm-payment`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to confirm stripe payment on the backend side
+  - Input Type: `FromBody`
+  - Input model: `ConfirmPaymentDtoApi`
+```json
+{
+  "PaymentIntentId": "string",
+  "PaymentMethodId": "string"
+}
+```
+- Output: `Code 204 NoContent`
+
+### ConfirmPaymentAsync
+  - HTTP Path: `POST /api/payments/webhook`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This is a webhook triggered by the Stripe API to retrieve the payment status, which is returned to the frontend using SignalR
+
 
 # Database 
 ### ERD Diagram
