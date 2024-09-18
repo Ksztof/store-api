@@ -59,7 +59,7 @@ By implementing a layered architecture in accordance with Clean Architecture, in
  - **Options Pattern** - Used to manage configuration settings in a structured and type-safe manner via strongly typed classes.
  - **Factory Pattern** -  Static methods in UserResult, like Success() and Failure(Error error), act as factories to create instances of UserResult in a controlled way.
  - **Singleton Pattern** - Ensures that a particular service or class instance is created only once and reused across the application.
- - **Strategy Pattern** -  Allows dynamic selection or change of execution strategy without altering the class implementation, used in JWT validation by configuring TokenValidationParameters.
+ - **Strategy Pattern** -  Allows dynamic selection or change of execution strategy without altering the class implementation, used in JWT validation by configuring TokenValidationParameters and `ValidationService` to dynamically inject and execute the appropriate validator instance based on the type being validated..
  - **Chain of Responsibility Pattern** - Used in middleware configurations where each middleware processes the request and decides whether to pass it along the chain.
  - **Unit of Work Pattern** - Automatically implemented by EF Core to ensure atomicity and consistency in database operations.
  - **Aspect-Oriented Programming (AOP)** - implemented through middleware to handle cross-cutting concerns like token validation in a centralized manner, improving modularity and maintainability.
@@ -99,15 +99,37 @@ The Api provides extension classes `ValidationResultExtensions` and `ResultExten
 
 <br></br>
 <div style="display: flex; gap: 10px; justify-content: flex-start;">
-  <img src="https://github.com/user-attachments/assets/a799bbbb-db64-41cd-911e-87d77e4ab753" alt="startup 1" width="33%" align="top">
-  <img src="https://github.com/user-attachments/assets/2eb63e16-a21a-4e61-a182-fded7dc44ea9" alt="startup 2" width="33%" align="top">
-  <img src="https://github.com/user-attachments/assets/8e529cc1-385b-4aea-87e3-d102e30d925c" alt="startup 3" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/a799bbbb-db64-41cd-911e-87d77e4ab753" alt="Startup 1" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/2eb63e16-a21a-4e61-a182-fded7dc44ea9" alt="Startup 2" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/8e529cc1-385b-4aea-87e3-d102e30d925c" alt="Startup 3" width="33%" align="top">
 </div>
 
 *`ServiceCollectionExtensions` and `ApplicationBuilderExtensions`*
 
-### Form Validation + Domain layer validatiron 
+### Form validation and business logic validation
+Following the Separation of Concerns principle, form validation takes place in the presentation layer at the controller level using FluentValidation, while business logic validation is handled in the application layer, ensuring a clear separation between input data validation and business rules. Additionally, the validation approach uses the Strategy Pattern with Dependency Injection, allowing for dynamic selection of the appropriate validator, making the method generic.
+
+<div style="display: flex; gap: 10px; justify-content: flex-start;">
+  <img src="https://github.com/user-attachments/assets/78b2b5a8-53bb-46d8-959a-9ca20d6cdf21" alt="Form validation 1" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/26c255a5-de2e-4cbd-a2b7-a08b7970d05b" alt="Form validation 2" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/a9ab11c2-d8c6-4722-b8a4-c34c62c7d9d2" alt="Form validation 3 " width="33%" align="top">
+</div>
+
+<br></br>
+
+<div style="display: flex; gap: 10px; justify-content: flex-start;">
+  <img src="https://github.com/user-attachments/assets/be1c8daf-3066-45e7-b982-993306e8db99" alt=Business validation 1" width="50%" align="top">
+  <img src="https://github.com/user-attachments/assets/3df12b63-0aa3-495c-80ba-38050003e887" alt="Business validation 2" width="50%" align="top">
+</div>
+
 ### Mapper
+AutoMapper library was used for mapping, and the mapping configurations were defined in classes with the `MappingProfile` prefix.
+<br></br>
+<div style="display: flex; gap: 10px; justify-content: flex-start;">
+  <img src="https://github.com/user-attachments/assets/45f5ad77-d347-4914-9f1f-0f5f0ff518f2" alt="Mapper" width="33%" align="top">
+  <img src="https://github.com/user-attachments/assets/f7f7b49a-a197-44ed-bf5c-79c2246775db" alt="Mapper" width="33%" align="top">
+    <img src="https://github.com/user-attachments/assets/b4f6d92f-d309-46fa-acf6-eb434d85cef9" alt="Mapper" width="33%" align="top">
+</div>
 
 # Database 
 ### ERD Diagram
