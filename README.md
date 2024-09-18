@@ -544,6 +544,117 @@ Test preparation is the next stage of development (in preparation...)
   - Authorization: `AllowAnonymous `
   - Description: This is a webhook triggered by the Stripe API to retrieve the payment status, which is returned to the frontend using SignalR
 
+## Products Controller
+### CreateProductAsync
+  - HTTP Path: `POST /api/products`
+  - Request Type: `POST`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to create product
+  - Input Type: `FromBody`
+  - Input model: `CreateProductDtoApi`
+```json
+{
+  "ProductName": "string",
+  "ProductPrice": "decimal",
+  "ProductDescription": "string",
+  "ProductCategoriesIds": [
+    "int"
+  ],
+  "ProductManufacturer": "string?"
+}
+```
+- Output: `Code 200 Ok(ProductResponseDto)`
+```json
+{
+  "Id": "int",
+  "Name": "string",
+  "Price": "decimal",
+  "Description": "string",
+  "Manufacturer": "string?",
+  "DateAdded": "DateTime"
+}
+
+```
+
+### DeleteProductAsync
+  - HTTP Path: `DELETE /api/products/{productId}`
+  - Request Type: `DELETE`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to delete product
+  - Input Type: `Parameter`
+  - Argumets: `"productId": "int"`
+  - Output: `Code 204 NoContent`
+
+### GetProductByIdAsync
+  - HTTP Path: `GET /api/products/{productId}`
+  - Request Type: `GET`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to get product by `Id`
+  - Input Type: `Parameter`
+  - Argumets: `"productId": "int"`
+  - Output: `Code 200 Ok(ProductResponseDto)`
+```json
+{
+  "Id": "int",
+  "Name": "string",
+  "Price": "decimal",
+  "Description": "string",
+  "Manufacturer": "string?",
+  "DateAdded": "DateTime"
+}
+
+```
+
+### GetAllProductsAsync
+  - HTTP Path: `GET /api/products`
+  - Request Type: `GET`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to get all products
+  - Input Type: `-`
+  - Output: `Code 200 Ok(ProductResponseDto)`
+```json
+{
+  "Id": "int",
+  "Name": "string",
+  "Price": "decimal",
+  "Description": "string",
+  "Manufacturer": "string?",
+  "DateAdded": "DateTime"
+}
+
+```
+
+### UpdateProductAsync
+  - HTTP Path: `PUT /api/products`
+  - Request Type: `PUT`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to update product 
+  - Input Type: `FromBody`
+  - Input model: `UpdateProductDtoApi`
+```JSON
+{
+  "productId": "int",
+  "ProductName": "string?",
+  "ProductPrice": "decimal?",
+  "ProductDescription": "string?",
+  "ProductManufacturer": "string?",
+  "ProductCategoriesIds": [
+    "int"
+  ]?
+}
+```
+  - Output: `Code 200 Ok(ProductResponseDto)`
+```json
+{
+  "Id": "int",
+  "Name": "string",
+  "Price": "decimal",
+  "Description": "string",
+  "Manufacturer": "string?",
+  "DateAdded": "DateTime"
+}
+
+```
 
 # Database 
 ### ERD Diagram
