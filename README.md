@@ -738,3 +738,6 @@ Test preparation is the next stage of development (in preparation...)
 # Database 
 ### ERD Diagram
 ### Entities
+
+# CI/CD
+The backend API is connected to Azure Web App and the CI/CD process starts automatically after each push to the main branch. The API is built and deployed using GitHub Actions, with Entity Framework Core migrations applied during the process. Secrets, such as Azure credentials and the SQL connection string, are used for secure configuration. After every push, the API is deployed to Azure Web App.
