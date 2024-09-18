@@ -89,7 +89,7 @@ public class UsersController : ControllerBase
     {
         UserResult result = await _userService.RequestDeletionAsync();
 
-        return result.IsSuccess ? Ok() : result.ToProblemDetails();
+        return result.IsSuccess ? NoContent() : result.ToProblemDetails();
     }
 
     [HttpDelete("{id}")]
