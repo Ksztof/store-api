@@ -137,11 +137,12 @@ Test preparation is the next stage of development (in preparation...)
 # Endpoints
 ## Carts Controller
 ### AddProductsToCartAsync
-  - HTTP Path: `/api/carts/products`
+  - HTTP Path: `POST /api/carts/products`
   - Request Type: `POST`
   - Authorization: `Administrator `
+  - Description: This endpoint is used to add products to the cart.
   - Input Type: `FromBody`
-  - Input:
+  - Input: `NewProductsDtoApi`
 ```json
 {
   "products": [
@@ -152,9 +153,201 @@ Test preparation is the next stage of development (in preparation...)
   ]
 }
 ```
-  - Description: This endpoint is used to add a single product to the cart.
+  - Output: `Code 200 Ok(CartResponseDto)`
+```json
+{
+  "CartId": "int?",
+  "CartLineResponse": [
+    {
+      "productId": "int?",
+      "ProductName": "string",
+      "Quantity": "decimal",
+      "UnitPrice": "decimal",
+      "TotalPrice": "decimal"
+    }
+  ]
+}
+```
  
+### DeleteProductFromCartAsync
+  - HTTP Path: `DELETE /api/carts/products/{productId}`
+  - Request Type: `DELETE`
+  - Authorization: `Administrator`
+  - Input Type: `Parameter`
+  - Argumets: `"productId": "int"`
+  - Description: This endpoint is used to delete single product from the cart.
+  - Output: `Code 200 Ok(CartResponseDto)`
+```json
+{
+  "CartId": "int?",
+  "CartLineResponse": [
+    {
+      "productId": "int?",
+      "ProductName": "string",
+      "Quantity": "decimal",
+      "UnitPrice": "decimal",
+      "TotalPrice": "decimal"
+    }
+  ]
+}
+```
+### ModifyProductAsync
+  - HTTP Path: `PATCH /api/carts/products`
+  - Request Type: `PATCH`
+  - Authorization: `Administrator `
+  - Input Type: `FromBody`
+  - Description: This endpoint is used to modify the quantity of a product in the cart.
+  - Input model: `ModifyProductDtoApi`
+```json
+{
+  "Product": {
+    "ProductId": "int",
+    "Quantity": "decimal"
+  }
+}
 
+```
+  - Output: `Code 200 Ok(CartResponseDto)`
+```json
+{
+  "CartId": "int?",
+  "CartLineResponse": [
+    {
+      "productId": "int?",
+      "ProductName": "string",
+      "Quantity": "decimal",
+      "UnitPrice": "decimal",
+      "TotalPrice": "decimal"
+    }
+  ]
+}
+```
+
+### CheckCartAsync
+  - HTTP Path: `GET /api/carts`
+  - Request Type: `GET`
+  - Authorization: `AllowAnonymous`
+  - Input Type: `-`
+  - Description: This endpoint is used to retrieve information about the cart's contents, including its total value and creation date.
+  - Output: `Code 204 NoContent`/`Code 200 OK(AboutCartDomResDto)`
+```json
+{
+  "TotalCartValue": "decimal",
+  "AboutProductsInCart": [
+    {
+      "ProductId": "int",
+      "ProductName": "string",
+      "ProductUnitPrice": "decimal",
+      "ProductTotalPrice": "decimal",
+      "Description": "string",
+      "Manufacturer": "string",
+      "Quantity": "decimal"
+    }
+  ],
+  "CreatedAt": "DateTime"
+}
+
+```
+
+### ClearCartAsync
+  - HTTP Path: `DELETE /api/carts`
+  - Request Type: `DELETE`
+  - Authorization: `AllowAnonymous`
+  - Input Type: `-`
+  - Description: This endpoint is used to delete cart content.
+  - Output: `Code 204 NoContent`
+
+    
+### GetCartByIdAsync
+  - HTTP Path: `GET /api/carts/{cartId}`
+  - Request Type: `GET`
+  - Authorization: `Administrator`
+  - Input Type: `Parameter`
+  - Argumets: `"cartId": "int"`
+  - Description: This endpoint is used to get cart content by `Id`.
+  - Output: `Code 200 Ok(CartResponseDto)`
+```json
+{
+  "CartId": "int?",
+  "CartLineResponse": [
+    {
+      "productId": "int?",
+      "ProductName": "string",
+      "Quantity": "decimal",
+      "UnitPrice": "decimal",
+      "TotalPrice": "decimal"
+    }
+  ]
+}
+```
+    
+### ReplaceCartContentAsync
+  - HTTP Path: `PUT /api/carts`
+  - Request Type: `PUT`
+  - Authorization: `AllowAnonymous `
+  - Input Type: `FromBody`
+  - Description: This endpoint is used to replace cart content.
+  - Input model: `NewProductsDtoApi`
+```json
+{
+  "Products": [
+    {
+      "ProductId": "int",
+      "Quantity": "decimal"
+    }
+  ]
+}
+
+```
+ - Output: `Code 204 NoContent`/`Code 200 Ok(AboutCartDomResDto)`
+```json
+{
+  "TotalCartValue": "decimal",
+  "AboutProductsInCart": [
+    {
+      "ProductId": "int",
+      "ProductName": "string",
+      "ProductUnitPrice": "decimal",
+      "ProductTotalPrice": "decimal",
+      "Description": "string",
+      "Manufacturer": "string",
+      "Quantity": "decimal"
+    }
+  ],
+  "CreatedAt": "DateTime"
+}
+
+```
+
+### CheckCurrentCartAsync
+  - HTTP Path: `POST /api/carts/check-current-cart`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Input Type: `FromBody`
+  - Description: This endpoint is used to check by date whether the current cart is up to date. If it is, the function returns nothing, if not, it returns the most up-to-date cart.
+  - Input model: `CheckCurrentCartDtoApi`
+```json
+{
+  "CreatedAt": "DateTime"
+}
+```
+- Output: `Code 204 NoContent`/`Code 200 Ok(AboutCartDomResDto)`
+```json
+{
+  "TotalCartValue": "decimal",
+  "AboutProductsInCart": [
+    {
+      "ProductId": "int",
+      "ProductName": "string",
+      "ProductUnitPrice": "decimal",
+      "ProductTotalPrice": "decimal",
+      "Description": "string",
+      "Manufacturer": "string",
+      "Quantity": "decimal"
+    }
+  ],
+  "CreatedAt": "DateTime"
+}
 
 
 # Database 
