@@ -643,7 +643,7 @@ Test preparation is the next stage of development (in preparation...)
   "ProductManufacturer": "string?",
   "ProductCategoriesIds": [
     "int"
-  ]?
+  ]
 }
 ```
   - Output: `Code 200 Ok(ProductResponseDto)`
