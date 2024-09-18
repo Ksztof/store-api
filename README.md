@@ -715,7 +715,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input arguments: `"id":"string"`
   - Output: `Code 204 NoContent`
 
-  - ### RemoveRefreshToken
+### RemoveRefreshToken
   - HTTP Path: `GET /api/users/logout`
   - Request Type: `GET`
   - Authorization: `Visitor`, `Administrator`
@@ -723,7 +723,7 @@ Test preparation is the next stage of development (in preparation...)
   - Input Type: `-`
   - Output: `Code 204 NoContent`
 
-  - ### RemoveGuestSessionId
+### RemoveGuestSessionId
   - HTTP Path: `GET /api/users`
   - Request Type: `GET`
   - Authorization: `AllowAnonymous`
