@@ -86,3 +86,6 @@ CORRS cookies https only itd
 # Database 
 ### ERD Diagram
 ### Entities
+
+<br></br>
+# [thanks for reading! Now you are ready to check the Front-end :) ](https://github.com/Ksztof/store-front)
