@@ -140,7 +140,7 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `POST /api/carts/products`
   - Request Type: `POST`
   - Authorization: `Administrator `
-  - Description: This endpoint is used to add products to the cart.
+  - Description: This endpoint is used to add products to the cart
   - Input Type: `FromBody`
   - Input: `NewProductsDtoApi`
 ```json
@@ -173,9 +173,9 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `DELETE /api/carts/products/{productId}`
   - Request Type: `DELETE`
   - Authorization: `Administrator`
+  - Description: This endpoint is used to delete single product from the cart
   - Input Type: `Parameter`
   - Argumets: `"productId": "int"`
-  - Description: This endpoint is used to delete single product from the cart.
   - Output: `Code 200 Ok(CartResponseDto)`
 ```json
 {
@@ -195,8 +195,8 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `PATCH /api/carts/products`
   - Request Type: `PATCH`
   - Authorization: `Administrator `
+  - Description: This endpoint is used to modify the quantity of a product in the cart
   - Input Type: `FromBody`
-  - Description: This endpoint is used to modify the quantity of a product in the cart.
   - Input model: `ModifyProductDtoApi`
 ```json
 {
@@ -227,8 +227,8 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `GET /api/carts`
   - Request Type: `GET`
   - Authorization: `AllowAnonymous`
+  - Description: This endpoint is used to retrieve information about the cart's contents, including its total value and creation date
   - Input Type: `-`
-  - Description: This endpoint is used to retrieve information about the cart's contents, including its total value and creation date.
   - Output: `Code 204 NoContent`/`Code 200 OK(AboutCartDomResDto)`
 ```json
 {
@@ -254,7 +254,7 @@ Test preparation is the next stage of development (in preparation...)
   - Request Type: `DELETE`
   - Authorization: `AllowAnonymous`
   - Input Type: `-`
-  - Description: This endpoint is used to delete cart content.
+  - Description: This endpoint is used to delete cart content
   - Output: `Code 204 NoContent`
 
     
@@ -262,9 +262,9 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `GET /api/carts/{cartId}`
   - Request Type: `GET`
   - Authorization: `Administrator`
+  - Description: This endpoint is used to get cart content by `Id`
   - Input Type: `Parameter`
   - Argumets: `"cartId": "int"`
-  - Description: This endpoint is used to get cart content by `Id`.
   - Output: `Code 200 Ok(CartResponseDto)`
 ```json
 {
@@ -285,8 +285,8 @@ Test preparation is the next stage of development (in preparation...)
   - HTTP Path: `PUT /api/carts`
   - Request Type: `PUT`
   - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to replace cart content
   - Input Type: `FromBody`
-  - Description: This endpoint is used to replace cart content.
   - Input model: `NewProductsDtoApi`
 ```json
 {
@@ -324,7 +324,7 @@ Test preparation is the next stage of development (in preparation...)
   - Request Type: `POST`
   - Authorization: `AllowAnonymous `
   - Input Type: `FromBody`
-  - Description: This endpoint is used to check by date whether the current cart is up to date. If it is, the function returns nothing, if not, it returns the most up-to-date cart.
+  - Description: This endpoint is used to check by date whether the current cart is up to date. If it is, the function returns nothing, if not, it returns the most up-to-date cart
   - Input model: `CheckCurrentCartDtoApi`
 ```json
 {
@@ -348,7 +348,150 @@ Test preparation is the next stage of development (in preparation...)
   ],
   "CreatedAt": "DateTime"
 }
+```
+## Orders Controller
+### SubmitOrderAsync
+  - HTTP Path: `POST /api/orders/{method?}`
+  - Request Type: `POST`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to place an order, paying by card or cash on delivery
+  - Input Type: `FromBody` + `Parameter`
+  - Argumets: `"method": "string?"`
+  - Input model: `CrateOrderDtoApi`
+```json
+{
+  "FirstName": "string",
+  "LastName": "string",
+  "Email": "string",
+  "Street": "string",
+  "StreetNumber": "string",
+  "HomeNumber": "string",
+  "PostCode": "string",
+  "City": "string",
+  "PhoneNumber": "string"
+}
 
+```
+- Output: `Code 200 Ok(OrderResponseDto)`
+```json
+{
+  "Id": "int",
+  "TotalCartValue": "decimal",
+  "AboutProductsInCart": [
+    {
+      "ProductId": "int",
+      "ProductName": "string",
+      "ProductUnitPrice": "decimal",
+      "ProductTotalPrice": "decimal",
+      "Description": "string",
+      "Manufacturer": "string",
+      "Quantity": "decimal"
+    }
+  ],
+  "ShippingDetil": {
+    "FirstName": "string",
+    "LastName": "string",
+    "Email": "string",
+    "Street": "string",
+    "StreetNumber": "string",
+    "HomeNumber": "string",
+    "PostCode": "string",
+    "City": "string",
+    "PhoneNumber": "string"
+  }
+}
+```
+
+### GetOrderByIdAsync
+  - HTTP Path: `GET /api/orders/{orderId}`
+  - Request Type: `GET`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to get order by `Id`
+  - Input Type: `Parameter`
+  - Argumets: `"orderId": "int"`
+  - Output: `Code 200 Ok(OrderResponseDto)`
+```json
+{
+  "Id": "int",
+  "TotalCartValue": "decimal",
+  "AboutProductsInCart": [
+    {
+      "ProductId": "int",
+      "ProductName": "string",
+      "ProductUnitPrice": "decimal",
+      "ProductTotalPrice": "decimal",
+      "Description": "string",
+      "Manufacturer": "string",
+      "Quantity": "decimal"
+    }
+  ],
+  "ShippingDetil": {
+    "FirstName": "string",
+    "LastName": "string",
+    "Email": "string",
+    "Street": "string",
+    "StreetNumber": "string",
+    "HomeNumber": "string",
+    "PostCode": "string",
+    "City": "string",
+    "PhoneNumber": "string"
+  }
+}
+```
+
+### DeleteOrderAsync
+  - HTTP Path: `DELETE /api/orders/{orderId}`
+  - Request Type: `DELETE`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to submit order deletion by administrator
+  - Input Type: `Parameter`
+  - Argumets: `"orderId": "int"`
+  - Output: `Code 204 NoContent`
+
+### MarkOrderAsDeletedAsync
+  - HTTP Path: `PATCH /api/orders/{orderId}//mark-as-deleted`
+  - Request Type: `PATCH`
+  - Authorization: `AllowAnonymous `
+  - Description: This endpoint is used to mark order as - to deletion by administrator, for user order becomes deleted
+  - Input Type: `Parameter`
+  - Argumets: `"orderId": "int"`
+  - Output: `Code 204 NoContent`
+
+### GetOrdersAsync
+  - HTTP Path: `GET /api/orders`
+  - Request Type: `GET`
+  - Authorization: `Administrator `
+  - Description: This endpoint is used to get all orders
+  - Argumets: `-`
+  - Output: `Code 200 OK(IEnumerable<OrdersResDto>)`
+```JSON
+[
+  {
+    "Status": "string",
+    "CartLineResponse": [
+      {
+        "productId": "int?",
+        "ProductName": "string",
+        "Quantity": "decimal",
+        "UnitPrice": "decimal",
+        "TotalPrice": "decimal"
+      }
+    ],
+    "ShippingInfo": {
+      "FirstName": "string",
+      "LastName": "string",
+      "Email": "string",
+      "Street": "string",
+      "StreetNumber": "string",
+      "HomeNumber": "string",
+      "PostCode": "string",
+      "City": "string",
+      "PhoneNumber": "string"
+    }
+  }
+]
+
+```
 
 # Database 
 ### ERD Diagram
