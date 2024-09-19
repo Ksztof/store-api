@@ -790,6 +790,8 @@ The tables in the database are mapped from the entities in project using the `En
 ```
 
 ## ERD Diagram
+![Untitled (1)](https://github.com/user-attachments/assets/42ab9754-65ab-425f-9161-0ca237f87c73)
+
 ## Entities
 ### `ASP.NET Core Identity tables`
 - `StoreUser` - class extends the default IdentityUser provided by ASP.NET Core Identity. This table represents the user in the system and stores references to their orders and cart.
