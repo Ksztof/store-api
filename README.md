@@ -643,7 +643,7 @@ Test preparation is the next stage of development (in preparation...)
   "ProductManufacturer": "string?",
   "ProductCategoriesIds": [
     "int"
-  ]?
+  ]
 }
 ```
   - Output: `Code 200 Ok(ProductResponseDto)`
@@ -737,6 +737,57 @@ Test preparation is the next stage of development (in preparation...)
     <br></br>
 # Database 
 The tables in the database are mapped from the entities in project using the `Entity Framework Core` ORM. The relationships between these entities are defined in the `ShopDbContext` file. This file also contains the `DbSet` properties for each entity, such as `Products`, `ProductCategories`, `Carts`, `CartLines`, `Orders`, and `ShippingDetails`, which are used to interact with the corresponding tables in the database.
+```csharp
+{
+    modelBuilder.Entity<Cart>()
+        .HasMany(c => c.CartLines);
+
+    modelBuilder.Entity<CartLine>()
+        .HasOne(cl => cl.Product)
+        .WithMany()
+        .HasForeignKey(cl => cl.ProductId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<Order>()
+        .HasOne(o => o.Cart)
+        .WithOne(c => c.Order)
+        .HasForeignKey<Order>(o => o.CartId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<Order>()
+        .HasOne(o => o.StoreUser)
+        .WithMany(su => su.Orders)
+        .HasForeignKey(o => o.StoreUserId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<ProductProductCategory>()
+         .HasKey(pc => new { pc.Id });
+
+    modelBuilder.Entity<ProductProductCategory>()
+        .HasOne(pc => pc.Product)
+        .WithMany(p => p.ProductProductCategories)
+        .HasForeignKey(pc => pc.ProductId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<ProductProductCategory>()
+        .HasOne(pc => pc.ProductCategory)
+        .WithMany(c => c.ProductProductCategories)
+        .HasForeignKey(pc => pc.ProductCategoryId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<StoreUser>()
+        .HasOne(su => su.Cart)
+        .WithOne(c => c.StoreUser)
+        .HasForeignKey<Cart>(c => c.StoreUserId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<Order>()
+        .HasOne(o => o.ShippingDetail)
+        .WithOne(sd => sd.Order)
+        .HasForeignKey<Order>(o => o.ShippingDetailId)
+        .OnDelete(DeleteBehavior.Restrict);
+}
+```
 
 ## ERD Diagram
 ## Entities
@@ -764,10 +815,30 @@ The `ShippingDetail` table represents the delivery details of the user placing t
 - `ShippingDetail` `(1) -> (1)` `Order`
 
 ### `Cart`
-The `Cart` table represents the user's shopping cart and contains information about its creation date `CreatedAt` and status `CartStatus`, which indicates whether the cart is archived or active. Additionally, this entity stores a reference to the user via `StoreUserId`, to the `Order` if it has already been placed, and to a list of products `CartLines`, which act as an aggregate for the cart and store information about the products added to the cart. The `StoreUserId` field is `nullable` because the `Cart` table may not be linked to a specific user if the cart was created by a guest, who is simply identified by the cart's `Id`. This field can be filled once the guest logs into their account, at which point their `Id` will be assigned to the cart. Similarly, the `Order` column will be populated only after an order is placed.
+The `Cart` table represents the user's shopping cart and contains information about its creation date `CreatedAt` and status `CartStatus`, which indicates whether the cart is archived or active. Additionally, this entity stores a reference to the user via `StoreUserId`, to the `Order` if it has already been placed, and to a list of products `CartLine`, which act as an aggregate for the cart and store information about the products added to the cart. The `StoreUserId` field is `nullable` because the `Cart` table may not be linked to a specific user if the cart was created by a guest, who is simply identified by the cart's `Id`. This field can be filled once the guest logs into their account, at which point their `Id` will be assigned to the cart. Similarly, the `Order` column will be populated only after an order is placed.
 - `Cart` `(1) -> (1)` `StoreUser`
-- `Cart` `(1) -> (N)` `CartLines`
+- `Cart` `(1) -> (N)` `CartLine`
 - `Cart` `(1) -> (1)` `Order`
+
+### `CartLine`
+The `CartLine` entity represents the product added to the cart and provides information about its quantity.
+- `CartLine` `(N) -> (1)` `Product`
+
+### `Product`
+The `Product` table represents a product in the database and contains information about its name `Name`, price `Price`, manufacturer `Manufacturer`, description `Description`, as well as the date it was added and modified `DateAdded`, `DateUpdated`. The table also holds references to the `ProductProductCategory` table, which describes the categories from `ProductCategory` table, assigned to the product.
+- `Product` `(1) -> (N)` `ProductProductCategory`
+- `Product` `(N) -> (M)` `ProductCategory`
+
+### `ProductProductCategory`
+The `ProductProductCategory` table is a join table that describes the `many-to-many` relationship between the `roduct` and `ProductCategory` tables.
+- `ProductProductCategory` `(N) -> (1)` `Product`
+- `ProductProductCategory` `(N) -> (1)` `ProductCategory`
+
+### `ProductCategory`
+The `ProductCategory` table stores information about product categories that can be used for filtering.
+- `ProductCategory` `(1) -> (N)` `ProductProductCategory`
+- `ProductCategory` `(N) -> (M)` `Product`
+
 
 # CI/CD
 The backend API is connected to Azure Web App and the CI/CD process starts automatically after each push to the main branch. The API is built and deployed using GitHub Actions, with Entity Framework Core migrations applied during the process. Secrets, such as Azure credentials and the SQL connection string, are used for secure configuration. After every push, the API is deployed to Azure Web App.
