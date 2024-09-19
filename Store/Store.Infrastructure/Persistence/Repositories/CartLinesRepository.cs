@@ -14,19 +14,19 @@ public class CartLinesRepository : ICartLinesRepository
 
     public async Task DeleteCartLineAsync(CartLine cartLine)
     {
-        _shopDbContext.CartsLine.Remove(cartLine);
+        _shopDbContext.CartsLines.Remove(cartLine);
         await _shopDbContext.SaveChangesAsync();
     }
 
     public async Task ClearCartAsync(ICollection<CartLine> cartLines)
     {
-        _shopDbContext.CartsLine.RemoveRange(cartLines);
+        _shopDbContext.CartsLines.RemoveRange(cartLines);
         await _shopDbContext.SaveChangesAsync();
     }
 
     public async Task<CartLine> GetByProductId(int productId)
     {
-        CartLine? cartLine = await _shopDbContext.CartsLine
+        CartLine? cartLine = await _shopDbContext.CartsLines
             .FirstOrDefaultAsync(cl => cl.ProductId == productId);
 
         return cartLine;

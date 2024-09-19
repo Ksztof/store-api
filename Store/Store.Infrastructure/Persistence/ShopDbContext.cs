@@ -48,7 +48,7 @@ public class ShopDbContext : IdentityDbContext<StoreUser>
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<ProductProductCategory>()
-             .HasKey(pc => new { pc.Id });
+            .HasKey(ppc => new { ppc.ProductId, ppc.ProductCategoryId });
 
         modelBuilder.Entity<ProductProductCategory>()
             .HasOne(pc => pc.Product)

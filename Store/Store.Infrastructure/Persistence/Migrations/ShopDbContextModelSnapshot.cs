@@ -178,7 +178,7 @@ namespace Store.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartsLine");
+                    b.ToTable("CartsLines");
                 });
 
             modelBuilder.Entity("Store.Domain.Carts.Cart", b =>
@@ -311,23 +311,18 @@ namespace Store.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Store.Domain.ProductProductCategories.ProductProductCategory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("ProductCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId", "ProductCategoryId");
 
                     b.HasIndex("ProductCategoryId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductProductCategories");
                 });

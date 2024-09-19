@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Store.Infrastructure.Persistence.Migrations
 {
-    public partial class InitialStoreMigration : Migration
+    public partial class InitialPerfumeShopMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -233,14 +234,13 @@ namespace Store.Infrastructure.Persistence.Migrations
                 name: "ProductProductCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductCategoryId = table.Column<int>(type: "int", nullable: false)
+                    ProductCategoryId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductProductCategories", x => x.Id);
+                    table.PrimaryKey("PK_ProductProductCategories", x => new { x.ProductId, x.ProductCategoryId });
                     table.ForeignKey(
                         name: "FK_ProductProductCategories_ProductCategories_ProductCategoryId",
                         column: x => x.ProductCategoryId,
@@ -256,25 +256,25 @@ namespace Store.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartsLine",
+                name: "CartsLines",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CartId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartsLine", x => x.Id);
+                    table.PrimaryKey("PK_CartsLines", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CartsLine_Carts_CartId",
+                        name: "FK_CartsLines_Carts_CartId",
                         column: x => x.CartId,
                         principalTable: "Carts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CartsLine_Products_ProductId",
+                        name: "FK_CartsLines_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -363,13 +363,13 @@ namespace Store.Infrastructure.Persistence.Migrations
                 filter: "[StoreUserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartsLine_CartId",
-                table: "CartsLine",
+                name: "IX_CartsLines_CartId",
+                table: "CartsLines",
                 column: "CartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartsLine_ProductId",
-                table: "CartsLine",
+                name: "IX_CartsLines_ProductId",
+                table: "CartsLines",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -393,11 +393,6 @@ namespace Store.Infrastructure.Persistence.Migrations
                 name: "IX_ProductProductCategories_ProductCategoryId",
                 table: "ProductProductCategories",
                 column: "ProductCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductProductCategories_ProductId",
-                table: "ProductProductCategories",
-                column: "ProductId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -418,7 +413,7 @@ namespace Store.Infrastructure.Persistence.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CartsLine");
+                name: "CartsLines");
 
             migrationBuilder.DropTable(
                 name: "Orders");
