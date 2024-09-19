@@ -15,7 +15,7 @@ public class ShopDbContext : IdentityDbContext<StoreUser>
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Cart> Carts { get; set; }
-    public DbSet<CartLine> CartsLine { get; set; }
+    public DbSet<CartLine> CartsLines { get; set; }
     public DbSet<ProductProductCategory> ProductProductCategories { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<ShippingDet> ShippingDetails { get; set; }

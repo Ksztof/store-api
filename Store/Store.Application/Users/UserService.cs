@@ -90,7 +90,7 @@ public class UserService : IUserService
 
         if (receiveCartIdResult.IsSuccess)
         {
-            EntityResult<CartResponse> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, receiveCartIdResult.Value);
+            EntityResult<CartResponseDto> result = await _cartsService.AssignGuestCartToUserAsync(user.Id, receiveCartIdResult.Value);
 
             if (result.IsFailure)
             {
@@ -129,7 +129,7 @@ public class UserService : IUserService
 
         if (receiveCartIdResult.IsSuccess)
         {
-            EntityResult<CartResponse> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
+            EntityResult<CartResponseDto> assignResult = await _cartsService.AssignGuestCartToUserAsync(storeUser.Id, receiveCartIdResult.Value);
 
             if (assignResult.IsFailure)
             {

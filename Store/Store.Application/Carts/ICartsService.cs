@@ -7,13 +7,13 @@ namespace Store.Application.Carts;
 
 public interface ICartsService
 {
-    public Task<EntityResult<CartResponse>> AddProductsToCartAsync(NewProductsDtoApp request);
-    public Task<EntityResult<CartResponse>> GetCartByIdAsync(int cartId);
-    public Task<EntityResult<CartResponse>> DeleteProductFromCartAsync(int productId);
-    public Task<EntityResult<CartResponse>> ModifyProductAsync(ModifyProductDtoApp productModification);
-    public Task<EntityResult<AboutCartDomRes>> CheckCartAsync();
+    public Task<EntityResult<CartResponseDto>> AddProductsToCartAsync(NewProductsDtoApp request);
+    public Task<EntityResult<CartResponseDto>> GetCartByIdAsync(int cartId);
+    public Task<EntityResult<CartResponseDto>> DeleteProductFromCartAsync(int productId);
+    public Task<EntityResult<CartResponseDto>> ModifyProductAsync(ModifyProductDtoApp productModification);
+    public Task<EntityResult<AboutCartDomResDto>> CheckCartAsync();
     public Task<Result> ClearCartAsync();
-    public Task<EntityResult<CartResponse>> AssignGuestCartToUserAsync(string userId, int cartId);
-    public Task<EntityResult<AboutCartDomRes>> ReplaceCartContentAsync(NewProductsDtoApp request);
-    public Task<EntityResult<AboutCartDomRes>> CheckCurrentCartAsync(CheckCurrentCartDtoApp addProductToCartDto);
+    public Task<EntityResult<CartResponseDto>> AssignGuestCartToUserAsync(string userId, int cartId);
+    public Task<EntityResult<AboutCartDomResDto>> ReplaceCartContentAsync(NewProductsDtoApp request);
+    public Task<EntityResult<AboutCartDomResDto>> CheckCurrentCartAsync(CheckCurrentCartDtoApp addProductToCartDto);
 }

@@ -8,5 +8,5 @@ public interface IEmailService
 {
     public Task<Result> SendActivationLink(UserDetailsForActivationLinkDto userDetails, string encodedToken);
     public string DecodeBaseUrlToken(string encodedEmailToken);
-    public Task SendOrderSummary(OrderResponse orderResponse);
+    public Task SendOrderSummary(OrderResponseDto orderResponse);
 }

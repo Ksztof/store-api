@@ -6,9 +6,9 @@ namespace Store.Application.Orders;
 
 public interface IOrdersService
 {
-    public Task<EntityResult<OrderResponse>> SubmitOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp);
-    public Task<EntityResult<OrderResponse>> GetOrderByIdAsync(int orderId);
-    public Task<EntityResult<OrderResponse>> DeleteOrderAsync(int orderId);
-    public Task<EntityResult<OrderResponse>> MarkOrderAsDeletedAsync(int orderId);
+    public Task<EntityResult<OrderResponseDto>> SubmitOrderAsync(string? method, CreateOrderDtoApp createOrderDtoApp);
+    public Task<EntityResult<OrderResponseDto>> GetOrderByIdAsync(int orderId);
+    public Task<EntityResult<OrderResponseDto>> DeleteOrderAsync(int orderId);
+    public Task<EntityResult<OrderResponseDto>> MarkOrderAsDeletedAsync(int orderId);
     public Task<EntityResult<IEnumerable<OrdersResDto>>> GetOrdersAsync();
 }

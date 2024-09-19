@@ -29,7 +29,7 @@ public class MappingProfileApplication : Profile
 
         CreateMap<ShippingDet, ShippingDetailResponse>();
 
-        CreateMap<CartLine, CartLineResponse>()
+        CreateMap<CartLine, CartLineResponseDto>()
             .ForMember(dest => dest.productId, opt => opt.MapFrom(src => src.Product.Id))
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
             .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))

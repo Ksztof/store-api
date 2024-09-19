@@ -58,7 +58,7 @@ public class EmailService : IEmailService
         return Result.Success();
     }
 
-    public async Task SendOrderSummary(OrderResponse orderResponse)
+    public async Task SendOrderSummary(OrderResponseDto orderResponse)
     {
         string subject = "Order Summary";
         int rowIndex = 0;

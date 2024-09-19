@@ -25,14 +25,14 @@ public class ProductsService : IProductsService
         _mapper = mapper;
     }
 
-    public async Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductDtoApp createProductForm)
+    public async Task<EntityResult<ProductResponseDto>> CreateProductAsync(CreateProductDtoApp createProductForm)
     {
         EntityResult<Product> getProduct = await _productsRepository.GetByName(createProductForm.ProductName);
 
         if (getProduct.IsSuccess)
         {
             Error error = EntityErrors<Product, int>.ProductAlreadyExists(getProduct.Entity.Id, createProductForm.ProductName);
-            return EntityResult<ProductResponse>.Failure(error);
+            return EntityResult<ProductResponseDto>.Failure(error);
         }
 
         ICollection<ProductCategory> productCategories = await _productCategoriesRepository.GetByIdsAsync(createProductForm.ProductCategoriesIds);
@@ -43,7 +43,7 @@ public class ProductsService : IProductsService
             int[] notFoundIds = createProductForm.ProductCategoriesIds.Except(foundIds).ToArray();
 
             Error error = EntityErrors<ProductCategory, int>.NotFoundEntitiesByIds(notFoundIds);
-            return EntityResult<ProductResponse>.Failure(error);
+            return EntityResult<ProductResponseDto>.Failure(error);
         }
 
         CreateProductDtoDom createProductDtoDom = _mapper.Map<CreateProductDtoDom>(createProductForm);
@@ -53,9 +53,9 @@ public class ProductsService : IProductsService
         product.CreateProduct(createProductDtoDom, productCategories);
         product = await _productsRepository.CreateAsync(product);
 
-        ProductResponse productDetails = MapProductResponse(product);
+        ProductResponseDto productDetails = MapProductResponse(product);
 
-        return EntityResult<ProductResponse>.Success(productDetails);
+        return EntityResult<ProductResponseDto>.Success(productDetails);
     }
 
     public async Task<EntityResult<Product>> DeleteProductAsync(int productId)
@@ -77,41 +77,41 @@ public class ProductsService : IProductsService
         return EntityResult<Product>.Success();
     }
 
-    public async Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId)
+    public async Task<EntityResult<ProductResponseDto>> GetProductByIdAsync(int productId)
     {
         if (productId <= 0)
         {
-            return EntityResult<ProductResponse>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
+            return EntityResult<ProductResponseDto>.Failure(EntityErrors<Product, int>.WrongEntityId(productId));
         }
 
         EntityResult<Product> getProduct = await _productsRepository.GetByIdAsync(productId);
 
         if (getProduct.IsFailure)
         {
-            return EntityResult<ProductResponse>.Failure(getProduct.Error);
+            return EntityResult<ProductResponseDto>.Failure(getProduct.Error);
         }
 
-        ProductResponse productDetails = MapProductResponse(getProduct.Entity);
+        ProductResponseDto productDetails = MapProductResponse(getProduct.Entity);
 
-        return EntityResult<ProductResponse>.Success(productDetails);
+        return EntityResult<ProductResponseDto>.Success(productDetails);
     }
 
-    public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
+    public async Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync()
     {
         IEnumerable<Product> products = await _productsRepository.GetAllAsync();
 
-        IEnumerable<ProductResponse> productsDetails = MapProductsToResponse(products);
+        IEnumerable<ProductResponseDto> productsDetails = MapProductsToResponse(products);
 
         return productsDetails;
     }
 
-    public async Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductDtoApp updateForm)
+    public async Task<EntityResult<ProductResponseDto>> UpdateProductAsync(UpdateProductDtoApp updateForm)
     {
         EntityResult<Product> getProduct = await _productsRepository.GetByIdAsync(updateForm.productId);
 
         if (getProduct.IsFailure)
         {
-            return EntityResult<ProductResponse>.Failure(getProduct.Error);
+            return EntityResult<ProductResponseDto>.Failure(getProduct.Error);
         }
 
         Product product = getProduct.Entity;
@@ -125,7 +125,7 @@ public class ProductsService : IProductsService
 
             Error error = EntityErrors<Product, int>.NotFoundEntitiesByIds(notFoundIds);
 
-            return EntityResult<ProductResponse>.Failure(error);
+            return EntityResult<ProductResponseDto>.Failure(error);
         }
 
         UpdateProductDtoDom updateProductDtoDom = _mapper.Map<UpdateProductDtoDom>(updateForm);
@@ -133,14 +133,14 @@ public class ProductsService : IProductsService
         product.UpdateProduct(updateProductDtoDom, newProductCategories);
         product = await _productsRepository.UpdateAsync(product);
 
-        ProductResponse productResponse = MapProductResponse(product);
+        ProductResponseDto productResponse = MapProductResponse(product);
 
-        return EntityResult<ProductResponse>.Success(productResponse);
+        return EntityResult<ProductResponseDto>.Success(productResponse);
     }
 
-    private static IEnumerable<ProductResponse> MapProductsToResponse(IEnumerable<Product> products)
+    private static IEnumerable<ProductResponseDto> MapProductsToResponse(IEnumerable<Product> products)
     {
-        return products.Select(x => new ProductResponse
+        return products.Select(x => new ProductResponseDto
         {
             Id = x.Id,
             Name = x.Name,
@@ -151,9 +151,9 @@ public class ProductsService : IProductsService
         });
     }
 
-    private static ProductResponse MapProductResponse(Product? product)
+    private static ProductResponseDto MapProductResponse(Product? product)
     {
-        ProductResponse productResponse = new ProductResponse
+        ProductResponseDto productResponse = new ProductResponseDto
         {
             Id = product.Id,
             Name = product.Name,

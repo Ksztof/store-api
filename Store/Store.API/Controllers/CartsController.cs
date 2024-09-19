@@ -87,7 +87,7 @@ public class CartsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> CheckCartAsync()
     {
-        EntityResult<AboutCartDomRes> result = await _cartsService.CheckCartAsync();
+        EntityResult<AboutCartDomResDto> result = await _cartsService.CheckCartAsync();
 
         if (result.IsSuccess && result.Entity == null)
         {
@@ -133,7 +133,7 @@ public class CartsController : ControllerBase
 
         NewProductsDtoApp addProductToCartDto = _mapper.Map<NewProductsDtoApp>(request);
 
-        EntityResult<AboutCartDomRes> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
+        EntityResult<AboutCartDomResDto> result = await _cartsService.ReplaceCartContentAsync(addProductToCartDto);
 
         if (result.IsSuccess && result.Entity == null)
         {
@@ -161,7 +161,7 @@ public class CartsController : ControllerBase
 
         CheckCurrentCartDtoApp addProductToCartDto = _mapper.Map<CheckCurrentCartDtoApp>(request);
 
-        EntityResult<AboutCartDomRes> result = await _cartsService.CheckCurrentCartAsync(addProductToCartDto);
+        EntityResult<AboutCartDomResDto> result = await _cartsService.CheckCurrentCartAsync(addProductToCartDto);
 
         if (result.IsFailure)
         {

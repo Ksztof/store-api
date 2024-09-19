@@ -54,7 +54,7 @@ public class OrdersController : ControllerBase
 
         CreateOrderDtoApp createOrderDtoApp = _mapper.Map<CreateOrderDtoApp>(createOrderRequest);
 
-        EntityResult<OrderResponse> result = await _orderService.SubmitOrderAsync(method, createOrderDtoApp);
+        EntityResult<OrderResponseDto> result = await _orderService.SubmitOrderAsync(method, createOrderDtoApp);
 
         return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
     }
@@ -63,7 +63,7 @@ public class OrdersController : ControllerBase
     [Authorize(Roles = UserRoles.Administrator)]
     public async Task<IActionResult> GetOrderByIdAsync(int orderId)
     {
-        EntityResult<OrderResponse> result = await _orderService.GetOrderByIdAsync(orderId);
+        EntityResult<OrderResponseDto> result = await _orderService.GetOrderByIdAsync(orderId);
 
         return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
     }
@@ -72,7 +72,7 @@ public class OrdersController : ControllerBase
     [Authorize(Roles = UserRoles.Administrator)]
     public async Task<IActionResult> DeleteOrderAsync(int orderId)
     {
-        EntityResult<OrderResponse> result = await _orderService.DeleteOrderAsync(orderId);
+        EntityResult<OrderResponseDto> result = await _orderService.DeleteOrderAsync(orderId);
 
         return result.IsSuccess ? NoContent() : result.ToProblemDetails();
     }
@@ -81,7 +81,7 @@ public class OrdersController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> MarkOrderAsDeletedAsync(int orderId)
     {
-        EntityResult<OrderResponse> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
+        EntityResult<OrderResponseDto> result = await _orderService.MarkOrderAsDeletedAsync(orderId);
 
         return result.IsSuccess ? NoContent() : result.ToProblemDetails();
     }
@@ -92,6 +92,6 @@ public class OrdersController : ControllerBase
     {
         EntityResult<IEnumerable<OrdersResDto>> result = await _orderService.GetOrdersAsync();
 
-        return result.IsSuccess ? NoContent() : result.ToProblemDetails();
+        return result.IsSuccess ? Ok(result.Entity) : result.ToProblemDetails();
     }
 }

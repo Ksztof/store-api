@@ -1,6 +1,6 @@
 ﻿namespace Store.Application.Carts.Dto.Response;
 
-public class CartLineResponse
+public class CartLineResponseDto
 {
     public int? productId { get; set; }
     public string ProductName { get; set; }

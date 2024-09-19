@@ -7,9 +7,9 @@ namespace Store.Application.Products;
 
 public interface IProductsService
 {
-    public Task<EntityResult<ProductResponse>> CreateProductAsync(CreateProductDtoApp createProductForm);
+    public Task<EntityResult<ProductResponseDto>> CreateProductAsync(CreateProductDtoApp createProductForm);
     public Task<EntityResult<Product>> DeleteProductAsync(int productId);
-    public Task<EntityResult<ProductResponse>> GetProductByIdAsync(int productId);
-    public Task<IEnumerable<ProductResponse>> GetAllProductsAsync();
-    public Task<EntityResult<ProductResponse>> UpdateProductAsync(UpdateProductDtoApp updateForm);
+    public Task<EntityResult<ProductResponseDto>> GetProductByIdAsync(int productId);
+    public Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync();
+    public Task<EntityResult<ProductResponseDto>> UpdateProductAsync(UpdateProductDtoApp updateForm);
 }
