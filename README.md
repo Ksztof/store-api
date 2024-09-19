@@ -736,10 +736,15 @@ Test preparation is the next stage of development (in preparation...)
   - Output: `Code 204 NoContent`
     <br></br>
 # Database 
+The tables in the database are mapped from the entities in project using the `Entity Framework Core` ORM. The relationships between these entities are defined in the `ShopDbContext` file. This file also contains the `DbSet` properties for each entity, such as `Products`, `ProductCategories`, `Carts`, `CartLines`, `Orders`, and `ShippingDetails`, which are used to interact with the corresponding tables in the database.
+
 ## ERD Diagram
 ## Entities
 ### `ASP.NET Core Identity tables`
-- `StoreUser` - class extends the default IdentityUser provided by ASP.NET Core Identity. This table represents the user in the system and stores references to their orders(`StoreUser` `(1)->(N)` `Order`) and cart(`StoreUser` `(1) -> (1)` `Cart`).
+- `StoreUser` - class extends the default IdentityUser provided by ASP.NET Core Identity. This table represents the user in the system and stores references to their orders and cart.
+  - `StoreUser` `(1)->(N)` `Order`
+  - `StoreUser` `(1) -> (1)` `Cart`
+ 
 - `AspNetRoleClaims` - Stores claims associated with roles, enabling role-based authorization by attaching specific claims to a role
 - `AspNetRoles` - Stores roles that can be assigned to users, such as "Administrator" or "Visitor."
 - `AspNetUserClaims` - Stores claims associated with users, allowing specific claims-based authorization on a per-user basis
@@ -749,10 +754,20 @@ Test preparation is the next stage of development (in preparation...)
 - `AspNetUserTokens` - Stores security tokens associated with users, which can be used for actions like password resets or multi-factor authentication.`
   
 ### `Order`
-The `Order` table represents a placed order and stores information about its status in the `Status` column. The table is linked to the `Cart` (`Order` `(1) -> (1)` `Cart`) table, allowing the ordered products to be tracked and to the `StoreUser`(`Order` `(N) -> (1)` `StoreUser`) table, indicating who placed the order. `Order` has also a reference to the `ShippingDetail` (`Order` `(1) -> (1)` `ShippingDetail`) table, which stores shipping-related information.
+The `Order` table represents a placed order and stores information about its status in the `Status` column. The table is linked to the `Cart`  table, allowing the ordered products to be tracked and to the `StoreUser` table, indicating who placed the order. `Order` has also a reference to the `ShippingDetail`  table, which stores shipping-related information.
+- `Order` `(1) -> (1)` `Cart`
+- `Order` `(N) -> (1)` `StoreUser`
+- `Order` `(1) -> (1)` `ShippingDetail`
 
 ### `ShippingDetail`
-The `ShippingDetail` table represents the delivery details of the user placing the order and it's only connected to `Order` (`ShippingDetail` `(1) -> (1)` `Order`) table. 
+The `ShippingDetail` table represents the delivery details of the user placing the order and it's only connected to `Order` table. 
+- `ShippingDetail` `(1) -> (1)` `Order`
+
+### `Cart`
+The `Cart` table represents the user's shopping cart and contains information about its creation date `CreatedAt` and status `CartStatus`, which indicates whether the cart is archived or active. Additionally, this entity stores a reference to the user via `StoreUserId`, to the `Order` if it has already been placed, and to a list of products `CartLines`, which act as an aggregate for the cart and store information about the products added to the cart. The `StoreUserId` field is `nullable` because the `Cart` table may not be linked to a specific user if the cart was created by a guest, who is simply identified by the cart's `Id`. This field can be filled once the guest logs into their account, at which point their `Id` will be assigned to the cart. Similarly, the `Order` column will be populated only after an order is placed.
+- `Cart` `(1) -> (1)` `StoreUser`
+- `Cart` `(1) -> (N)` `CartLines`
+- `Cart` `(1) -> (1)` `Order`
 
 # CI/CD
 The backend API is connected to Azure Web App and the CI/CD process starts automatically after each push to the main branch. The API is built and deployed using GitHub Actions, with Entity Framework Core migrations applied during the process. Secrets, such as Azure credentials and the SQL connection string, are used for secure configuration. After every push, the API is deployed to Azure Web App.
