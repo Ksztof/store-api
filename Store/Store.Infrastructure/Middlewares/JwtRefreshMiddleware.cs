@@ -86,8 +86,8 @@ public class JwtRefreshMiddleware
                                 {
                                     HttpOnly = true,
                                     Secure = true,
-                                    Expires = DateTime.UtcNow.AddSeconds(_jwtOptions.JwtTokenExpirationInHours),
-                                    IsEssential = true,
+                                    Expires = DateTime.UtcNow.AddHours(_jwtOptions.JwtTokenExpirationInHours),
+                                    IsEssential = false,
                                     SameSite = SameSiteMode.None
                                 };
 
@@ -96,7 +96,7 @@ public class JwtRefreshMiddleware
                                     HttpOnly = true,
                                     Secure = true,
                                     Expires = DateTime.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationInHours),
-                                    IsEssential = true,
+                                    IsEssential = false,
                                     SameSite = SameSiteMode.None
                                 };
 

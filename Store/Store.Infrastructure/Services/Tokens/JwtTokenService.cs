@@ -71,7 +71,7 @@ public class JwtTokenService : ITokenService
         {
             Issuer = _jwtOptions.ValidIssuer,
             Audience = _jwtOptions.ValidAudience,
-            Expires = DateTime.UtcNow.AddSeconds(15),//shouled be set: .AddHours(_jwtOptions.JwtTokenExpirationInHours), .AddSeconds(15) is for presentation purposes
+            Expires = DateTime.UtcNow.AddHours(_jwtOptions.JwtTokenExpirationInHours),
             SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
             Subject = new ClaimsIdentity(claims)
         };
