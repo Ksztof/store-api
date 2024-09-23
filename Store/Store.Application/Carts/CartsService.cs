@@ -450,7 +450,8 @@ public class CartsService : ICartsService
 
             if (getUserCart.IsFailure)
             {
-                return Result.Failure(getUserCart.Error);
+                //if cart can't be fount it means that cart content has been already cleared
+                return Result.Success();
             }
 
             Cart userCart = getUserCart.Entity;
